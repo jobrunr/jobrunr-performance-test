@@ -1,0 +1,20 @@
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n%ex{5}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Change the level in the following line to have more debugging (DEBUG, TRACE) -->
+    <logger name="org.jobrunr" level="INFO"/>
+    <logger name="org.jobrunr.utils.multicast" level="WARN"/>
+    <logger name="org.jobrunr.storage.sql.common.DatabaseCreator" level="WARN"/>
+    <logger name="org.jobrunr.storage.nosql.common.NoSqlDatabaseCreator" level="WARN"/>
+    <logger name="org.jobrunr.server.strategy.RoundRobinDynamicQueueStrategy" level="DEBUG "/>
+    <logger name="org.jobrunr.server.strategy.WeightedRoundRobinDynamicQueueStrategy" level="DEBUG "/>
+    <logger name="org.jobrunr.server.zookeeper.tasks.ProcessScheduledJobsTask" level="TRACE "/>
+
+    <root level="info">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>
