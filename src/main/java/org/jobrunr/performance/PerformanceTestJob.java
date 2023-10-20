@@ -10,5 +10,6 @@ public class PerformanceTestJob {
     @Job(name = "Job %0")
     public void testJob(int index) throws InterruptedException {
         jobs.mark();
+        Main.countDownLatch.countDown();
     }
 }
