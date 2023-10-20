@@ -1,5 +1,7 @@
 package org.jobrunr.performance;
 
+import com.codahale.metrics.ConsoleReporter;
+import com.codahale.metrics.MetricRegistry;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.jobrunr.configuration.JobRunr;
@@ -9,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -18,7 +21,10 @@ public class Main {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
-    public static void main(String[] args) throws InterruptedException {
+    public static final MetricRegistry metrics = new MetricRegistry();
+
+
+    public static void main(String[] args) {
         DataSource dataSource = getDataSource();
 
         JobRunr.configure()
@@ -30,14 +36,19 @@ public class Main {
 
         PerformanceTestJob performanceTestJob = new PerformanceTestJob();
 
-        Stream<Integer> jobStreamTenantA = IntStream.range(0, 1_000_000)
+        Stream<Integer> jobStreamTenantA = IntStream.range(0, 500_000)
                 .mapToObj(i -> i);
 
-        Long startTime = System.currentTimeMillis();
-        BackgroundJob.enqueue(jobStreamTenantA, i -> performanceTestJob.testJob( i, startTime));
+        BackgroundJob.enqueue(jobStreamTenantA, performanceTestJob::testJob);
         LOGGER.info("Enqueued all jobs - starting processing");
         JobRunr.getBackgroundJobServer().start();
         LOGGER.info("Enqueued all jobs - processing started");
+
+        ConsoleReporter reporter = ConsoleReporter.forRegistry(metrics)
+                .convertRatesTo(TimeUnit.SECONDS)
+                .convertDurationsTo(TimeUnit.MILLISECONDS)
+                .build();
+        reporter.start(1, TimeUnit.SECONDS);
     }
 
     protected static DataSource getDataSource() {
