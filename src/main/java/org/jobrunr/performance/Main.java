@@ -9,9 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
-
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
+import static org.jobrunr.server.BackgroundJobServerConfiguration.usingStandardBackgroundJobServerConfiguration;
 
 public class Main {
 
@@ -22,19 +23,21 @@ public class Main {
 
         JobRunrPro.configure()
                 .useStorageProvider(SqlStorageProviderFactory.using(dataSource))
-                .useBackgroundJobServer()
+                .useBackgroundJobServer(usingStandardBackgroundJobServerConfiguration(), false)
                 .useDashboard()
                 .initialize();
 
 
         PerformanceTestJob performanceTestJob = new PerformanceTestJob();
 
-        Stream<Integer> jobStreamTenantA = IntStream.range(0, 1000000)
+        Stream<Integer> jobStreamTenantA = IntStream.range(0, 1_000_000)
                 .mapToObj(i -> i);
 
         Long startTime = System.currentTimeMillis();
         BackgroundJob.enqueue(jobStreamTenantA, i -> performanceTestJob.testJob( i, startTime));
-        LOGGER.info("Enqueued all jobs");
+        LOGGER.info("Enqueued all jobs - starting processing");
+        JobRunrPro.getBackgroundJobServer().start();
+        LOGGER.info("Enqueued all jobs - processing started");
     }
 
     protected static DataSource getDataSource() {
@@ -42,7 +45,7 @@ public class Main {
         config.setJdbcUrl("jdbc:postgresql://127.0.0.1:5432/postgres");
         config.setUsername("postgres");
         config.setPassword("postgres");
-        config.setMinimumIdle(5);
+        config.setMinimumIdle(80);
         config.setMaximumPoolSize(105);
         return new HikariDataSource(config);
     }
