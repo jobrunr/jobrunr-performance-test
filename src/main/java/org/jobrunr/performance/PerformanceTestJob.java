@@ -22,7 +22,7 @@ public class PerformanceTestJob {
     public static final AtomicLong startTime = new AtomicLong(0L);
 
     @Job(name = "Job %0")
-    public void testJob(int index, long startTime) throws InterruptedException {
+    public void testJob(int index) {
         PerformanceTestJob.startTime.compareAndExchange(0L, System.currentTimeMillis());
 
         long executedJobsCounter = counter.incrementAndGet();
