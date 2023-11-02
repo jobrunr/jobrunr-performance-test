@@ -26,6 +26,8 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
         DataSource dataSource = getDataSource();
 
+        LOGGER.error("=== " + JobRunrPro.class.getName().toUpperCase() + " ===");
+
         JobRunrPro.configure()
                 .useStorageProvider(SqlStorageProviderFactory.using(dataSource))
                 .useBackgroundJobServer(usingStandardBackgroundJobServerConfiguration(), false)
