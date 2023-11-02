@@ -27,7 +27,7 @@ public class Main {
         DataSource dataSource = getDataSource();
 
         System.out.println("=============================");
-        System.out.println("======   " + JobRunrPro.class.getSimpleName().toUpperCase() + "   ======");
+        System.out.println("======   " + JobRunrPro.class.getSimpleName() + "   ======");
         System.out.println("=============================");
 
         JobRunrPro.configure()
