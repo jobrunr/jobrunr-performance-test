@@ -5,13 +5,30 @@
         </encoder>
     </appender>
 
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>/home/kabutz/jobrunr/jobrunr-pro-performance-test/tests.log</file>
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator> <!-- defaults to type ch.qos.logback.classic.boolex.JaninoEventEvaluator -->
+                <expression>return message.contains("Could not start processing job");</expression>
+            </evaluator>
+            <OnMismatch>DENY</OnMismatch>
+            <OnMatch>NEUTRAL</OnMatch>
+        </filter>
+        <append>true</append>
+        <encoder>
+            <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
     <!-- Change the level in the following line to have more debugging (DEBUG, TRACE) -->
     <logger name="org.jobrunr" level="INFO"/>
     <logger name="org.jobrunr.utils.multicast" level="WARN"/>
     <logger name="org.jobrunr.storage.sql.common.DatabaseCreator" level="WARN"/>
     <logger name="org.jobrunr.storage.nosql.common.NoSqlDatabaseCreator" level="WARN"/>
+    <logger name="org.jobrunr.server.BackgroundJobPerformer" level="TRACE"/>
 
     <root level="info">
         <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
     </root>
 </configuration>

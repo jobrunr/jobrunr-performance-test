@@ -3,7 +3,7 @@ package org.jobrunr.performance;
 import com.p6spy.engine.spy.P6DataSource;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.jobrunr.configuration.JobRunr;
+import org.jobrunr.configuration.JobRunrPro;
 import org.jobrunr.scheduling.BackgroundJob;
 import org.jobrunr.storage.sql.common.SqlStorageProviderFactory;
 import org.slf4j.Logger;
@@ -26,7 +26,7 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
         DataSource dataSource = getDataSource();
 
-        JobRunr.configure()
+        JobRunrPro.configure()
                 .useStorageProvider(SqlStorageProviderFactory.using(dataSource))
                 .useBackgroundJobServer(usingStandardBackgroundJobServerConfiguration(), false)
                 .useDashboard()
@@ -40,7 +40,7 @@ public class Main {
 
         BackgroundJob.enqueue(jobStreamTenantA, performanceTestJob::testJob);
         LOGGER.info("Enqueued all jobs - starting processing");
-        JobRunr.getBackgroundJobServer().start();
+        JobRunrPro.getBackgroundJobServer().start();
         long startTime = System.currentTimeMillis();
         LOGGER.info("Enqueued all jobs - processing started");
 

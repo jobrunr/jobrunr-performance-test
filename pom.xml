@@ -24,8 +24,8 @@
     <dependencies>
         <dependency>
             <groupId>org.jobrunr</groupId>
-            <artifactId>jobrunr</artifactId>
-            <version>6.3.2</version>
+            <artifactId>jobrunr-pro</artifactId>
+            <version>6.3.3</version>
         </dependency>
         <dependency>
             <groupId>io.dropwizard.metrics</groupId>
