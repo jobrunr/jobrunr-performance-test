@@ -32,7 +32,7 @@ public class Main {
 
         JobRunrPro.configure()
                 .useStorageProvider(SqlStorageProviderFactory.using(dataSource))
-                .useBackgroundJobServer(usingStandardBackgroundJobServerConfiguration(), false)
+                .useBackgroundJobServer(usingStandardBackgroundJobServerConfiguration().andPollIntervalInSeconds(5), false)
                 .useDashboard()
                 .initialize();
 
