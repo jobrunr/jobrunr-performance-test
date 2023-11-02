@@ -20,7 +20,7 @@ public class Main {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
-    public static final CountDownLatch countDownLatch = new CountDownLatch(10_000);
+    public static final CountDownLatch countDownLatch = new CountDownLatch(25_000);
 
 
     public static void main(String[] args) throws InterruptedException {
