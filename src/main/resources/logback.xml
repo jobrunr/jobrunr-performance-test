@@ -6,7 +6,7 @@
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>/home/kabutz/jobrunr/jobrunr-pro-performance-test/tests.log</file>
+        <file>/home/kabutz/jobrunr/jobrunr-performance-test/tests.log</file>
         <append>true</append>
         <encoder>
             <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
