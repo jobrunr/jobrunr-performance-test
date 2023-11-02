@@ -1,5 +1,6 @@
 package org.jobrunr.performance;
 
+import com.p6spy.engine.spy.P6DataSource;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.jobrunr.configuration.JobRunr;
@@ -56,6 +57,6 @@ public class Main {
         config.setPassword("postgres");
         config.setMinimumIdle(80);
         config.setMaximumPoolSize(105);
-        return new HikariDataSource(config);
+        return new P6DataSource(new HikariDataSource(config));
     }
 }
