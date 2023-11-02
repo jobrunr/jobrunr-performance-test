@@ -7,13 +7,6 @@
 
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
         <file>/home/kabutz/jobrunr/jobrunr-pro-performance-test/tests.log</file>
-        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
-            <evaluator> <!-- defaults to type ch.qos.logback.classic.boolex.JaninoEventEvaluator -->
-                <expression>return message.contains("Could not start processing job");</expression>
-            </evaluator>
-            <OnMismatch>DENY</OnMismatch>
-            <OnMatch>NEUTRAL</OnMatch>
-        </filter>
         <append>true</append>
         <encoder>
             <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
