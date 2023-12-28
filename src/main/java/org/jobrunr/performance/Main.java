@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.Statement;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -20,7 +22,7 @@ public class Main {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
-    public static final CountDownLatch countDownLatch = new CountDownLatch(25_000);
+    public static final CountDownLatch countDownLatch = new CountDownLatch(250_000);
 
 
     public static void main(String[] args) throws InterruptedException {
@@ -43,6 +45,13 @@ public class Main {
                 .boxed();
 
         BackgroundJob.enqueue(jobStreamTenantA, performanceTestJob::testJob);
+
+        try(Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
+            statement.executeUpdate("VACUUM (VERBOSE, ANALYZE) jobrunr_jobs;");
+        } catch(java.sql.SQLException e) {
+            throw new RuntimeException(e);
+        }
+
         LOGGER.info("Enqueued all jobs - starting processing");
         JobRunrPro.getBackgroundJobServer().start();
         long startTime = System.currentTimeMillis();
@@ -59,8 +68,8 @@ public class Main {
         config.setJdbcUrl("jdbc:postgresql://127.0.0.1:5432/postgres");
         config.setUsername("postgres");
         config.setPassword("postgres");
-        config.setMinimumIdle(80);
-        config.setMaximumPoolSize(105);
+        config.setMinimumIdle(40);
+        config.setMaximumPoolSize(80);
         return new P6DataSource(new HikariDataSource(config));
     }
 }
