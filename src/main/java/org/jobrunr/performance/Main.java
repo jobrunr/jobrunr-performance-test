@@ -5,7 +5,10 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.jobrunr.configuration.JobRunrPro;
 import org.jobrunr.scheduling.BackgroundJob;
+import org.jobrunr.storage.StorageProvider;
 import org.jobrunr.storage.sql.common.SqlStorageProviderFactory;
+import org.jobrunr.storage.sql.postgres.PostgresStorageProvider;
+import org.jobrunr.storage.sql.sqlserver.SQLServerStorageProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,14 +29,15 @@ public class Main {
 
 
     public static void main(String[] args) throws InterruptedException {
-        DataSource dataSource = getDataSource();
+        DataSource dataSource = getPostgresDataSource();
+        StorageProvider storageProvider = SqlStorageProviderFactory.using(dataSource);
 
         System.out.println("=============================");
         System.out.println("======   " + JobRunrPro.class.getSimpleName() + "   =======");
         System.out.println("=============================");
 
         JobRunrPro.configure()
-                .useStorageProvider(SqlStorageProviderFactory.using(dataSource))
+                .useStorageProvider(storageProvider)
                 .useBackgroundJobServer(usingStandardBackgroundJobServerConfiguration().andPollIntervalInSeconds(5), false)
                 .useDashboard()
                 .initialize();
@@ -46,10 +50,20 @@ public class Main {
 
         BackgroundJob.enqueue(jobStreamTenantA, performanceTestJob::testJob);
 
-        try(Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
-            statement.executeUpdate("VACUUM (VERBOSE, ANALYZE) jobrunr_jobs;");
-        } catch(java.sql.SQLException e) {
-            throw new RuntimeException(e);
+        if(storageProvider instanceof PostgresStorageProvider) {
+            try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
+                statement.executeUpdate("VACUUM (VERBOSE, ANALYZE) jobrunr_jobs;");
+                LOGGER.info("VACUUMED POSTGRES TABLES");
+            } catch (java.sql.SQLException e) {
+                throw new RuntimeException(e);
+            }
+        } else if(storageProvider instanceof SQLServerStorageProvider) {
+            try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
+                statement.executeUpdate("UPDATE STATISTICS jobrunr_jobs;");
+                LOGGER.info("UPDATED SQLSERVER STATISTICS");
+            } catch (java.sql.SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         LOGGER.info("Enqueued all jobs - starting processing");
@@ -63,11 +77,21 @@ public class Main {
         System.exit(0);
     }
 
-    protected static DataSource getDataSource() {
+    protected static DataSource getPostgresDataSource() {
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl("jdbc:postgresql://127.0.0.1:5432/postgres");
         config.setUsername("postgres");
         config.setPassword("postgres");
+        config.setMinimumIdle(40);
+        config.setMaximumPoolSize(80);
+        return new P6DataSource(new HikariDataSource(config));
+    }
+
+    protected static DataSource getSQLServerDataSource() {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl("jdbc:sqlserver://localhost:1433;databaseName=tempdb;encrypt=true;trustServerCertificate=true;");
+        config.setUsername("sa");
+        config.setPassword("sqlServer(!)");
         config.setMinimumIdle(40);
         config.setMaximumPoolSize(80);
         return new P6DataSource(new HikariDataSource(config));
