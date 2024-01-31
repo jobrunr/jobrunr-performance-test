@@ -14,35 +14,42 @@ public class PerformanceTestJob {
     private static final Logger LOGGER = LoggerFactory.getLogger(PerformanceTestJob.class);
 
     private static final int MAX_SECONDS = 10;
-    private static final ConcurrentHashMap<Long, AtomicInteger> jobsCountMap = new ConcurrentHashMap<>(10, 0.9F, 100);
-
+    private static final ConcurrentHashMap<Long, AtomicInteger> jobsCountMap = new ConcurrentHashMap<>();
 
     public static final AtomicLong counter = new AtomicLong();
-
-    public static final AtomicLong startTime = new AtomicLong(0L);
+    public static final AtomicLong startTime = new AtomicLong(-1L);
 
     @Job(name = "Job %0")
     public void testJob(int index) {
-        PerformanceTestJob.startTime.compareAndExchange(0L, System.currentTimeMillis());
+        long currentTime = System.currentTimeMillis();
+        startTime.compareAndSet(-1L, currentTime);
 
         long executedJobsCounter = counter.incrementAndGet();
-        long ms = System.currentTimeMillis() - PerformanceTestJob.startTime.get();
-        long currentTimeSeconds = System.currentTimeMillis() / 1000;
 
-        // Add a new job count for the current second if needed
+        long currentTimeSeconds = currentTime / 1000;
         AtomicInteger newSecond = jobsCountMap.putIfAbsent(currentTimeSeconds, new AtomicInteger(0));
         jobsCountMap.get(currentTimeSeconds).incrementAndGet();
 
         Main.countDownLatch.countDown();
-        if(newSecond == null || counter.get() == 1_000_000) {
-            // Remove job counts that are more than MAX_SECONDS old
-            long itemsToDeleteBefore = currentTimeSeconds - MAX_SECONDS;
-            jobsCountMap.entrySet().removeIf(e -> e.getKey() < itemsToDeleteBefore);
 
+        // Trigger logging and cleanup periodically
+        if (newSecond == null || Main.countDownLatch.getCount() == 0) {
+            cleanUpOldEntries(currentTimeSeconds);
+
+            long elapsedTime = currentTime - startTime.get();
             int totalJobs = jobsCountMap.values().stream().mapToInt(AtomicInteger::get).sum();
-            double jobsPerSecond = totalJobs / (double) MAX_SECONDS;
+            double jobsPerSecond = (double) totalJobs / MAX_SECONDS;
 
-            LOGGER.info(ms + "ms / " + Duration.ofMillis(ms) + " - processed " + executedJobsCounter + " jobs / " + index + " index | " + executedJobsCounter * 1000 / (ms) + " jobs/sec (overall) | " + jobsPerSecond + " jobs/sec (last " + MAX_SECONDS + " sec)");
+            LOGGER.info(elapsedTime + "ms / " + Duration.ofMillis(elapsedTime) +
+                    " - processed " + executedJobsCounter + " jobs / " + index +
+                    " index | " + executedJobsCounter * 1000.0 / elapsedTime +
+                    " jobs/sec (overall) | " + jobsPerSecond + " jobs/sec (last " +
+                    MAX_SECONDS + " sec)");
         }
+    }
+
+    private void cleanUpOldEntries(long currentTimeSeconds) {
+        long threshold = currentTimeSeconds - MAX_SECONDS;
+        jobsCountMap.keySet().removeIf(key -> key < threshold);
     }
 }

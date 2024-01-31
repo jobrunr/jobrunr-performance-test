@@ -1,10 +1,11 @@
 package org.jobrunr.performance;
 
-import com.p6spy.engine.spy.P6DataSource;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import de.siegmar.fastcsv.writer.CsvWriter;
 import org.jobrunr.configuration.JobRunrPro;
 import org.jobrunr.scheduling.BackgroundJob;
+import org.jobrunr.server.BackgroundJobServer;
 import org.jobrunr.storage.StorageProvider;
 import org.jobrunr.storage.sql.common.SqlStorageProviderFactory;
 import org.jobrunr.storage.sql.postgres.PostgresStorageProvider;
@@ -12,25 +13,40 @@ import org.jobrunr.storage.sql.sqlserver.SQLServerStorageProvider;
 import org.jobrunr.utils.metadata.VersionRetriever;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import util.Zipper;
 
 import javax.sql.DataSource;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.sql.Connection;
 import java.sql.Statement;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static java.lang.Integer.parseInt;
 import static org.jobrunr.server.BackgroundJobServerConfiguration.usingStandardBackgroundJobServerConfiguration;
+import static org.jobrunr.utils.StringUtils.substringBefore;
 
 public class Main {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
-
-    public static final CountDownLatch countDownLatch = new CountDownLatch(250_000);
+    public static CountDownLatch countDownLatch;
 
 
     public static void main(String[] args) throws InterruptedException {
-        DataSource dataSource = getPostgresDataSource();
+        int totalAmountOfJobs = parseInt(getArg("amount", args, "500_000").replace("_", ""));
+        String jobRunrProSourceDir = getArg("jobRunrProSourceDir", args, "../../JobRunrPro");
+        if (!Files.exists(Path.of(jobRunrProSourceDir, "core"))) throw new IllegalStateException("Cannot find JobRunr Pro Source Dir for logbook");
+
+        countDownLatch = new CountDownLatch(totalAmountOfJobs);
+        DataSource dataSource = getPostgresDataSource(); // new P6DataSource(getPostgresDataSource());
         StorageProvider storageProvider = SqlStorageProviderFactory.using(dataSource);
 
         System.out.println("=============================");
@@ -40,25 +56,24 @@ public class Main {
         JobRunrPro.configure()
                 .useStorageProvider(storageProvider)
                 .useBackgroundJobServer(usingStandardBackgroundJobServerConfiguration().andPollIntervalInSeconds(5), false)
-                .useDashboard()
+                .useDashboard(8010)
                 .initialize();
 
 
         PerformanceTestJob performanceTestJob = new PerformanceTestJob();
 
-        Stream<Integer> jobStreamTenantA = IntStream.range(0, (int) countDownLatch.getCount())
-                .boxed();
+        Stream<Integer> jobStreamTenantA = IntStream.range(0, totalAmountOfJobs).boxed();
 
         BackgroundJob.enqueue(jobStreamTenantA, performanceTestJob::testJob);
 
-        if(storageProvider instanceof PostgresStorageProvider) {
+        if (storageProvider instanceof PostgresStorageProvider) {
             try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
                 statement.executeUpdate("VACUUM (VERBOSE, ANALYZE) jobrunr_jobs;");
                 LOGGER.info("VACUUMED POSTGRES TABLES");
             } catch (java.sql.SQLException e) {
                 throw new RuntimeException(e);
             }
-        } else if(storageProvider instanceof SQLServerStorageProvider) {
+        } else if (storageProvider instanceof SQLServerStorageProvider) {
             try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
                 statement.executeUpdate("UPDATE STATISTICS jobrunr_jobs;");
                 LOGGER.info("UPDATED SQLSERVER STATISTICS");
@@ -75,7 +90,31 @@ public class Main {
         countDownLatch.await();
         long endTime = System.currentTimeMillis();
         LOGGER.info("Processing took {}ms", (endTime - startTime));
+
+        appendToLogbook(jobRunrProSourceDir, Instant.now(), totalAmountOfJobs, startTime, endTime, JobRunrPro.getBackgroundJobServer());
+
         System.exit(0);
+
+    }
+
+    private static void appendToLogbook(String jobRunrProSourceDir, Instant instant, int totalJobs, long startTime, long endTime, BackgroundJobServer backgroundJobServer) {
+        Path jobProSourceLogBook = Path.of("./jobrunr-pro-source/");
+
+        Path logBookPath = Path.of("./logbook.csv");
+        boolean addHeader = !Files.exists(logBookPath);
+        try (CsvWriter csv = CsvWriter.builder().build(logBookPath, StandardOpenOption.CREATE, StandardOpenOption.APPEND)) {
+            if (!Files.exists(jobProSourceLogBook)) Files.createDirectories(jobProSourceLogBook);
+            new Zipper(Path.of(jobRunrProSourceDir, "core"), jobProSourceLogBook.resolve(substringBefore(instant.toString().replace(":", ""), ".")  + ".zip"))
+                    .excludeFolders("bin", "build", "node_modules")
+                    .zip();
+
+            if (addHeader) csv.writeRecord("Date & Time", "Host name", "amount of jobs", "duration", "duration in millis", "jobs / sec");
+            csv.writeRecord(instant.toString(), InetAddress.getLocalHost().getHostName(), String.valueOf(totalJobs), Duration.ofMillis(endTime - startTime).toString(),
+                    String.valueOf(endTime - startTime), String.format(Locale.US, "%.2f", (float) totalJobs / ((endTime - startTime) / 1000)),
+                    backgroundJobServer.getWorkDistributionStrategy().getJobQueue().getClass().getSimpleName());
+        } catch (IOException e) {
+            LOGGER.error("Could not create logbook", e);
+        }
     }
 
     protected static DataSource getPostgresDataSource() {
@@ -85,7 +124,7 @@ public class Main {
         config.setPassword("postgres");
         config.setMinimumIdle(40);
         config.setMaximumPoolSize(80);
-        return new P6DataSource(new HikariDataSource(config));
+        return new HikariDataSource(config);
     }
 
     protected static DataSource getSQLServerDataSource() {
@@ -95,6 +134,14 @@ public class Main {
         config.setPassword("sqlServer(!)");
         config.setMinimumIdle(40);
         config.setMaximumPoolSize(80);
-        return new P6DataSource(new HikariDataSource(config));
+        return new HikariDataSource(config);
+    }
+
+    private static String getArg(String key, String[] args, String defaultValue) {
+        return Stream.of(args)
+                .filter(x -> x.startsWith(key))
+                .map(x -> x.replace(key + "=", ""))
+                .findFirst()
+                .orElse(defaultValue);
     }
 }
