@@ -141,7 +141,7 @@ public class Main {
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl("jdbc:postgresql://127.0.0.1:5432/postgres");
         config.setUsername("postgres");
-        config.setPassword("postgres");
+        config.setPassword("oTsMa6h61BOFYTpIVvLs");
         config.setMinimumIdle(40);
         config.setMaximumPoolSize(80);
         return new HikariDataSource(config);
