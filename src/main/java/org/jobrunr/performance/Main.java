@@ -6,7 +6,9 @@ import de.siegmar.fastcsv.writer.CsvWriter;
 import org.jobrunr.configuration.JobRunrPro;
 import org.jobrunr.scheduling.BackgroundJob;
 import org.jobrunr.server.BackgroundJobServer;
+import org.jobrunr.server.configuration.DefaultBackgroundJobServerWorkerPolicy;
 import org.jobrunr.server.strategy.WorkDistributionStrategy;
+import org.jobrunr.server.threadpool.ScheduledThreadPoolJobRunrExecutor;
 import org.jobrunr.storage.StorageProvider;
 import org.jobrunr.storage.sql.common.SqlStorageProviderFactory;
 import org.jobrunr.storage.sql.postgres.PostgresStorageProvider;
@@ -58,7 +60,10 @@ public class Main {
 
         JobRunrPro.configure()
                 .useStorageProvider(storageProvider)
-                .useBackgroundJobServer(usingStandardBackgroundJobServerConfiguration().andPollIntervalInSeconds(5), false)
+                .useBackgroundJobServer(usingStandardBackgroundJobServerConfiguration()
+                                .andPollIntervalInSeconds(5)
+                                .andBackgroundJobServerWorkerPolicy(new DefaultBackgroundJobServerWorkerPolicy(160, ScheduledThreadPoolJobRunrExecutor::new))
+                        , false)
                 .useDashboard(8010)
                 .initialize();
 
@@ -107,7 +112,7 @@ public class Main {
         boolean addHeader = !Files.exists(logBookPath);
         try (CsvWriter csv = CsvWriter.builder().build(logBookPath, StandardOpenOption.CREATE, StandardOpenOption.APPEND)) {
             if (!Files.exists(jobProSourceLogBook)) Files.createDirectories(jobProSourceLogBook);
-            new Zipper(Path.of(jobRunrProSourceDir, "core"), jobProSourceLogBook.resolve(substringBefore(instant.toString().replace(":", ""), ".")  + ".zip"))
+            new Zipper(Path.of(jobRunrProSourceDir, "core"), jobProSourceLogBook.resolve(substringBefore(instant.toString().replace(":", ""), ".") + ".zip"))
                     .excludeFolders("bin", "build", "node_modules")
                     .zip();
 
@@ -131,7 +136,7 @@ public class Main {
 
     static String getJobQueue(BackgroundJobServer backgroundJobServer) {
         WorkDistributionStrategy workDistributionStrategy = backgroundJobServer.getWorkDistributionStrategy();
-        if(objectContainsFieldOrProperty(workDistributionStrategy, "queue")) {
+        if (objectContainsFieldOrProperty(workDistributionStrategy, "queue")) {
             return ReflectionUtils.getValueFromFieldOrProperty(workDistributionStrategy, "queue").getClass().getSimpleName();
         }
         return null;
