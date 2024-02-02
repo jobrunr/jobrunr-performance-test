@@ -8,7 +8,7 @@ import org.jobrunr.scheduling.BackgroundJob;
 import org.jobrunr.server.BackgroundJobServer;
 import org.jobrunr.server.configuration.DefaultBackgroundJobServerWorkerPolicy;
 import org.jobrunr.server.strategy.WorkDistributionStrategy;
-import org.jobrunr.server.threadpool.ScheduledThreadPoolJobRunrExecutor;
+import org.jobrunr.server.threadpool.VirtualThreadPoolJobRunrExecutor;
 import org.jobrunr.storage.StorageProvider;
 import org.jobrunr.storage.sql.common.SqlStorageProviderFactory;
 import org.jobrunr.storage.sql.postgres.PostgresStorageProvider;
@@ -62,7 +62,7 @@ public class Main {
                 .useStorageProvider(storageProvider)
                 .useBackgroundJobServer(usingStandardBackgroundJobServerConfiguration()
                                 .andPollIntervalInSeconds(5)
-                                .andBackgroundJobServerWorkerPolicy(new DefaultBackgroundJobServerWorkerPolicy(160, ScheduledThreadPoolJobRunrExecutor::new))
+                                .andBackgroundJobServerWorkerPolicy(new DefaultBackgroundJobServerWorkerPolicy(4000, VirtualThreadPoolJobRunrExecutor::new))
                         , false)
                 .useDashboard(8010)
                 .initialize();
