@@ -8,3 +8,15 @@ Date & Time,Host name,amount of jobs,duration,duration in millis,jobs / sec, Jav
 2024-01-31T17:57:25.825815Z,Ronalds-MBP.fritz.box,500000,PT1M8.603S,68603,7352.94,,,TurboQueue
 2024-01-31T18:54:20.597610Z,Ronalds-MBP.fritz.box,500000,PT1M7.248S,67248,7462.69,21+35-2513,,TurboQueue
 2024-02-01T12:04:33.343426Z,Ronalds-MacBook-Pro.local,500000,PT1M35.444S,95444,5263.16,21+35-2513,ref: refs/heads/v7,
+2024-02-02T09:03:26.699712820Z,Ubuntu-2204-jammy-amd64-base,500000,PT44.699S,44699,11363.64,17.0.9+9,ref: refs/heads/feature/smart-queue,
+2024-02-02T09:23:22.929580861Z,Ubuntu-2204-jammy-amd64-base,500000,PT2M6.984S,126984,3968.25,17.0.9+9,ref: refs/heads/v7,
+2024-02-02T10:09:01.933289881Z,Ubuntu-2204-jammy-amd64-base,500000,PT43.829S,43829,11627.91,17.0.9+9,ref: refs/heads/feature/smart-queue,
+2024-02-02T10:13:15.869600094Z,Ubuntu-2204-jammy-amd64-base,500000,PT43.604S,43604,11627.91,17.0.9+9,ref: refs/heads/feature/smart-queue,
+2024-02-02T10:20:20.479667309Z,Ubuntu-2204-jammy-amd64-base,500000,PT43.797S,43797,11627.91,17.0.9+9,ref: refs/heads/feature/smart-queue,
+2024-02-02T10:27:49.079494640Z,Ubuntu-2204-jammy-amd64-base,500000,PT44.029S,44029,11356.15,17.0.9+9,ref: refs/heads/feature/smart-queue,
+2024-02-02T10:30:07.100167511Z,Ubuntu-2204-jammy-amd64-base,500000,PT43.694S,43694,11443.22,17.0.9+9,ref: refs/heads/feature/smart-queue,
+2024-02-02T11:29:23.578105486Z,Ubuntu-2204-jammy-amd64-base,500000,PT43.109S,43109,11598.51,17.0.9+9,ref: refs/heads/feature/smart-queue,
+2024-02-02T11:43:42.306332357Z,Ubuntu-2204-jammy-amd64-base,500000,PT39.088S,39088,12791.65,21.0.2+13-LTS-58,ref: refs/heads/feature/smart-queue,
+2024-02-02T11:56:47.605197051Z,Ubuntu-2204-jammy-amd64-base,500000,PT42.07S,42070,11884.95,21.0.2+13-LTS-58,ref: refs/heads/feature/smart-queue,
+2024-02-02T11:59:36.284042037Z,Ubuntu-2204-jammy-amd64-base,500000,PT40.124S,40124,12461.37,21.0.2+13-LTS-58,ref: refs/heads/feature/smart-queue,
+2024-02-02T12:03:21.871666244Z,Ubuntu-2204-jammy-amd64-base,500000,PT40.981S,40981,12200.78,21.0.2+13-LTS-58,ref: refs/heads/feature/smart-queue,
