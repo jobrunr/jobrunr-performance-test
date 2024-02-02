@@ -6,11 +6,13 @@ import de.siegmar.fastcsv.writer.CsvWriter;
 import org.jobrunr.configuration.JobRunrPro;
 import org.jobrunr.scheduling.BackgroundJob;
 import org.jobrunr.server.BackgroundJobServer;
+import org.jobrunr.server.strategy.WorkDistributionStrategy;
 import org.jobrunr.storage.StorageProvider;
 import org.jobrunr.storage.sql.common.SqlStorageProviderFactory;
 import org.jobrunr.storage.sql.postgres.PostgresStorageProvider;
 import org.jobrunr.storage.sql.sqlserver.SQLServerStorageProvider;
 import org.jobrunr.utils.metadata.VersionRetriever;
+import org.jobrunr.utils.reflection.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.Zipper;
@@ -33,6 +35,7 @@ import java.util.stream.Stream;
 import static java.lang.Integer.parseInt;
 import static org.jobrunr.server.BackgroundJobServerConfiguration.usingStandardBackgroundJobServerConfiguration;
 import static org.jobrunr.utils.StringUtils.substringBefore;
+import static org.jobrunr.utils.reflection.ReflectionUtils.objectContainsFieldOrProperty;
 
 public class Main {
 
@@ -111,10 +114,27 @@ public class Main {
             if (addHeader) csv.writeRecord("Date & Time", "Host name", "amount of jobs", "duration", "duration in millis", "jobs / sec");
             csv.writeRecord(instant.toString(), InetAddress.getLocalHost().getHostName(), String.valueOf(totalJobs), Duration.ofMillis(endTime - startTime).toString(),
                     String.valueOf(endTime - startTime), String.format(Locale.US, "%.2f", (float) totalJobs / ((endTime - startTime) / 1000)),
-                    backgroundJobServer.getWorkDistributionStrategy().getJobQueue().getClass().getSimpleName());
+                    getJavaVersion(), getBranch(jobRunrProSourceDir), getJobQueue(backgroundJobServer));
         } catch (IOException e) {
             LOGGER.error("Could not create logbook", e);
         }
+    }
+
+    static String getJavaVersion() throws IOException {
+        return Runtime.version().toString();
+    }
+
+    static String getBranch(String jobRunrProSourceDir) throws IOException {
+        Path path = Path.of(jobRunrProSourceDir, ".git/HEAD");
+        return Files.readAllLines(path).get(0);
+    }
+
+    static String getJobQueue(BackgroundJobServer backgroundJobServer) {
+        WorkDistributionStrategy workDistributionStrategy = backgroundJobServer.getWorkDistributionStrategy();
+        if(objectContainsFieldOrProperty(workDistributionStrategy, "queue")) {
+            return ReflectionUtils.getValueFromFieldOrProperty(workDistributionStrategy, "queue").getClass().getSimpleName();
+        }
+        return null;
     }
 
     protected static DataSource getPostgresDataSource() {
