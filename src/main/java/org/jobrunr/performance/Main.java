@@ -113,7 +113,7 @@ public class Main {
 
             if (addHeader) csv.writeRecord("Date & Time", "Host name", "amount of jobs", "duration", "duration in millis", "jobs / sec");
             csv.writeRecord(instant.toString(), InetAddress.getLocalHost().getHostName(), String.valueOf(totalJobs), Duration.ofMillis(endTime - startTime).toString(),
-                    String.valueOf(endTime - startTime), String.format(Locale.US, "%.2f", (float) totalJobs / ((endTime - startTime) / 1000)),
+                    String.valueOf(endTime - startTime), String.format(Locale.US, "%.2f", (double) totalJobs / ((endTime - startTime) / 1000.0)),
                     getJavaVersion(), getBranch(jobRunrProSourceDir), getJobQueue(backgroundJobServer));
         } catch (IOException e) {
             LOGGER.error("Could not create logbook", e);
