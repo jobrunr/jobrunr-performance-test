@@ -19,7 +19,7 @@ public class PerformanceTestJob {
     public static final AtomicLong counter = new AtomicLong();
     public static final AtomicLong startTime = new AtomicLong(-1L);
 
-    @Job(name = "Job %0")
+    @Job(name = "Job %0", labels = {"label 1", "other label"})
     public void testJob(int index) {
         long currentTime = System.currentTimeMillis();
         startTime.compareAndSet(-1L, currentTime);
