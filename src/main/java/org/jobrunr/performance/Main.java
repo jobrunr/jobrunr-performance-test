@@ -11,7 +11,7 @@ import org.jobrunr.storage.StorageProvider;
 import org.jobrunr.storage.sql.common.SqlStorageProviderFactory;
 import org.jobrunr.storage.sql.postgres.PostgresStorageProvider;
 import org.jobrunr.storage.sql.sqlserver.SQLServerStorageProvider;
-import org.jobrunr.utils.metadata.VersionRetriever;
+import org.jobrunr.utils.JarUtils;
 import org.jobrunr.utils.reflection.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +53,7 @@ public class Main {
         StorageProvider storageProvider = SqlStorageProviderFactory.using(dataSource);
 
         System.out.println("=============================");
-        System.out.println("======   " + JobRunrPro.class.getSimpleName() + " (" + VersionRetriever.getVersion(JobRunrPro.class) + ")   =======");
+        System.out.println("======   " + JobRunrPro.class.getSimpleName() + " (" + JarUtils.getVersion(JobRunrPro.class) + ")   =======");
         System.out.println("=============================");
 
         JobRunrPro.configure()
