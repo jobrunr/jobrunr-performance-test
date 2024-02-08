@@ -22,3 +22,5 @@ Date & Time,Host name,amount of jobs,duration,duration in millis,jobs / sec, Jav
 2024-02-02T12:03:21.871666244Z,Ubuntu-2204-jammy-amd64-base,500000,PT40.981S,40981,12200.78,21.0.2+13-LTS-58,ref: refs/heads/feature/smart-queue,
 2024-02-02T13:44:20.682548Z,Ronalds-MacBook-Pro.local,500000,PT1M3.985S,63985,7814.33,21+35-2513,ref: refs/heads/feature/smart-queue,
 2024-02-05T08:03:09.602206Z,Ronalds-MacBook-Pro.local,500000,PT1M38.703S,98703,5065.70,21+35-2513,ref: refs/heads/v7,
+2024-02-08T14:16:57.613753646Z,rdehuyss-NUC,500000,PT2M8.041S,128041,3905.00,17.0.8+7,ref: refs/heads/feature/smart-queue,
+2024-02-08T14:36:56.525679441Z,rdehuyss-NUC,500000,PT8M34.906S,514906,971.05,17.0.8+7,ref: refs/heads/v7,
