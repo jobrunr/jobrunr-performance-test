@@ -11,10 +11,10 @@ import org.jobrunr.storage.StorageProvider;
 import org.jobrunr.storage.sql.common.SqlStorageProviderFactory;
 import org.jobrunr.storage.sql.postgres.PostgresStorageProvider;
 import org.jobrunr.storage.sql.sqlserver.SQLServerStorageProvider;
-import org.jobrunr.utils.JarUtils;
 import org.jobrunr.utils.reflection.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import util.JarUtils;
 import util.Zipper;
 
 import javax.sql.DataSource;
@@ -111,10 +111,10 @@ public class Main {
                     .excludeFolders("bin", "build", "node_modules")
                     .zip();
 
-            if (addHeader) csv.writeRecord("Date & Time", "Host name", "amount of jobs", "duration", "duration in millis", "jobs / sec");
+            if (addHeader) csv.writeRecord("Date & Time", "Host name", "amount of jobs", "duration", "duration in millis", "jobs / sec", "JobRunr version", "Java version", "Git Branch", "");
             csv.writeRecord(instant.toString(), InetAddress.getLocalHost().getHostName(), String.valueOf(totalJobs), Duration.ofMillis(endTime - startTime).toString(),
                     String.valueOf(endTime - startTime), String.format(Locale.US, "%.2f", (double) totalJobs / ((endTime - startTime) / 1000.0)),
-                    getJavaVersion(), getBranch(jobRunrProSourceDir), getJobQueue(backgroundJobServer));
+                    JarUtils.getVersion(JobRunrPro.class), getJavaVersion(), getBranch(jobRunrProSourceDir), getJobQueue(backgroundJobServer));
         } catch (IOException e) {
             LOGGER.error("Could not create logbook", e);
         }
