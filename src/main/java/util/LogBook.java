@@ -1,7 +1,6 @@
 package util;
 
 import de.siegmar.fastcsv.writer.CsvWriter;
-import org.jobrunr.configuration.JobRunrPro;
 import org.jobrunr.server.BackgroundJobServer;
 import org.jobrunr.server.strategy.WorkDistributionStrategy;
 import org.jobrunr.utils.reflection.ReflectionUtils;
@@ -41,7 +40,7 @@ public class LogBook {
             if (addHeader) csv.writeRecord("Date & Time", "Host name", "amount of jobs", "duration", "duration in millis", "jobs / sec", "JobRunr type", "JobRunr version", "Java version", "StorageProvider", "Git Branch", "");
             csv.writeRecord(instant.toString(), InetAddress.getLocalHost().getHostName(), String.valueOf(totalJobs), Duration.ofMillis(endTime - startTime).toString(),
                     String.valueOf(endTime - startTime), String.format(Locale.US, "%.2f", (double) totalJobs / ((endTime - startTime) / 1000.0)),
-                    jobRunrType, JarUtils.getVersion(JobRunrPro.class), getJavaVersion(), backgroundJobServer.getStorageProvider().getStorageProviderInfo().getName(), getBranch(jobRunrProSourceDir), getJobQueue(backgroundJobServer));
+                    jobRunrType, JarUtils.getVersion(backgroundJobServer.getClass()), getJavaVersion(), backgroundJobServer.getStorageProvider().getStorageProviderInfo().getName(), getBranch(jobRunrProSourceDir), getJobQueue(backgroundJobServer));
         } catch (IOException e) {
             LOGGER.error("Could not create logbook", e);
         }
