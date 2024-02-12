@@ -35,11 +35,6 @@ public class Main {
 
 
     public static void main(String[] args) throws InterruptedException {
-        int totalAmountOfJobs = parseInt(getArg("amount", args, "500_000").replace("_", ""));
-        String jobRunrProSourceDir = getArg("jobRunrProSourceDir", args, "../../JobRunrPro");
-        if (!Files.exists(Path.of(jobRunrProSourceDir, "core"))) throw new IllegalStateException("Cannot find JobRunr Pro Source Dir at " + Path.of(jobRunrProSourceDir) + " for logbook");
-
-        countDownLatch = new CountDownLatch(totalAmountOfJobs);
         DataSource dataSource = getPostgresDataSource(); // new P6DataSource(getPostgresDataSource());
         StorageProvider storageProvider = SqlStorageProviderFactory.using(dataSource);
 
@@ -49,7 +44,13 @@ public class Main {
                 .useDashboard(8010)
                 .initialize();
 
+        int totalAmountOfJobs = parseInt(getArg("amount", args, "500_000").replace("_", ""));
+        String jobRunrProSourceDir = getArg("jobRunrProSourceDir", args);
+        if(jobRunrProSourceDir != null && !Files.exists(Path.of(jobRunrProSourceDir, "core"))) {
+            throw new IllegalStateException("Cannot find JobRunr Pro Source Dir at " + Path.of(jobRunrProSourceDir) + " for logbook");
+        }
 
+        countDownLatch = new CountDownLatch(totalAmountOfJobs);
         PerformanceTestJob performanceTestJob = new PerformanceTestJob();
 
         Stream<Integer> jobStreamTenantA = IntStream.range(0, totalAmountOfJobs).boxed();
@@ -161,6 +162,10 @@ public class Main {
         config.setMinimumIdle(40);
         config.setMaximumPoolSize(80);
         return new HikariDataSource(config);
+    }
+
+    private static String getArg(String key, String[] args) {
+        return getArg(key, args, null);
     }
 
     private static String getArg(String key, String[] args, String defaultValue) {

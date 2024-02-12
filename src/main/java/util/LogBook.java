@@ -31,9 +31,12 @@ public class LogBook {
         boolean addHeader = !Files.exists(logBookPath);
         try (CsvWriter csv = CsvWriter.builder().build(logBookPath, StandardOpenOption.CREATE, StandardOpenOption.APPEND)) {
             if (!Files.exists(jobProSourceLogBook)) Files.createDirectories(jobProSourceLogBook);
-            new Zipper(Path.of(jobRunrProSourceDir, "core"), jobProSourceLogBook.resolve(substringBefore(instant.toString().replace(":", ""), ".") + ".zip"))
-                    .excludeFolders("bin", "build", "node_modules")
-                    .zip();
+
+            if(jobRunrProSourceDir != null) {
+                new Zipper(Path.of(jobRunrProSourceDir, "core"), jobProSourceLogBook.resolve(substringBefore(instant.toString().replace(":", ""), ".") + ".zip"))
+                        .excludeFolders("bin", "build", "node_modules")
+                        .zip();
+            }
 
             if (addHeader) csv.writeRecord("Date & Time", "Host name", "amount of jobs", "duration", "duration in millis", "jobs / sec", "JobRunr type", "JobRunr version", "Java version", "StorageProvider", "Git Branch", "");
             csv.writeRecord(instant.toString(), InetAddress.getLocalHost().getHostName(), String.valueOf(totalJobs), Duration.ofMillis(endTime - startTime).toString(),
