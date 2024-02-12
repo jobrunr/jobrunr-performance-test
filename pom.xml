@@ -21,11 +21,55 @@
         </repository>
     </repositories>
 
+    <profiles>
+        <profile>
+            <id>OSS-v6</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.jobrunr</groupId>
+                    <artifactId>jobrunr</artifactId>
+                    <version>6.3.4</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>OSS-v7</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.jobrunr</groupId>
+                    <artifactId>jobrunr</artifactId>
+                    <version>1.0.0-SNAPSHOT</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>PRO-v6</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.jobrunr</groupId>
+                    <artifactId>jobrunr-pro</artifactId>
+                    <version>6.3.8</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>PRO-v7</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.jobrunr</groupId>
+                    <artifactId>jobrunr-pro</artifactId>
+                    <version>1.0.0-SNAPSHOT</version>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+
     <dependencies>
         <dependency>
             <groupId>org.jobrunr</groupId>
             <artifactId>jobrunr-pro</artifactId>
             <version>1.0.0-SNAPSHOT</version>
+            <scope>provided</scope> <!-- will be provided by profile -->
         </dependency>
         <dependency>
             <groupId>io.dropwizard.metrics</groupId>

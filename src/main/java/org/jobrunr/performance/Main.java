@@ -2,40 +2,31 @@ package org.jobrunr.performance;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import de.siegmar.fastcsv.writer.CsvWriter;
-import org.jobrunr.configuration.JobRunrPro;
+import org.jobrunr.configuration.JobRunrConfiguration;
 import org.jobrunr.scheduling.BackgroundJob;
 import org.jobrunr.server.BackgroundJobServer;
-import org.jobrunr.server.strategy.WorkDistributionStrategy;
 import org.jobrunr.storage.StorageProvider;
 import org.jobrunr.storage.sql.common.SqlStorageProviderFactory;
 import org.jobrunr.storage.sql.postgres.PostgresStorageProvider;
 import org.jobrunr.storage.sql.sqlserver.SQLServerStorageProvider;
-import org.jobrunr.utils.reflection.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.JarUtils;
-import util.Zipper;
+import util.LogBook;
 
 import javax.sql.DataSource;
-import java.io.IOException;
-import java.net.InetAddress;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.sql.Connection;
 import java.sql.Statement;
-import java.time.Duration;
 import java.time.Instant;
-import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.lang.Integer.parseInt;
 import static org.jobrunr.server.BackgroundJobServerConfiguration.usingStandardBackgroundJobServerConfiguration;
-import static org.jobrunr.utils.StringUtils.substringBefore;
-import static org.jobrunr.utils.reflection.ReflectionUtils.objectContainsFieldOrProperty;
 
 public class Main {
 
@@ -46,17 +37,13 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
         int totalAmountOfJobs = parseInt(getArg("amount", args, "500_000").replace("_", ""));
         String jobRunrProSourceDir = getArg("jobRunrProSourceDir", args, "../../JobRunrPro");
-        if (!Files.exists(Path.of(jobRunrProSourceDir, "core"))) throw new IllegalStateException("Cannot find JobRunr Pro Source Dir for logbook");
+        if (!Files.exists(Path.of(jobRunrProSourceDir, "core"))) throw new IllegalStateException("Cannot find JobRunr Pro Source Dir at " + Path.of(jobRunrProSourceDir) + " for logbook");
 
         countDownLatch = new CountDownLatch(totalAmountOfJobs);
         DataSource dataSource = getPostgresDataSource(); // new P6DataSource(getPostgresDataSource());
         StorageProvider storageProvider = SqlStorageProviderFactory.using(dataSource);
 
-        System.out.println("=============================");
-        System.out.println("======   " + JobRunrPro.class.getSimpleName() + " (" + JarUtils.getVersion(JobRunrPro.class) + ")   =======");
-        System.out.println("=============================");
-
-        JobRunrPro.configure()
+        jobRunr()
                 .useStorageProvider(storageProvider)
                 .useBackgroundJobServer(usingStandardBackgroundJobServerConfiguration().andPollIntervalInSeconds(5), false)
                 .useDashboard(8010)
@@ -86,7 +73,7 @@ public class Main {
         }
 
         LOGGER.info("Enqueued all jobs - starting processing");
-        JobRunrPro.getBackgroundJobServer().start();
+        backgroundJobServer().start();
         long startTime = System.currentTimeMillis();
         LOGGER.info("Enqueued all jobs - processing started");
 
@@ -94,47 +81,66 @@ public class Main {
         long endTime = System.currentTimeMillis();
         LOGGER.info("Processing took {}ms", (endTime - startTime));
 
-        appendToLogbook(jobRunrProSourceDir, Instant.now(), totalAmountOfJobs, startTime, endTime, JobRunrPro.getBackgroundJobServer());
+        LogBook.append(jobRunrProSourceDir, Instant.now(), totalAmountOfJobs, startTime, endTime, JarUtils.getManifestAttributeValue(backgroundJobServer().getClass(), "Implementation-Title"), backgroundJobServer());
 
         System.exit(0);
 
     }
 
-    private static void appendToLogbook(String jobRunrProSourceDir, Instant instant, int totalJobs, long startTime, long endTime, BackgroundJobServer backgroundJobServer) {
-        Path jobProSourceLogBook = Path.of("./jobrunr-pro-source/");
+    static JobRunrConfiguration jobRunr() {
+        JobRunrConfiguration jobRunrConfiguration;
 
-        Path logBookPath = Path.of("./logbook.csv");
-        boolean addHeader = !Files.exists(logBookPath);
-        try (CsvWriter csv = CsvWriter.builder().build(logBookPath, StandardOpenOption.CREATE, StandardOpenOption.APPEND)) {
-            if (!Files.exists(jobProSourceLogBook)) Files.createDirectories(jobProSourceLogBook);
-            new Zipper(Path.of(jobRunrProSourceDir, "core"), jobProSourceLogBook.resolve(substringBefore(instant.toString().replace(":", ""), ".") + ".zip"))
-                    .excludeFolders("bin", "build", "node_modules")
-                    .zip();
+        jobRunrConfiguration = jobRunrConfiguration("org.jobrunr.configuration.JobRunrPro");
+        if(jobRunrConfiguration != null) {
+            String title = "JobRunrPro (" + JarUtils.getVersion(jobRunrConfiguration.getClass()) + ")";
+            System.out.println("=".repeat(20 + title.length()));
+            System.out.println("======    " + title + "    =======");
+            System.out.println("=".repeat(20 + title.length()));
+            return jobRunrConfiguration;
+        }
 
-            if (addHeader) csv.writeRecord("Date & Time", "Host name", "amount of jobs", "duration", "duration in millis", "jobs / sec", "JobRunr version", "Java version", "Git Branch", "");
-            csv.writeRecord(instant.toString(), InetAddress.getLocalHost().getHostName(), String.valueOf(totalJobs), Duration.ofMillis(endTime - startTime).toString(),
-                    String.valueOf(endTime - startTime), String.format(Locale.US, "%.2f", (double) totalJobs / ((endTime - startTime) / 1000.0)),
-                    JarUtils.getVersion(JobRunrPro.class), getJavaVersion(), getBranch(jobRunrProSourceDir), getJobQueue(backgroundJobServer));
-        } catch (IOException e) {
-            LOGGER.error("Could not create logbook", e);
+        jobRunrConfiguration = jobRunrConfiguration("org.jobrunr.configuration.JobRunr");
+        if(jobRunrConfiguration != null) {
+            String title = "JobRunr (" + JarUtils.getVersion(jobRunrConfiguration.getClass()) + ")";
+            System.out.println("=".repeat(20 + title.length()));
+            System.out.println("======    " + title + "    =======");
+            System.out.println("=".repeat(20 + title.length()));
+            return jobRunrConfiguration;
+        }
+
+        throw new IllegalStateException("JobRunr (Pro) not found on classpath");
+    }
+
+    static BackgroundJobServer backgroundJobServer() {
+        BackgroundJobServer backgroundJobServer;
+
+        backgroundJobServer = backgroundJobServer("org.jobrunr.configuration.JobRunrPro");
+        if(backgroundJobServer != null) return backgroundJobServer;
+
+        backgroundJobServer = backgroundJobServer("org.jobrunr.configuration.JobRunr");
+        if(backgroundJobServer != null) return backgroundJobServer;
+
+        throw new IllegalStateException("JobRunr (Pro) not found on classpath");
+    }
+
+    static JobRunrConfiguration jobRunrConfiguration(String className) {
+        try {
+            Class<?> jobRunrClass = Class.forName(className);
+            Method configureMethod = jobRunrClass.getMethod("configure");
+            return (JobRunrConfiguration) configureMethod.invoke(jobRunrClass);
+        } catch (ReflectiveOperationException e) {
+            return null;
         }
     }
 
-    static String getJavaVersion() throws IOException {
-        return Runtime.version().toString();
-    }
-
-    static String getBranch(String jobRunrProSourceDir) throws IOException {
-        Path path = Path.of(jobRunrProSourceDir, ".git/HEAD");
-        return Files.readAllLines(path).get(0);
-    }
-
-    static String getJobQueue(BackgroundJobServer backgroundJobServer) {
-        WorkDistributionStrategy workDistributionStrategy = backgroundJobServer.getWorkDistributionStrategy();
-        if (objectContainsFieldOrProperty(workDistributionStrategy, "queue")) {
-            return ReflectionUtils.getValueFromFieldOrProperty(workDistributionStrategy, "queue").getClass().getSimpleName();
+    static BackgroundJobServer backgroundJobServer(String className) {
+        try {
+            Class<?> jobRunrClass = Class.forName(className);
+            Method configureMethod = jobRunrClass.getMethod("getBackgroundJobServer");
+            return (BackgroundJobServer) configureMethod.invoke(jobRunrClass);
+        } catch (ReflectiveOperationException e) {
+            return null;
         }
-        return null;
     }
 
     protected static DataSource getPostgresDataSource() {
