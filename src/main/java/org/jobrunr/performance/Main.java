@@ -38,10 +38,11 @@ public class Main {
         DataSource dataSource = getPostgresDataSource(); // new P6DataSource(getPostgresDataSource());
         StorageProvider storageProvider = SqlStorageProviderFactory.using(dataSource);
 
+        int dashboardPort = parseInt(getArg("dashboard_port", args, "0"));
         jobRunr()
                 .useStorageProvider(storageProvider)
                 .useBackgroundJobServer(usingStandardBackgroundJobServerConfiguration().andPollIntervalInSeconds(5), false)
-                .useDashboard(8010)
+                .useDashboardIf(dashboardPort > 0, dashboardPort)
                 .initialize();
 
         String jobRunrProSourceDir = getArg("jobRunrProSourceDir", args);
