@@ -44,19 +44,35 @@ public class Main {
                 .useDashboard(8010)
                 .initialize();
 
-        int totalAmountOfJobs = parseInt(getArg("amount", args, "500_000").replace("_", ""));
         String jobRunrProSourceDir = getArg("jobRunrProSourceDir", args);
         if(jobRunrProSourceDir != null && !Files.exists(Path.of(jobRunrProSourceDir, "core"))) {
             throw new IllegalStateException("Cannot find JobRunr Pro Source Dir at " + Path.of(jobRunrProSourceDir) + " for logbook");
         }
 
+        int totalAmountOfJobs = createJobs(args, storageProvider, dataSource);
+
+        backgroundJobServer().start();
+        long startTime = System.currentTimeMillis();
+        LOGGER.info("Enqueued all jobs - processing started");
+
+        countDownLatch.await();
+        long endTime = System.currentTimeMillis();
+        LOGGER.info("Processing took {}ms", (endTime - startTime));
+
+        LogBook.append(jobRunrProSourceDir, Instant.now(), totalAmountOfJobs, startTime, endTime, JarUtils.getManifestAttributeValue(backgroundJobServer().getClass(), "Implementation-Title"), backgroundJobServer());
+
+        System.exit(0);
+    }
+
+    private static int createJobs(String[] args, StorageProvider storageProvider, DataSource dataSource) {
+        int totalAmountOfJobs = parseInt(getArg("amount", args, "0").replace("_", ""));
+
+        if(totalAmountOfJobs < 1) return 0;
+
         countDownLatch = new CountDownLatch(totalAmountOfJobs);
         PerformanceTestJob performanceTestJob = new PerformanceTestJob();
-
         Stream<Integer> jobStreamTenantA = IntStream.range(0, totalAmountOfJobs).boxed();
-
         BackgroundJob.enqueue(jobStreamTenantA, performanceTestJob::testJob);
-
         if (storageProvider instanceof PostgresStorageProvider) {
             try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
                 statement.executeUpdate("VACUUM (VERBOSE, ANALYZE) jobrunr_jobs;");
@@ -72,20 +88,8 @@ public class Main {
                 throw new RuntimeException(e);
             }
         }
-
         LOGGER.info("Enqueued all jobs - starting processing");
-        backgroundJobServer().start();
-        long startTime = System.currentTimeMillis();
-        LOGGER.info("Enqueued all jobs - processing started");
-
-        countDownLatch.await();
-        long endTime = System.currentTimeMillis();
-        LOGGER.info("Processing took {}ms", (endTime - startTime));
-
-        LogBook.append(jobRunrProSourceDir, Instant.now(), totalAmountOfJobs, startTime, endTime, JarUtils.getManifestAttributeValue(backgroundJobServer().getClass(), "Implementation-Title"), backgroundJobServer());
-
-        System.exit(0);
-
+        return totalAmountOfJobs;
     }
 
     static JobRunrConfiguration jobRunr() {

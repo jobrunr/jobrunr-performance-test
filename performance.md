@@ -117,6 +117,38 @@ index on country, state, date
  
 
 
+  "cpu_stats": {
+    "cpu_usage": {
+      "total_usage": 402439808000,
+                     508813533000
+      "usage_in_kernelmode": 111201113000,
+      "usage_in_usermode": 291238694000
+    },
+    "system_cpu_usage": 61778026940000000,
+    "online_cpus": 20,
+    "throttling_data": {
+      "periods": 0,
+      "throttled_periods": 0,
+      "throttled_time": 0
+    }
+  },
+  
+
+  "cpu_stats": {
+    "cpu_usage": {
+      "total_usage": 508813533000,
+      "usage_in_kernelmode": 150283245000,
+      "usage_in_usermode": 358530288000
+    },
+    "system_cpu_usage": 61782325970000000,
+    "online_cpus": 20,
+    "throttling_data": {
+      "periods": 0,
+      "throttled_periods": 0,
+      "throttled_time": 0
+    }
+  },
+
 
 
 
