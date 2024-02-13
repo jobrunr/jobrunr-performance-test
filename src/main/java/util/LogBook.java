@@ -51,6 +51,7 @@ public class LogBook {
     }
 
     static String getBranch(String jobRunrProSourceDir) throws IOException {
+        if(jobRunrProSourceDir == null) return null;
         Path path = Path.of(jobRunrProSourceDir, ".git/HEAD");
         return Files.readAllLines(path).get(0);
     }
