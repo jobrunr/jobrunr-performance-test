@@ -55,13 +55,15 @@ public class Main {
         long startTime = System.currentTimeMillis();
         LOGGER.info("Enqueued all jobs - processing started");
 
-        countDownLatch.await();
-        long endTime = System.currentTimeMillis();
-        LOGGER.info("Processing took {}ms", (endTime - startTime));
-
-        LogBook.append(jobRunrProSourceDir, Instant.now(), totalAmountOfJobs, startTime, endTime, JarUtils.getManifestAttributeValue(backgroundJobServer().getClass(), "Implementation-Title"), backgroundJobServer());
-
-        System.exit(0);
+        if(totalAmountOfJobs > 0) {
+            countDownLatch.await();
+            long endTime = System.currentTimeMillis();
+            LOGGER.info("Processing took {}ms", (endTime - startTime));
+            LogBook.append(jobRunrProSourceDir, Instant.now(), totalAmountOfJobs, startTime, endTime, JarUtils.getManifestAttributeValue(backgroundJobServer().getClass(), "Implementation-Title"), backgroundJobServer());
+            System.exit(0);
+        } else {
+            Thread.currentThread().join();
+        }
     }
 
     private static int createJobs(String[] args, StorageProvider storageProvider, DataSource dataSource) {
