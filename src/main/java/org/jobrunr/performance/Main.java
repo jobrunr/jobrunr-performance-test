@@ -119,6 +119,19 @@ public class Main {
         throw new IllegalStateException("JobRunr (Pro) not found on classpath");
     }
 
+    public static void countDown() {
+        if(countDownLatch != null) {
+            countDownLatch.countDown();
+        }
+    }
+
+    public static boolean hasPerformanceTestFinished() {
+        if(countDownLatch != null) {
+            return countDownLatch.getCount() == 0;
+        }
+        return false;
+    }
+
     static BackgroundJobServer backgroundJobServer() {
         BackgroundJobServer backgroundJobServer;
 

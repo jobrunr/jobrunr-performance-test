@@ -30,10 +30,10 @@ public class PerformanceTestJob {
         AtomicInteger newSecond = jobsCountMap.putIfAbsent(currentTimeSeconds, new AtomicInteger(0));
         jobsCountMap.get(currentTimeSeconds).incrementAndGet();
 
-        Main.countDownLatch.countDown();
+        Main.countDown();
 
         // Trigger logging and cleanup periodically
-        if (newSecond == null || Main.countDownLatch.getCount() == 0) {
+        if (newSecond == null || Main.hasPerformanceTestFinished()) {
             cleanUpOldEntries(currentTimeSeconds);
 
             long elapsedTime = currentTime - startTime.get();
