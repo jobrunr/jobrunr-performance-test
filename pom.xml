@@ -23,6 +23,16 @@
 
     <profiles>
         <profile>
+            <id>OSS-v6</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.jobrunr</groupId>
+                    <artifactId>jobrunr</artifactId>
+                    <version>6.3.5</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
             <id>OSS-v7</id>
             <dependencies>
                 <dependency>
@@ -39,6 +49,16 @@
                     <groupId>org.jobrunr</groupId>
                     <artifactId>jobrunr</artifactId>
                     <version>1.0.0-SNAPSHOT</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>PRO-v6</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.jobrunr</groupId>
+                    <artifactId>jobrunr-pro</artifactId>
+                    <version>6.3.10</version>
                 </dependency>
             </dependencies>
         </profile>
