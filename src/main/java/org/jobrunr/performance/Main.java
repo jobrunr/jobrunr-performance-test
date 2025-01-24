@@ -36,7 +36,7 @@ public class Main {
 
 
     public static void main(String[] args) throws InterruptedException {
-        DataSource dataSource = getPostgresDataSource(); // new P6DataSource(getPostgresDataSource());
+        DataSource dataSource = getDataSource(args); // new P6DataSource(getPostgresDataSource());
         StorageProvider storageProvider = SqlStorageProviderFactory.using(dataSource);
 
         int dashboardPort = parseInt(getArg("dashboard_port", args, "0"));
@@ -199,8 +199,9 @@ public class Main {
 
     protected static DataSource getMySQLDataSource() {
         try {
-            Runtime.getRuntime().exec(new String[] { "/bin/bash", "-c", "sh run-db-mysql.sh" });
-        } catch (IOException e) {
+            Process exec = Runtime.getRuntime().exec(new String[]{"/bin/bash", "-c", "sh run-db-mysql.sh"});
+            exec.waitFor();
+        } catch (Exception e) {
             throw new IllegalStateException("Could not start MySQL", e);
         }
         HikariConfig config = new HikariConfig();
