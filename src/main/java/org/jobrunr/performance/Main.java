@@ -205,7 +205,7 @@ public class Main {
             throw new IllegalStateException("Could not start MySQL", e);
         }
         HikariConfig config = new HikariConfig();
-        config.setJdbcUrl("jdbc:mysql://localhost:3306/mysql");
+        config.setJdbcUrl("jdbc:mysql://127.0.0.1:3306/mysql?useSSL=false&allowPublicKeyRetrieval=true&autoReconnect=true&failOverReadOnly=false&maxReconnects=10");
         config.setUsername("mysql-jobrunr");
         config.setPassword("7UAZ5ZAt46QqxQrwyjL64gXp");
         config.setMinimumIdle(40);
