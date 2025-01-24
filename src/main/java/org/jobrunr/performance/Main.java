@@ -7,6 +7,7 @@ import org.jobrunr.scheduling.BackgroundJob;
 import org.jobrunr.server.BackgroundJobServer;
 import org.jobrunr.storage.StorageProvider;
 import org.jobrunr.storage.sql.common.SqlStorageProviderFactory;
+import org.jobrunr.storage.sql.mysql.MySqlStorageProvider;
 import org.jobrunr.storage.sql.postgres.PostgresStorageProvider;
 import org.jobrunr.storage.sql.sqlserver.SQLServerStorageProvider;
 import org.slf4j.Logger;
@@ -88,6 +89,14 @@ public class Main {
             try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
                 statement.executeUpdate("UPDATE STATISTICS jobrunr_jobs;");
                 LOGGER.info("UPDATED SQLSERVER STATISTICS");
+            } catch (java.sql.SQLException e) {
+                throw new RuntimeException(e);
+            }
+        } else if (storageProvider instanceof MySqlStorageProvider) {
+            try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
+                statement.executeUpdate("OPTIMIZE TABLE jobrunr_jobs;");
+                statement.executeUpdate("ANALYZE TABLE jobrunr_jobs;");
+                LOGGER.info("OPTIMIZED AND ANALYZED MYSQL TABLES");
             } catch (java.sql.SQLException e) {
                 throw new RuntimeException(e);
             }
