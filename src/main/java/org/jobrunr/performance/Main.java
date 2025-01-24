@@ -164,6 +164,18 @@ public class Main {
         }
     }
 
+    protected static DataSource getDataSource(String[] args) {
+        String database = getArg("database", args, "postgres");
+        if("postgres".equals(database)) {
+            return getPostgresDataSource();
+        } else if("mysql".equals(database)) {
+            return getMySQLDataSource();
+        } else if("sqlserver".equals(database)) {
+            return getSQLServerDataSource();
+        }
+        throw new IllegalStateException("Unknown database: " + database);
+    }
+
     protected static DataSource getPostgresDataSource() {
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl("jdbc:postgresql://127.0.0.1:5432/postgres");
@@ -179,6 +191,17 @@ public class Main {
         config.setJdbcUrl("jdbc:sqlserver://localhost:1433;databaseName=tempdb;encrypt=true;trustServerCertificate=true;");
         config.setUsername("sa");
         config.setPassword("sqlServer(!)");
+        config.setMinimumIdle(40);
+        config.setMaximumPoolSize(80);
+        return new HikariDataSource(config);
+    }
+
+    protected static DataSource getMySQLDataSource() {
+        Process p = Runtime.getRuntime().exec("docker images");
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl("jdbc:mysql://localhost:3306/mysql");
+        config.setUsername("mysql-jobrunr");
+        config.setPassword("7UAZ5ZAt46QqxQrwyjL64gXp");
         config.setMinimumIdle(40);
         config.setMaximumPoolSize(80);
         return new HikariDataSource(config);
