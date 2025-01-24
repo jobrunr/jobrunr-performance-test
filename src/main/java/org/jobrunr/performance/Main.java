@@ -15,6 +15,7 @@ import util.JarUtils;
 import util.LogBook;
 
 import javax.sql.DataSource;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -197,7 +198,11 @@ public class Main {
     }
 
     protected static DataSource getMySQLDataSource() {
-        Process p = Runtime.getRuntime().exec("docker images");
+        try {
+            Runtime.getRuntime().exec(new String[] { "/bin/bash", "-c", "sh run-db-mysql.sh" });
+        } catch (IOException e) {
+            throw new IllegalStateException("Could not start MySQL", e);
+        }
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl("jdbc:mysql://localhost:3306/mysql");
         config.setUsername("mysql-jobrunr");
