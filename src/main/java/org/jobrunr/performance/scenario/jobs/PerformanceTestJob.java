@@ -1,4 +1,4 @@
-package org.jobrunr.performance;
+package org.jobrunr.performance.scenario.jobs;
 
 import org.jobrunr.jobs.annotations.Job;
 import org.slf4j.Logger;
@@ -20,7 +20,7 @@ public class PerformanceTestJob {
     public static final AtomicLong startTime = new AtomicLong(-1L);
 
     @Job(name = "Job %0", labels = {"label 1", "other label"})
-    public void testJob(int index) {
+    public void testJob(int totalAmountOfJobs, int index) {
         long currentTime = System.currentTimeMillis();
         startTime.compareAndSet(-1L, currentTime);
 
@@ -30,10 +30,7 @@ public class PerformanceTestJob {
         AtomicInteger newSecond = jobsCountMap.putIfAbsent(currentTimeSeconds, new AtomicInteger(0));
         jobsCountMap.get(currentTimeSeconds).incrementAndGet();
 
-        OldMain.countDown();
-
-        // Trigger logging and cleanup periodically
-        if (newSecond == null || OldMain.hasPerformanceTestFinished()) {
+        if (newSecond == null || totalAmountOfJobs == index) {
             cleanUpOldEntries(currentTimeSeconds);
 
             long elapsedTime = currentTime - startTime.get();
