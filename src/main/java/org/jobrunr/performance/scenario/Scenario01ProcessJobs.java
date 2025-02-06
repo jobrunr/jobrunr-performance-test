@@ -1,8 +1,8 @@
 package org.jobrunr.performance.scenario;
 
 import org.jobrunr.performance.scenario.jobs.PerformanceTestJob;
+import org.jobrunr.performance.storage.DataStore;
 import org.jobrunr.scheduling.BackgroundJob;
-import org.jobrunr.storage.DataStore;
 
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -18,7 +18,6 @@ public class Scenario01ProcessJobs extends AbstractScenario {
     @Override
     protected long loadJobs() {
         int totalAmountOfJobs = parseInt(getArg("amount", "0").replace("_", ""));
-
         if (totalAmountOfJobs < 1) return 0;
 
         PerformanceTestJob performanceTestJob = new PerformanceTestJob();

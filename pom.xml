@@ -9,6 +9,7 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
+        <jobrunr.version>1.0.0-SNAPSHOT</jobrunr.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -23,62 +24,22 @@
 
     <profiles>
         <profile>
-            <id>OSS-v6</id>
+            <id>OSS</id>
             <dependencies>
                 <dependency>
                     <groupId>org.jobrunr</groupId>
                     <artifactId>jobrunr</artifactId>
-                    <version>6.3.5</version>
+                    <version>${jobrunr.version}</version>
                 </dependency>
             </dependencies>
         </profile>
         <profile>
-            <id>OSS-v7</id>
-            <dependencies>
-                <dependency>
-                    <groupId>org.jobrunr</groupId>
-                    <artifactId>jobrunr</artifactId>
-                    <version>7.3.0</version>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>OSS-v8</id>
-            <dependencies>
-                <dependency>
-                    <groupId>org.jobrunr</groupId>
-                    <artifactId>jobrunr</artifactId>
-                    <version>1.0.0-SNAPSHOT</version>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>PRO-v6</id>
+            <id>PRO</id>
             <dependencies>
                 <dependency>
                     <groupId>org.jobrunr</groupId>
                     <artifactId>jobrunr-pro</artifactId>
-                    <version>6.3.10</version>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>PRO-v7</id>
-            <dependencies>
-                <dependency>
-                    <groupId>org.jobrunr</groupId>
-                    <artifactId>jobrunr-pro</artifactId>
-                    <version>7.3.0</version>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>PRO-v8</id>
-            <dependencies>
-                <dependency>
-                    <groupId>org.jobrunr</groupId>
-                    <artifactId>jobrunr-pro</artifactId>
-                    <version>1.0.0-SNAPSHOT</version>
+                    <version>${jobrunr.version}</version>
                 </dependency>
             </dependencies>
         </profile>
@@ -88,18 +49,18 @@
         <dependency>
             <groupId>org.jobrunr</groupId>
             <artifactId>jobrunr-pro</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>${jobrunr.version}</version>
             <scope>provided</scope> <!-- will be provided by profile -->
         </dependency>
         <dependency>
-            <groupId>io.dropwizard.metrics</groupId>
-            <artifactId>metrics-core</artifactId>
-            <version>4.2.21</version>
+            <groupId>info.picocli</groupId>
+            <artifactId>picocli</artifactId>
+            <version>4.7.6</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.4.7</version>
+            <version>1.4.12</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -110,11 +71,6 @@
             <groupId>de.siegmar</groupId>
             <artifactId>fastcsv</artifactId>
             <version>3.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.zeroturnaround</groupId>
-            <artifactId>zt-zip</artifactId>
-            <version>1.17</version>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
@@ -159,7 +115,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.6.0</version>
+            <version>42.7.2</version>
         </dependency>
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
@@ -170,6 +126,11 @@
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
             <version>9.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <version>3.5.1</version>
         </dependency>
         <dependency>
             <groupId>com.zaxxer</groupId>
@@ -197,8 +158,16 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.1.0</version>
                 <configuration>
-                    <mainClass>org.jobrunr.performance.Main</mainClass>
+                    <mainClass>org.jobrunr.performance.PerformanceTest</mainClass>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>performance-test</id>
+                        <configuration>
+                            <mainClass>org.jobrunr.performance.Main</mainClass>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

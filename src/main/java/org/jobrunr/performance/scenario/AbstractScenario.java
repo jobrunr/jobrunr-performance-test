@@ -1,11 +1,18 @@
 package org.jobrunr.performance.scenario;
 
+import org.jobrunr.performance.storage.DataStore;
+import org.jobrunr.performance.utils.ArgUtils;
+import org.jobrunr.performance.utils.LogBook;
 import org.jobrunr.server.BackgroundJobServerConfiguration;
-import org.jobrunr.storage.DataStore;
+import org.jobrunr.storage.JobStats;
 import org.jobrunr.storage.StorageProvider;
+import org.jobrunr.storage.listeners.JobStatsChangeListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import util.ArgUtils;
+
+import java.time.Duration;
+import java.time.Instant;
+import java.util.concurrent.CountDownLatch;
 
 import static java.lang.Integer.parseInt;
 import static org.jobrunr.performance.JobRunrFactory.backgroundJobServer;
@@ -18,8 +25,17 @@ public abstract class AbstractScenario implements Scenario {
 
     private final DataStore dataStore;
     protected final String[] args;
+    protected final ScenarioResult scenarioResult;
+    private StorageProvider storageProvider;
 
-    public AbstractScenario(DataStore dataStore, String[] args) {
+    protected AbstractScenario(DataStore dataStore, String[] args) {
+        this.scenarioResult = new ScenarioResult(getClass().getSimpleName().toLowerCase());
+        this.dataStore = dataStore;
+        this.args = args;
+    }
+
+    protected AbstractScenario(String scenarioName, DataStore dataStore, String[] args) {
+        this.scenarioResult = new ScenarioResult(scenarioName);
         this.dataStore = dataStore;
         this.args = args;
     }
@@ -32,19 +48,58 @@ public abstract class AbstractScenario implements Scenario {
 
     public void run() {
         startDataStoreAndInitializeJobRunr();
-        long totalAmountOfJobsCreated = loadJobs();
-        dataStore.updateStatistics();
-
-        backgroundJobServer().start();
-        long startTime = System.currentTimeMillis();
-        LOGGER.info("Enqueued {} jobs - processing started", totalAmountOfJobsCreated);
-        System.out.println("Todo: wait until jobs are done and create a CSV file for the scenario");
+        createJobsAndUpdateStatistics();
+        processJobs();
+        appendToLogbook();
+        stopJobRunrAndDataStore();
     }
 
     private void startDataStoreAndInitializeJobRunr() {
         dataStore.start();
-        StorageProvider storageProvider = dataStore.getStorageProvider();
+        storageProvider = dataStore.getStorageProvider();
         initializeJobRunr(storageProvider);
+        LOGGER.info("Started JobRunr with BackgroundJobServer paused");
+    }
+
+    private void createJobsAndUpdateStatistics() {
+        LOGGER.info("Creating jobs");
+        Instant startTime = Instant.now();
+        long totalAmountOfJobsCreated = loadJobs();
+        Instant endTime = Instant.now();
+        scenarioResult.setAmountOfJobsCreated(totalAmountOfJobsCreated, Duration.between(startTime, endTime));
+        LOGGER.info("Successfully created {} jobs in {}. Updating database statistics", totalAmountOfJobsCreated, scenarioResult.getCreationDuration());
+        dataStore.updateStatistics();
+        LOGGER.info("Successfully updated database statistics");
+    }
+
+    private void processJobs() {
+        Instant startTime = startProcessingJobs();
+        Instant endTime = waitForJobsToComplete();
+        scenarioResult.setProcessingDuration(Duration.between(startTime, endTime));
+        LOGGER.info("Processed {} jobs in {}", scenarioResult.getAmountOfJobs(), scenarioResult.getProcessingDuration());
+    }
+
+    private void appendToLogbook() {
+        LogBook.append(backgroundJobServer(), scenarioResult);
+    }
+
+    private Instant startProcessingJobs() {
+        Instant startTime = Instant.now();
+        backgroundJobServer().start();
+        return startTime;
+    }
+
+    private Instant waitForJobsToComplete() {
+        AllJobsSucceededLatch latch = new AllJobsSucceededLatch(scenarioResult.getAmountOfJobs());
+        storageProvider.addJobStorageOnChangeListener(latch);
+        latch.await();
+        return dataStore.getUpdatedAtOfLastSucceededJob();
+    }
+
+    private void stopJobRunrAndDataStore() {
+        backgroundJobServer().stop();
+        dataStore.stop();
+        System.exit(0);
     }
 
     protected void initializeJobRunr(StorageProvider storageProvider) {
@@ -62,5 +117,31 @@ public abstract class AbstractScenario implements Scenario {
 
     protected String getArg(String key, String defaultValue) {
         return ArgUtils.getArg(args, key, defaultValue);
+    }
+
+    private static class AllJobsSucceededLatch implements JobStatsChangeListener {
+
+        private final long totalAmountOfJobs;
+        private final CountDownLatch countDownLatch;
+
+        public AllJobsSucceededLatch(long totalAmountOfJobs) {
+            this.totalAmountOfJobs = totalAmountOfJobs;
+            this.countDownLatch = new CountDownLatch(1);
+        }
+
+        @Override
+        public void onChange(JobStats jobStats) {
+            if (jobStats.getSucceeded() >= totalAmountOfJobs) {
+                countDownLatch.countDown();
+            }
+        }
+
+        public void await() {
+            try {
+                countDownLatch.await();
+            } catch (InterruptedException e) {
+                throw new RuntimeException("Exception waiting for " + totalAmountOfJobs + " jobs to succeed", e);
+            }
+        }
     }
 }
