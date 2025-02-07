@@ -4,25 +4,25 @@ import java.time.Duration;
 
 public class ScenarioResult {
 
-    private final String scenarioName;
+    private final Scenario scenario;
     private long amountOfJobs;
     private Duration creationDuration, processingDuration;
 
-    public ScenarioResult(String scenarioName) {
-        this.scenarioName = scenarioName;
+    public ScenarioResult(Scenario scenario) {
+        this.scenario = scenario;
     }
 
     public void setAmountOfJobsCreated(long amountOfJobs, Duration creationDuration) {
         this.amountOfJobs = amountOfJobs;
         this.creationDuration = creationDuration;
     }
-    
+
     public void setProcessingDuration(Duration processingDuration) {
         this.processingDuration = processingDuration;
     }
 
-    public String getScenarioName() {
-        return scenarioName;
+    public Scenario getScenario() {
+        return scenario;
     }
 
     public long getAmountOfJobs() {

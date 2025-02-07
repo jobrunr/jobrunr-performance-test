@@ -1,4 +1,0 @@
-Date & Time,Host name,Java version,JobRunr type,JobRunr version,StorageProvider,amount of jobs,creation duration,processing duration,job throughput (jobs / sec)
-2025-02-06T14:38:21.050923Z,Ronalds-MacBook-Pro.local,21.0.2+13-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/v8/pause-dynamic-queue),PostgresStorageProvider,500000,PT25.310623S,PT1M2.725063S,8064.52
-2025-02-06T15:25:09.509240Z,Ronalds-MacBook-Pro.local,21.0.2+13-LTS,JobRunr,1.0.0-SNAPSHOT (master),PostgresStorageProvider,5000,PT0.385598S,PT1.8568S,5000.00
-2025-02-07T08:33:23.809733Z,Ronalds-MacBook-Pro.local,21.0.2+13-LTS,JobRunr,7.4.0,MongoDBStorageProvider,500000,PT11.357497S,PT1M13.212294S,6849.32

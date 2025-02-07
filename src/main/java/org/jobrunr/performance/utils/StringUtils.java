@@ -1,6 +1,34 @@
 package org.jobrunr.performance.utils;
 
+import org.jobrunr.performance.scenario.Scenario;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class StringUtils {
+
+    public static String camelCaseToHumanReadable(Scenario scenario) {
+        // Pattern to capture a prefix like "Scenario01" and the remainder
+        String input = scenario.getClass().getSimpleName();
+        Pattern pattern = Pattern.compile("^(Scenario\\d+)(.*)$");
+        Matcher matcher = pattern.matcher(input);
+        if (matcher.matches()) {
+            String prefix = matcher.group(1);
+            String remainder = matcher.group(2);
+
+            String spaced = remainder.replaceAll("(?<!^)(?=[A-Z])", " ").trim();
+
+            if (!spaced.isEmpty()) {
+                spaced = spaced.substring(0, 1).toUpperCase() + spaced.substring(1).toLowerCase();
+            }
+
+            return prefix + " - " + spaced;
+        } else {
+            // Fallback: simply insert spaces for camel case in the entire string.
+            String spaced = input.replaceAll("(?<!^)(?=[A-Z])", " ").trim();
+            return spaced;
+        }
+    }
 
     public static boolean isNullOrEmpty(String s) {
         return s == null || s.isEmpty();

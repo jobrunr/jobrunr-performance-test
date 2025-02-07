@@ -15,13 +15,14 @@ import java.time.Instant;
 import java.util.Locale;
 
 import static java.util.Optional.ofNullable;
+import static org.jobrunr.performance.utils.StringUtils.camelCaseToHumanReadable;
 
 public class LogBook {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(LogBook.class);
 
     public static void append(BackgroundJobServer backgroundJobServer, ScenarioResult scenarioResult) {
-        Path logBookPath = findLogbooksFolder().resolve(scenarioResult.getScenarioName() + "-logbook.csv");
+        Path logBookPath = findLogbooksFolder().resolve(camelCaseToHumanReadable(scenarioResult.getScenario()) + "-logbook.csv");
         boolean addHeader = !Files.exists(logBookPath);
         try (CsvWriter csv = CsvWriter.builder().build(logBookPath, StandardOpenOption.CREATE, StandardOpenOption.APPEND)) {
             if (addHeader)
