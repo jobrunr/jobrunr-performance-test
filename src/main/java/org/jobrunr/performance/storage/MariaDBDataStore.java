@@ -1,5 +1,6 @@
 package org.jobrunr.performance.storage;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.testcontainers.containers.MariaDBContainer;
 
 import java.sql.Connection;
@@ -12,6 +13,11 @@ public class MariaDBDataStore extends AbstractSqlDataStore {
                 new MariaDBContainer<>("mariadb:11.4")
                         .withCommand("--max-allowed-packet=128M"),
                 "org.mariadb.jdbc.Driver");
+    }
+
+    @Override
+    protected HikariDataSource toHikariDataSource(String jdbcUrl, String userName, String password, String driverClassName) {
+        return super.toHikariDataSource(jdbcUrl + "?useServerPrepStmts=true", userName, password, driverClassName);
     }
 
     @Override

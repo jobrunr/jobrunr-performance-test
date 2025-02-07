@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 import static java.lang.Boolean.parseBoolean;
 import static java.util.stream.Collectors.joining;
 import static org.jobrunr.performance.utils.ArgUtils.getArg;
+import static org.jobrunr.performance.utils.StringUtils.substringBefore;
 
 public class Main {
 
@@ -61,11 +62,10 @@ public class Main {
             JobRunrDistribution jobRunrDistribution = JobRunrDistribution.current;
             String version = jobRunrDistribution.getVersion();
             String mavenProfile = jobRunrDistribution.getMavenProfile();
-            String execArgs = String.format("datastore=%s scenario=%s %s", dataStoreType.name(), scenarioName,
-                    Stream.of(args).filter(x -> !Set.of(ARG_JVM_PER_DATASTORE, ARG_DATASTORE, ARG_SCENARIO).contains(x)).collect(joining(" ")));
+            String execArgs = String.format("datastore=%s scenario=%s system-exit=true %s", dataStoreType.name(), scenarioName,
+                    Stream.of(args).filter(x -> !Set.of(ARG_JVM_PER_DATASTORE, ARG_DATASTORE, ARG_SCENARIO).contains(substringBefore(x, "="))).collect(joining(" ")));
 
             String mavenCmd = createMavenCmd(pomPath, mavenProfile, version, execArgs);
-
             // Execute the Maven command using ProcessBuilder.
             ProcessBuilder pb = new ProcessBuilder("bash", "-c", mavenCmd);
             pb.inheritIO();
