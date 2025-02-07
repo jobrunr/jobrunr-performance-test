@@ -1,5 +1,6 @@
 package org.jobrunr.performance.storage;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.testcontainers.containers.MySQLContainer;
 
 import java.sql.Connection;
@@ -11,6 +12,11 @@ public class MySQLDataStore extends AbstractSqlDataStore {
         super(new MySQLContainer<>("mysql:9.2")
                         .withCommand("--max-allowed-packet=128M"),
                 "com.mysql.cj.jdbc.Driver");
+    }
+
+    @Override
+    protected HikariDataSource toHikariDataSource(String jdbcUrl, String userName, String password, String driverClassName) {
+        return super.toHikariDataSource(jdbcUrl + "?useServerPrepStmts=true&cachePrepStmts=true&prepStmtCacheSize=500&prepStmtCacheSqlLimit=1024", userName, password, driverClassName);
     }
 
     @Override

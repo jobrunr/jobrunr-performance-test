@@ -1,6 +1,7 @@
 package org.jobrunr.performance.scenario;
 
 import org.jobrunr.dashboard.JobRunrDashboardWebServerConfiguration;
+import org.jobrunr.jobs.mappers.JobMapper;
 import org.jobrunr.performance.JobRunrDistribution;
 import org.jobrunr.performance.storage.DataStore;
 import org.jobrunr.performance.utils.ArgUtils;
@@ -10,6 +11,7 @@ import org.jobrunr.server.BackgroundJobServerConfiguration;
 import org.jobrunr.storage.JobStats;
 import org.jobrunr.storage.StorageProvider;
 import org.jobrunr.storage.listeners.JobStatsChangeListener;
+import org.jobrunr.utils.mapper.jackson.JacksonJsonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +19,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.concurrent.CountDownLatch;
 
+import static java.lang.Boolean.parseBoolean;
 import static java.lang.Integer.parseInt;
 import static org.jobrunr.server.BackgroundJobServerConfiguration.usingStandardBackgroundJobServerConfiguration;
 
@@ -54,6 +57,7 @@ public abstract class AbstractScenario implements Scenario {
         processJobs();
         appendToLogbook();
         stopJobRunrAndDataStore();
+        exitJVMIfRequested();
     }
 
     private void logTitle() {
@@ -114,9 +118,17 @@ public abstract class AbstractScenario implements Scenario {
         dataStore.stop();
     }
 
+    private void exitJVMIfRequested() {
+        if (parseBoolean(getArg("system-exit", "false"))) {
+            System.exit(0);
+        }
+    }
+
     protected void initializeJobRunr(StorageProvider storageProvider) {
         BackgroundJobServerConfiguration backgroundJobServerConfiguration = getBackgroundJobServerConfiguration();
         JobRunrDashboardWebServerConfiguration dashboardWebServerConfiguration = getDashboardWebServerConfiguration();
+
+        storageProvider.setJobMapper(new JobMapper(new JacksonJsonMapper()));
 
         JobRunrDistribution.current.saveLicense(storageProvider);
         JobRunrDistribution.current.getConfiguration()
