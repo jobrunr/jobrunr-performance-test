@@ -1,3 +1,8 @@
 Date & Time,Host name,Java version,JobRunr type,JobRunr version,StorageProvider,amount of jobs,creation duration,processing duration,job throughput (jobs / sec)
 2025-02-07T10:55:18.399523Z,Ronalds-MacBook-Pro.local,21.0.2+13-LTS,JobRunr,7.4.0,PostgresStorageProvider,500000,PT13.871059S,PT54.490206S,9259.26
 2025-02-07T13:47:49.923372Z,Ronalds-MacBook-Pro.local,21.0.2+13-LTS,JobRunr,7.4.0,MariaDbStorageProvider,500000,PT19.654696S,PT4M54.478116S,1700.68
+2025-02-07T14:19:47.917168544Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr,7.4.0,MariaDbStorageProvider,500000,PT25.857582464S,PT8M40.620138101S,961.54
+2025-02-07T14:23:18.048429423Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr,7.4.0,MongoDBStorageProvider,500000,PT9.023312424S,PT3M4.633275154S,2717.39
+2025-02-07T14:37:57.104501462Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr,7.4.0,MySqlStorageProvider,500000,PT1M48.829032935S,PT12M5.157941382S,689.66
+2025-02-07T14:39:28.750936098Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr,7.4.0,PostgresStorageProvider,500000,PT13.550121934S,PT1M4.404543239S,7812.50
+2025-02-07T14:55:58.274206581Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr,7.4.0,SQLServerStorageProvider,500000,PT31.749837832S,PT15M31.333049093S,537.06
