@@ -46,6 +46,7 @@ public abstract class AbstractSqlDataStore implements DataStore {
 
     @Override
     public void stop() {
+        dataSource.close();
         container.stop();
     }
 

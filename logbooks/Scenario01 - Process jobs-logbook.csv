@@ -1,2 +1,3 @@
 Date & Time,Host name,Java version,JobRunr type,JobRunr version,StorageProvider,amount of jobs,creation duration,processing duration,job throughput (jobs / sec)
 2025-02-07T10:55:18.399523Z,Ronalds-MacBook-Pro.local,21.0.2+13-LTS,JobRunr,7.4.0,PostgresStorageProvider,500000,PT13.871059S,PT54.490206S,9259.26
+2025-02-07T13:47:49.923372Z,Ronalds-MacBook-Pro.local,21.0.2+13-LTS,JobRunr,7.4.0,MariaDbStorageProvider,500000,PT19.654696S,PT4M54.478116S,1700.68
