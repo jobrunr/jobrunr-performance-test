@@ -10,6 +10,8 @@
     <logger name="org.jobrunr.utils.multicast" level="WARN"/>
     <logger name="org.jobrunr.storage.sql.common.DatabaseCreator" level="WARN"/>
     <logger name="org.jobrunr.storage.nosql.common.NoSqlDatabaseCreator" level="WARN"/>
+    <logger name="org.jobrunr.server.BackgroundJobPerformer" level="WARN"/>
+    <logger name="org.jobrunr.server.queue" level="DEBUG"/>
 
     <root level="info">
         <appender-ref ref="STDOUT"/>

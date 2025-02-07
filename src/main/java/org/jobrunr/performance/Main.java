@@ -1,63 +1,29 @@
 package org.jobrunr.performance;
 
-import com.codahale.metrics.ConsoleReporter;
-import com.codahale.metrics.MetricRegistry;
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
-import org.jobrunr.configuration.JobRunrPro;
-import org.jobrunr.scheduling.BackgroundJob;
-import org.jobrunr.storage.sql.common.SqlStorageProviderFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jobrunr.performance.scenario.Scenario;
+import org.jobrunr.performance.storage.DataStore;
+import org.jobrunr.performance.storage.DataStore.DataStoreType;
 
-import javax.sql.DataSource;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-
-import static org.jobrunr.server.BackgroundJobServerConfiguration.usingStandardBackgroundJobServerConfiguration;
+import static org.jobrunr.performance.utils.ArgUtils.getArg;
 
 public class Main {
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
-
-    public static final MetricRegistry metrics = new MetricRegistry();
-
-
     public static void main(String[] args) {
-        DataSource dataSource = getDataSource();
+        String datastore = getArg(args, "datastore");
+        String scenario = getArg(args, "scenario");
 
-        JobRunrPro.configure()
-                .useStorageProvider(SqlStorageProviderFactory.using(dataSource))
-                .useBackgroundJobServer(usingStandardBackgroundJobServerConfiguration(), false)
-                .useDashboard()
-                .initialize();
-
-
-        PerformanceTestJob performanceTestJob = new PerformanceTestJob();
-
-        Stream<Integer> jobStreamTenantA = IntStream.range(0, 500_000)
-                .mapToObj(i -> i);
-
-        BackgroundJob.enqueue(jobStreamTenantA, performanceTestJob::testJob);
-        LOGGER.info("Enqueued all jobs - starting processing");
-        JobRunrPro.getBackgroundJobServer().start();
-        LOGGER.info("Enqueued all jobs - processing started");
-
-        ConsoleReporter reporter = ConsoleReporter.forRegistry(metrics)
-                .convertRatesTo(TimeUnit.SECONDS)
-                .convertDurationsTo(TimeUnit.MILLISECONDS)
-                .build();
-        reporter.start(1, TimeUnit.SECONDS);
+        if ("all".equals(datastore)) {
+            for (DataStoreType dataStoreType : DataStoreType.values()) {
+                runScenario(dataStoreType, scenario, args);
+            }
+        } else {
+            runScenario(DataStoreType.valueOf(datastore), scenario, args);
+        }
     }
 
-    protected static DataSource getDataSource() {
-        HikariConfig config = new HikariConfig();
-        config.setJdbcUrl("jdbc:postgresql://127.0.0.1:5432/postgres");
-        config.setUsername("postgres");
-        config.setPassword("postgres");
-        config.setMinimumIdle(80);
-        config.setMaximumPoolSize(105);
-        return new HikariDataSource(config);
+    public static void runScenario(DataStoreType dataStoreType, String scenarioName, String[] args) {
+        DataStore dataStore = DataStore.loadDataStore(dataStoreType);
+        Scenario scenario = Scenario.loadScenario(scenarioName, dataStore, args);
+        scenario.run();
     }
 }
