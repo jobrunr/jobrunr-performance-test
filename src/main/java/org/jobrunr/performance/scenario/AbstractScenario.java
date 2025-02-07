@@ -5,6 +5,7 @@ import org.jobrunr.performance.JobRunrDistribution;
 import org.jobrunr.performance.storage.DataStore;
 import org.jobrunr.performance.utils.ArgUtils;
 import org.jobrunr.performance.utils.LogBook;
+import org.jobrunr.performance.utils.StringUtils;
 import org.jobrunr.server.BackgroundJobServerConfiguration;
 import org.jobrunr.storage.JobStats;
 import org.jobrunr.storage.StorageProvider;
@@ -32,8 +33,9 @@ public abstract class AbstractScenario implements Scenario {
         this.scenarioResult = new ScenarioResult(this);
         this.dataStore = dataStore;
         this.args = args;
+        logTitle();
     }
-    
+
     protected BackgroundJobServerConfiguration getBackgroundJobServerConfiguration() {
         return usingStandardBackgroundJobServerConfiguration().andPollIntervalInSeconds(5);
     }
@@ -52,6 +54,17 @@ public abstract class AbstractScenario implements Scenario {
         processJobs();
         appendToLogbook();
         stopJobRunrAndDataStore();
+    }
+
+    private void logTitle() {
+        String scenario = StringUtils.camelCaseToHumanReadable(this);
+        String distributionWithVersion = JobRunrDistribution.current.getTitle();
+        String scenarioWithMarkup = "======    " + scenario + "    =======";
+        String distributionWithMarkup = "======    " + distributionWithVersion + "    =======";
+        LOGGER.info("=".repeat(distributionWithMarkup.length()));
+        LOGGER.info(scenarioWithMarkup);
+        LOGGER.info(distributionWithMarkup);
+        LOGGER.info("=".repeat(distributionWithMarkup.length()));
     }
 
     private void startDataStoreAndInitializeJobRunr() {
@@ -97,9 +110,8 @@ public abstract class AbstractScenario implements Scenario {
     }
 
     private void stopJobRunrAndDataStore() {
-        JobRunrDistribution.current.backgroundJobServer().stop();
+        JobRunrDistribution.current.stop();
         dataStore.stop();
-        System.exit(0);
     }
 
     protected void initializeJobRunr(StorageProvider storageProvider) {

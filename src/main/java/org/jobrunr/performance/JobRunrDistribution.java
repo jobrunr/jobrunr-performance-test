@@ -11,8 +11,8 @@ import static org.jobrunr.utils.reflection.ReflectionUtils.classExists;
 
 public enum JobRunrDistribution {
 
-    JobRunrOSS("JobRunr"),
-    JobRunrPro("JobRunrPro") {
+    JobRunrOSS("JobRunr", "OSS"),
+    JobRunrPro("JobRunrPro", "PRO") {
         @Override
         public void saveLicense(StorageProvider storageProvider) {
             if ("1.0.0-SNAPSHOT".equals(getVersion())) {
@@ -33,14 +33,15 @@ public enum JobRunrDistribution {
         } else {
             throw new IllegalStateException("JobRunr or JobRunr Pro not found on classpath");
         }
-        current.printTitleHeader();
     }
 
     private final String configurationClassName;
+    private final String mavenProfile;
     private final JobRunrConfiguration jobRunrConfiguration;
 
-    JobRunrDistribution(String configurationClassName) {
+    JobRunrDistribution(String configurationClassName, String mavenProfile) {
         this.configurationClassName = "org.jobrunr.configuration." + configurationClassName;
+        this.mavenProfile = mavenProfile;
         this.jobRunrConfiguration = jobRunrConfiguration();
     }
 
@@ -52,12 +53,8 @@ public enum JobRunrDistribution {
         return name() + " (" + getVersion() + ")";
     }
 
-    public void printTitleHeader() {
-        String title = getTitle();
-        String titleWithMarkup = "======    " + title + "    =======";
-        System.out.println("=".repeat(titleWithMarkup.length()));
-        System.out.println(titleWithMarkup);
-        System.out.println("=".repeat(titleWithMarkup.length()));
+    public String getMavenProfile() {
+        return mavenProfile;
     }
 
     public String getVersion() {
@@ -79,6 +76,16 @@ public enum JobRunrDistribution {
             return (BackgroundJobServer) configureMethod.invoke(jobRunrClass);
         } catch (ReflectiveOperationException e) {
             return null;
+        }
+    }
+
+    public void stop() {
+        try {
+            Class<?> jobRunrClass = Class.forName(configurationClassName);
+            Method configureMethod = jobRunrClass.getMethod("destroy");
+            configureMethod.invoke(jobRunrClass);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("Unable to stop JobRunr", e);
         }
     }
 

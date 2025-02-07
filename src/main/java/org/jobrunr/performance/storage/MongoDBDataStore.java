@@ -43,6 +43,7 @@ public class MongoDBDataStore implements DataStore {
 
     @Override
     public void stop() {
+        this.mongoClient.close();
         this.container.stop();
     }
 
