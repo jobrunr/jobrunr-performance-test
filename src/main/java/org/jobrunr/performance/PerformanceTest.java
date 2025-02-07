@@ -53,7 +53,7 @@ public class PerformanceTest implements Callable<Integer> {
         String mavenProfile = distribution.toString().toUpperCase();
 
         // Build the exec.args value: you may add more options as needed.
-        String execArgs = String.format("datastore=%s scenario=%s amount=5000", dataStore.toString(), scenario.toString());
+        String execArgs = String.format("datastore=%s scenario=%s amount=500_000", dataStore.toString(), scenario.toString());
 
         // Build the full Maven command.
         // For example:

@@ -6,13 +6,14 @@ import org.jobrunr.server.BackgroundJobServer;
 
 import java.lang.reflect.Method;
 
+import static java.util.Optional.ofNullable;
 import static org.jobrunr.utils.reflection.ReflectionUtils.classExists;
 
 public class JobRunrFactory {
 
     public static JobRunrConfiguration jobRunr() {
         JobRunrConfiguration jobRunrConfiguration = jobRunrConfiguration();
-        String title = JarUtils.getManifestAttributeValue(jobRunrConfiguration.getClass(), "Implementation-Title") + " (" + JarUtils.getVersion(jobRunrConfiguration.getClass()) + ")";
+        String title = getTitle(jobRunrConfiguration.getClass()) + " (" + JarUtils.getVersion(jobRunrConfiguration.getClass()) + ")";
         String titleWithMarkup = "======    " + title + "    =======";
 
         System.out.println("=".repeat(titleWithMarkup.length()));
@@ -57,5 +58,10 @@ public class JobRunrFactory {
         } catch (ReflectiveOperationException e) {
             return null;
         }
+    }
+
+    private static String getTitle(Class<?> clazz) {
+        return ofNullable(JarUtils.getManifestAttributeValue(clazz, "Implementation-Title"))
+                .orElse("JobRunr");
     }
 }

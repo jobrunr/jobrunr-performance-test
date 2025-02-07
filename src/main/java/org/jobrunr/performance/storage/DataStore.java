@@ -27,4 +27,19 @@ public interface DataStore {
         String fullyQualifiedClassName = packageName + "." + name;
         return ReflectionUtils.newInstance(fullyQualifiedClassName);
     }
+
+    static DataStore loadDataStore(DataStoreType dataStore) {
+        return loadDataStore(dataStore.name());
+    }
+
+
+    enum DataStoreType {
+        DB2DataStore,
+        MariaDBDataStore,
+        MongoDBDataStore,
+        MySQLDataStore,
+        OracleDataStore,
+        PostgresDataStore,
+        SQLServerDataStore,
+    }
 }
