@@ -1,5 +1,7 @@
 package org.jobrunr.performance.scenario;
 
+import org.jobrunr.dashboard.JobRunrDashboardWebServerConfiguration;
+import org.jobrunr.performance.JobRunrDistribution;
 import org.jobrunr.performance.storage.DataStore;
 import org.jobrunr.performance.utils.ArgUtils;
 import org.jobrunr.performance.utils.LogBook;
@@ -15,8 +17,6 @@ import java.time.Instant;
 import java.util.concurrent.CountDownLatch;
 
 import static java.lang.Integer.parseInt;
-import static org.jobrunr.performance.JobRunrFactory.backgroundJobServer;
-import static org.jobrunr.performance.JobRunrFactory.jobRunr;
 import static org.jobrunr.server.BackgroundJobServerConfiguration.usingStandardBackgroundJobServerConfiguration;
 
 public abstract class AbstractScenario implements Scenario {
@@ -29,19 +29,19 @@ public abstract class AbstractScenario implements Scenario {
     private StorageProvider storageProvider;
 
     protected AbstractScenario(DataStore dataStore, String[] args) {
-        this.scenarioResult = new ScenarioResult(getClass().getSimpleName().toLowerCase());
+        this.scenarioResult = new ScenarioResult(this);
         this.dataStore = dataStore;
         this.args = args;
     }
-
-    protected AbstractScenario(String scenarioName, DataStore dataStore, String[] args) {
-        this.scenarioResult = new ScenarioResult(scenarioName);
-        this.dataStore = dataStore;
-        this.args = args;
-    }
-
+    
     protected BackgroundJobServerConfiguration getBackgroundJobServerConfiguration() {
         return usingStandardBackgroundJobServerConfiguration().andPollIntervalInSeconds(5);
+    }
+
+    protected JobRunrDashboardWebServerConfiguration getDashboardWebServerConfiguration() {
+        int dashboardPort = parseInt(getArg("dashboard_port", "0"));
+        if (dashboardPort == 0) return null;
+        return JobRunrDashboardWebServerConfiguration.usingStandardDashboardConfiguration().andPort(dashboardPort);
     }
 
     protected abstract long loadJobs();
@@ -80,12 +80,12 @@ public abstract class AbstractScenario implements Scenario {
     }
 
     private void appendToLogbook() {
-        LogBook.append(backgroundJobServer(), scenarioResult);
+        LogBook.append(JobRunrDistribution.current.backgroundJobServer(), scenarioResult);
     }
 
     private Instant startProcessingJobs() {
         Instant startTime = Instant.now();
-        backgroundJobServer().start();
+        JobRunrDistribution.current.backgroundJobServer().start();
         return startTime;
     }
 
@@ -97,17 +97,20 @@ public abstract class AbstractScenario implements Scenario {
     }
 
     private void stopJobRunrAndDataStore() {
-        backgroundJobServer().stop();
+        JobRunrDistribution.current.backgroundJobServer().stop();
         dataStore.stop();
         System.exit(0);
     }
 
     protected void initializeJobRunr(StorageProvider storageProvider) {
-        int dashboardPort = parseInt(getArg("dashboard_port", "0"));
-        jobRunr()
+        BackgroundJobServerConfiguration backgroundJobServerConfiguration = getBackgroundJobServerConfiguration();
+        JobRunrDashboardWebServerConfiguration dashboardWebServerConfiguration = getDashboardWebServerConfiguration();
+
+        JobRunrDistribution.current.saveLicense(storageProvider);
+        JobRunrDistribution.current.getConfiguration()
                 .useStorageProvider(storageProvider)
-                .useBackgroundJobServer(getBackgroundJobServerConfiguration(), false)
-                .useDashboardIf(dashboardPort > 0, dashboardPort)
+                .useBackgroundJobServer(backgroundJobServerConfiguration, false)
+                .useDashboardIf(dashboardWebServerConfiguration != null, dashboardWebServerConfiguration)
                 .initialize();
     }
 

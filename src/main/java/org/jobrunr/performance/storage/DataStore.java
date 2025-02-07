@@ -40,6 +40,14 @@ public interface DataStore {
         MySQLDataStore,
         OracleDataStore,
         PostgresDataStore,
-        SQLServerDataStore,
+        SQLServerDataStore;
+
+        public static DataStoreType[] all() {
+            return DataStoreType.values();
+        }
+
+        public static DataStoreType[] allButSlow() {
+            return new DataStoreType[]{MariaDBDataStore, MongoDBDataStore, MySQLDataStore, PostgresDataStore, SQLServerDataStore};
+        }
     }
 }

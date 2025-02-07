@@ -57,8 +57,8 @@ public class PerformanceTest implements Callable<Integer> {
 
         // Build the full Maven command.
         // For example:
-        //   mvn -f "<projectRoot>/pom.xml" compile exec:java -P PRO -Djobrunr.version=7.4.0 -Dexec.args="datastore=PostgresDataStore scenario=Scenario01ProcessJobs"
-        String mavenCmd = String.format("mvn -f \"%s\" compile exec:java -P %s -Djobrunr.version=%s -Dexec.args=\"%s\"",
+        //   mvn -f "<projectRoot>/pom.xml" compile exec:java@performance-test -P PRO -Djobrunr.version=7.4.0 -Dexec.args="datastore=PostgresDataStore scenario=Scenario01ProcessJobs"
+        String mavenCmd = String.format("mvn -f \"%s\" compile exec:java@performance-test -P %s -Djobrunr.version=%s -Dexec.args=\"%s\"",
                 pomPath, mavenProfile, version, execArgs);
 
         // Execute the Maven command using ProcessBuilder.

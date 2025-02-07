@@ -13,7 +13,11 @@ public class Main {
         String scenario = getArg(args, "scenario");
 
         if ("all".equals(datastore)) {
-            for (DataStoreType dataStoreType : DataStoreType.values()) {
+            for (DataStoreType dataStoreType : DataStoreType.all()) {
+                runScenario(dataStoreType, scenario, args);
+            }
+        } else if ("allButSlow".equals(datastore)) {
+            for (DataStoreType dataStoreType : DataStoreType.allButSlow()) {
                 runScenario(dataStoreType, scenario, args);
             }
         } else {
