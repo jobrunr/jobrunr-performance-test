@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
 import static java.lang.Boolean.parseBoolean;
@@ -93,7 +94,7 @@ public abstract class AbstractScenario implements Scenario {
         Instant startTime = startProcessingJobs();
         Instant endTime = waitForJobsToComplete();
         scenarioResult.setProcessingDuration(Duration.between(startTime, endTime));
-        LOGGER.info("Processed {} jobs in {}", scenarioResult.getAmountOfJobs(), scenarioResult.getProcessingDuration());
+        LOGGER.info("Processed {} jobs in {}", scenarioResult.getCreatedJobs(), scenarioResult.getProcessingDuration());
     }
 
     private void appendToLogbook() {
@@ -107,9 +108,10 @@ public abstract class AbstractScenario implements Scenario {
     }
 
     private Instant waitForJobsToComplete() {
-        AllJobsSucceededLatch latch = new AllJobsSucceededLatch(scenarioResult.getAmountOfJobs());
+        AllJobsSucceededLatch latch = new AllJobsSucceededLatch(scenarioResult.getCreatedJobs());
         storageProvider.addJobStorageOnChangeListener(latch);
-        latch.await();
+        Long succeededJobs = latch.awaitForAllJobsToBeProcessed();
+        scenarioResult.setSucceededJobs(succeededJobs);
         return dataStore.getUpdatedAtOfLastSucceededJob();
     }
 
@@ -150,6 +152,8 @@ public abstract class AbstractScenario implements Scenario {
 
         private final long totalAmountOfJobs;
         private final CountDownLatch countDownLatch;
+        private JobStats jobsStats;
+        private int duplicateJobStatsCounter;
 
         public AllJobsSucceededLatch(long totalAmountOfJobs) {
             this.totalAmountOfJobs = totalAmountOfJobs;
@@ -160,12 +164,21 @@ public abstract class AbstractScenario implements Scenario {
         public void onChange(JobStats jobStats) {
             if (jobStats.getSucceeded() >= totalAmountOfJobs) {
                 countDownLatch.countDown();
+            } else if (this.jobsStats != null
+                    && Objects.equals(this.jobsStats.getSucceeded(), jobStats.getSucceeded())
+                    && Objects.equals(this.jobsStats.getEnqueued(), jobStats.getEnqueued())) {
+                // in case of failure
+                if (duplicateJobStatsCounter++ > 3) {
+                    countDownLatch.countDown();
+                }
             }
+            this.jobsStats = jobStats;
         }
 
-        public void await() {
+        public Long awaitForAllJobsToBeProcessed() {
             try {
                 countDownLatch.await();
+                return jobsStats.getSucceeded();
             } catch (InterruptedException e) {
                 throw new RuntimeException("Exception waiting for " + totalAmountOfJobs + " jobs to succeed", e);
             }
