@@ -5,8 +5,8 @@ import org.jobrunr.performance.utils.Memory;
 import org.testcontainers.containers.OracleContainer;
 import org.testcontainers.utility.DockerImageName;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.Statement;
 
 import static org.jobrunr.performance.utils.Memory.Unit.gigabytes;
 
@@ -31,8 +31,9 @@ public class OracleDataStore extends AbstractSqlDataStore {
 
     @Override
     public void updateStatistics() {
-        try (Connection connection = getDataSource().getConnection(); Statement statement = connection.createStatement()) {
-            statement.executeUpdate("EXEC DBMS_STATS.GATHER_DATABASE_STATS;");
+        try (Connection connection = getDataSource().getConnection();
+             CallableStatement statement = connection.prepareCall("{call DBMS_STATS.GATHER_DATABASE_STATS}")) {
+            statement.execute();
             LOGGER.info("UPDATED Oracle STATISTICS");
         } catch (java.sql.SQLException e) {
             throw new RuntimeException(e);
