@@ -1,5 +1,6 @@
 package org.jobrunr.performance.storage;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.jobrunr.performance.utils.Memory;
 import org.testcontainers.containers.OracleContainer;
 import org.testcontainers.utility.DockerImageName;
@@ -21,6 +22,11 @@ public class OracleDataStore extends AbstractSqlDataStore {
                         .withEnv("DB_PASSWD", "oracle")
                         .withSharedMemorySize(Memory.of(2, gigabytes).toBytes()),
                 "oracle.jdbc.driver.OracleDriver");
+    }
+
+    @Override
+    protected HikariDataSource toHikariDataSource(String jdbcUrl, String userName, String password, String driverClassName) {
+        return super.toHikariDataSource(jdbcUrl.replace("xepdb1", "FREEPDB1"), userName, password, driverClassName);
     }
 
     @Override
