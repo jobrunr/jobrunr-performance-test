@@ -11,6 +11,7 @@ import org.jobrunr.server.configuration.RoundRobinDynamicQueuePolicy;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static java.lang.Integer.parseInt;
 import static org.jobrunr.scheduling.JobBuilder.aJob;
 
 public class Scenario02ProcessJobsInDynamicQueues extends AbstractScenario {
@@ -33,9 +34,11 @@ public class Scenario02ProcessJobsInDynamicQueues extends AbstractScenario {
 
     @Override
     protected long loadJobs() {
-        int dynamicQueueCount = 1000;
-        int jobsPerDynamicQueue = 500;
+        int totalAmountOfJobs = parseInt(getArg("amount", "0").replace("_", ""));
+        if (totalAmountOfJobs < 1) return 0;
 
+        int dynamicQueueCount = 1000;
+        int jobsPerDynamicQueue = totalAmountOfJobs / dynamicQueueCount;
         for (int i = 0; i < dynamicQueueCount; i++) {
             String dynamicQueue = String.format("Tenant-%03d", i); // Zero-padded queue names
             String label = "tenant: " + dynamicQueue;
@@ -45,7 +48,8 @@ public class Scenario02ProcessJobsInDynamicQueues extends AbstractScenario {
                             .<PerformanceTestJob>withDetails(x -> x.testJob(jobsPerDynamicQueue, j))
                             .withLabels(label));
             BackgroundJob.create(jobBuilderStream);
+            LOGGER.info("   Created {} jobs", (i + 1) * jobsPerDynamicQueue);
         }
-        return dynamicQueueCount * jobsPerDynamicQueue;
+        return totalAmountOfJobs;
     }
 }
