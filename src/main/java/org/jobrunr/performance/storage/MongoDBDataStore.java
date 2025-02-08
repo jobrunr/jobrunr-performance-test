@@ -12,6 +12,7 @@ import org.bson.UuidRepresentation;
 import org.bson.codecs.UuidCodec;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
+import org.jobrunr.performance.utils.Memory;
 import org.jobrunr.storage.StorageProvider;
 import org.jobrunr.storage.nosql.mongo.MongoDBStorageProvider;
 import org.slf4j.Logger;
@@ -22,6 +23,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 
+import static org.jobrunr.performance.utils.Memory.Unit.gigabytes;
 import static org.jobrunr.storage.StorageProviderUtils.Jobs.FIELD_UPDATED_AT;
 
 public class MongoDBDataStore implements DataStore {
@@ -33,7 +35,8 @@ public class MongoDBDataStore implements DataStore {
 
 
     public MongoDBDataStore() {
-        this.container = new MongoDBContainer("mongo:7.0.16");
+        this.container = new MongoDBContainer("mongo:7.0.16")
+                .withSharedMemorySize(Memory.of(2, gigabytes).toBytes());
     }
 
     @Override

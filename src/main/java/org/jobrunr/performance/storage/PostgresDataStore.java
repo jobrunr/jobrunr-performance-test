@@ -1,14 +1,18 @@
 package org.jobrunr.performance.storage;
 
+import org.jobrunr.performance.utils.Memory;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 import java.sql.Connection;
 import java.sql.Statement;
 
+import static org.jobrunr.performance.utils.Memory.Unit.gigabytes;
+
 public class PostgresDataStore extends AbstractSqlDataStore {
 
     public PostgresDataStore() {
-        super(new PostgreSQLContainer<>("postgres:15-alpine"), "org.postgresql.Driver");
+        super(new PostgreSQLContainer<>("postgres:15-alpine")
+                .withSharedMemorySize(Memory.of(2, gigabytes).toBytes()), "org.postgresql.Driver");
     }
 
     @Override

@@ -1,16 +1,20 @@
 package org.jobrunr.performance.storage;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.jobrunr.performance.utils.Memory;
 import org.testcontainers.containers.MariaDBContainer;
 
 import java.sql.Connection;
 import java.sql.Statement;
+
+import static org.jobrunr.performance.utils.Memory.Unit.gigabytes;
 
 public class MariaDBDataStore extends AbstractSqlDataStore {
 
     public MariaDBDataStore() {
         super(
                 new MariaDBContainer<>("mariadb:11.4")
+                        .withSharedMemorySize(Memory.of(2, gigabytes).toBytes())
                         .withCommand("--max-allowed-packet=128M"),
                 "org.mariadb.jdbc.Driver");
     }

@@ -1,19 +1,22 @@
 package org.jobrunr.performance.storage;
 
+import org.jobrunr.performance.utils.Memory;
 import org.testcontainers.containers.OracleContainer;
 
 import java.sql.Connection;
 import java.sql.Statement;
 
+import static org.jobrunr.performance.utils.Memory.Unit.gigabytes;
+
 public class OracleDataStore extends AbstractSqlDataStore {
 
     public OracleDataStore() {
-        super(new OracleContainer("gvenzl/oracle-xe")
+        super(new OracleContainer("gvenzl/oracle-free:latest-faststart")
                         .withStartupTimeoutSeconds(900)
                         .withConnectTimeoutSeconds(500)
                         .withEnv("DB_SID", "ORCL")
                         .withEnv("DB_PASSWD", "oracle")
-                        .withSharedMemorySize(4294967296L),
+                        .withSharedMemorySize(Memory.of(2, gigabytes).toBytes()),
                 "oracle.jdbc.driver.OracleDriver");
     }
 
