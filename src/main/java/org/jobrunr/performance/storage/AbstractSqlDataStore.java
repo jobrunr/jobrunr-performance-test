@@ -24,7 +24,6 @@ import static java.time.Instant.now;
 public abstract class AbstractSqlDataStore implements DataStore {
 
     protected final Logger LOGGER = LoggerFactory.getLogger(getClass());
-    protected static final JdbcDatabaseContainer dbContainer;
 
     private final JdbcDatabaseContainer<?> container;
     private final String driverClassName;
