@@ -37,7 +37,7 @@ public class PerformanceTestJob {
 
             LOGGER.info(elapsedTime + "ms / " + Duration.ofMillis(elapsedTime) +
                     " - processed " + executedJobsCounter + " jobs / " + index +
-                    " index | " + executedJobsCounter * 1000.0 / elapsedTime +
+                    " index | " + String.format("%.2f", executedJobsCounter * 1000.0 / elapsedTime) +
                     " jobs/sec (overall) | " + jobsPerSecond + " jobs/sec (last " +
                     MAX_SECONDS + " sec)");
         }
