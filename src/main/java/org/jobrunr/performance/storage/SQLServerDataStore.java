@@ -2,6 +2,7 @@ package org.jobrunr.performance.storage;
 
 import org.testcontainers.containers.MSSQLServerContainer;
 import org.testcontainers.containers.startupcheck.MinimumDurationRunningStartupCheckStrategy;
+import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
 
 import java.sql.Connection;
@@ -14,7 +15,8 @@ public class SQLServerDataStore extends AbstractSqlDataStore {
         super(new MSSQLServerContainer<>(DockerImageName
                         .parse("mcr.microsoft.com/azure-sql-edge")
                         .asCompatibleSubstituteFor("mcr.microsoft.com/mssql/server"))
-                        .withStartupCheckStrategy(new MinimumDurationRunningStartupCheckStrategy(Duration.ofSeconds(5))),
+                        .waitingFor(Wait.forListeningPort())
+                        .withStartupCheckStrategy(new MinimumDurationRunningStartupCheckStrategy(Duration.ofSeconds(10))),
                 "com.microsoft.sqlserver.jdbc.SQLServerDriver");
     }
 
