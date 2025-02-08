@@ -20,9 +20,15 @@ public class Scenario01ProcessJobs extends AbstractScenario {
         int totalAmountOfJobs = parseInt(getArg("amount", "0").replace("_", ""));
         if (totalAmountOfJobs < 1) return 0;
 
-        PerformanceTestJob performanceTestJob = new PerformanceTestJob();
-        Stream<Integer> jobStream = IntStream.range(0, totalAmountOfJobs).boxed();
-        BackgroundJob.enqueue(jobStream, index -> performanceTestJob.testJob(totalAmountOfJobs, index));
+        int batchSize = 5000;
+        int amountOfBatches = totalAmountOfJobs / batchSize;
+        for (int i = 0; i < amountOfBatches; i++) {
+            int finalI = i;
+            PerformanceTestJob performanceTestJob = new PerformanceTestJob();
+            Stream<Integer> jobStream = IntStream.range(0, batchSize).boxed();
+            BackgroundJob.enqueue(jobStream, index -> performanceTestJob.testJob(totalAmountOfJobs, (finalI * batchSize) + index));
+            LOGGER.info("   Created {} jobs", (finalI + 1) * batchSize);
+        }
         return totalAmountOfJobs;
     }
 }
