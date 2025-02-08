@@ -2,6 +2,7 @@ package org.jobrunr.performance.storage;
 
 import org.jobrunr.performance.utils.Memory;
 import org.testcontainers.containers.OracleContainer;
+import org.testcontainers.utility.DockerImageName;
 
 import java.sql.Connection;
 import java.sql.Statement;
@@ -11,7 +12,9 @@ import static org.jobrunr.performance.utils.Memory.Unit.gigabytes;
 public class OracleDataStore extends AbstractSqlDataStore {
 
     public OracleDataStore() {
-        super(new OracleContainer("gvenzl/oracle-free:latest-faststart")
+        super(new OracleContainer(DockerImageName
+                        .parse("gvenzl/oracle-free:latest-faststart")
+                        .asCompatibleSubstituteFor("gvenzl/oracle-xe"))
                         .withStartupTimeoutSeconds(900)
                         .withConnectTimeoutSeconds(500)
                         .withEnv("DB_SID", "ORCL")
