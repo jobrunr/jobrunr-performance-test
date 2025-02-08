@@ -24,6 +24,7 @@ import static java.time.Instant.now;
 public abstract class AbstractSqlDataStore implements DataStore {
 
     protected final Logger LOGGER = LoggerFactory.getLogger(getClass());
+    protected static final JdbcDatabaseContainer dbContainer;
 
     private final JdbcDatabaseContainer<?> container;
     private final String driverClassName;
@@ -79,7 +80,6 @@ public abstract class AbstractSqlDataStore implements DataStore {
         config.setUsername(userName);
         config.setPassword(password);
         config.setDriverClassName(driverClassName);
-        config.setAutoCommit(true);
         config.setMinimumIdle(40);
         config.setMaximumPoolSize(80);
         return new HikariDataSource(config);

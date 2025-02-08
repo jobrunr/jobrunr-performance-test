@@ -1,15 +1,19 @@
 package org.jobrunr.performance.storage;
 
+import org.jobrunr.performance.utils.Memory;
 import org.testcontainers.containers.Db2Container;
 
 import java.sql.Connection;
 import java.sql.Statement;
+
+import static org.jobrunr.performance.utils.Memory.Unit.gigabytes;
 
 public class DB2DataStore extends AbstractSqlDataStore {
 
     public DB2DataStore() {
         super(new Db2Container("icr.io/db2_community/db2:12.1.0.0")
                         .withPrivilegedMode(true)
+                        .withSharedMemorySize(Memory.of(2, gigabytes).toBytes())
                         .acceptLicense(),
                 "com.ibm.db2.jcc.DB2Driver");
     }

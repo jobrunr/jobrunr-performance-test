@@ -1,15 +1,19 @@
 package org.jobrunr.performance.storage;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.jobrunr.performance.utils.Memory;
 import org.testcontainers.containers.MySQLContainer;
 
 import java.sql.Connection;
 import java.sql.Statement;
 
+import static org.jobrunr.performance.utils.Memory.Unit.gigabytes;
+
 public class MySQLDataStore extends AbstractSqlDataStore {
 
     public MySQLDataStore() {
         super(new MySQLContainer<>("mysql:9.2")
+                        .withSharedMemorySize(Memory.of(2, gigabytes).toBytes())
                         .withCommand("--max-allowed-packet=128M"),
                 "com.mysql.cj.jdbc.Driver");
     }

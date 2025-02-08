@@ -24,7 +24,7 @@ public class Scenario01ProcessJobs extends AbstractScenario {
         Stream<Integer> jobStream = IntStream.range(0, totalAmountOfJobs)
                 .boxed()
                 .peek(i -> {
-                    if (i % 5000 == 0) {
+                    if (i > 0 && i % 5000 == 0) {
                         LOGGER.info("    Created {} jobs", i);
                     }
                 });

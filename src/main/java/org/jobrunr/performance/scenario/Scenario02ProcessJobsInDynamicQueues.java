@@ -48,7 +48,7 @@ public class Scenario02ProcessJobsInDynamicQueues extends AbstractScenario {
                             .<PerformanceTestJob>withDetails(x -> x.testJob(jobsPerDynamicQueue, j))
                             .withLabels(label));
             BackgroundJob.create(jobBuilderStream);
-            LOGGER.info("   Created {} jobs", (i + 1) * jobsPerDynamicQueue);
+            LOGGER.info("   Created {} jobs in total | {} for {}", (i + 1) * jobsPerDynamicQueue, jobsPerDynamicQueue, dynamicQueue);
         }
         return totalAmountOfJobs;
     }
