@@ -47,7 +47,7 @@ public interface DataStore {
         }
 
         public static DataStoreType[] allButSlow() {
-            return new DataStoreType[]{MariaDBDataStore, MongoDBDataStore, MySQLDataStore, PostgresDataStore, SQLServerDataStore};
+            return new DataStoreType[]{MariaDBDataStore, MongoDBDataStore, MySQLDataStore, OracleDataStore, PostgresDataStore, SQLServerDataStore};
         }
     }
 }
