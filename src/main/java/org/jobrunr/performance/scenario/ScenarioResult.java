@@ -5,7 +5,8 @@ import java.time.Duration;
 public class ScenarioResult {
 
     private final Scenario scenario;
-    private long amountOfJobs;
+    private long createdJobs;
+    private long succeededJobs;
     private Duration creationDuration, processingDuration;
 
     public ScenarioResult(Scenario scenario) {
@@ -13,7 +14,7 @@ public class ScenarioResult {
     }
 
     public void setAmountOfJobsCreated(long amountOfJobs, Duration creationDuration) {
-        this.amountOfJobs = amountOfJobs;
+        this.createdJobs = amountOfJobs;
         this.creationDuration = creationDuration;
     }
 
@@ -25,8 +26,8 @@ public class ScenarioResult {
         return scenario;
     }
 
-    public long getAmountOfJobs() {
-        return amountOfJobs;
+    public long getCreatedJobs() {
+        return createdJobs;
     }
 
     public Duration getCreationDuration() {
@@ -35,5 +36,13 @@ public class ScenarioResult {
 
     public Duration getProcessingDuration() {
         return processingDuration;
+    }
+
+    public void setSucceededJobs(Long succeededJobs) {
+        this.succeededJobs = succeededJobs;
+    }
+
+    public long getSucceededJobs() {
+        return succeededJobs;
     }
 }
