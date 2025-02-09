@@ -14,7 +14,7 @@ public class OracleDataStore extends AbstractSqlDataStore {
                         .withConnectTimeoutSeconds(500)
                         .withEnv("DB_SID", "ORCL")
                         .withEnv("DB_PASSWD", "oracle"),
-                "oracle.jdbc.driver.OracleDriver");
+                "oracle.jdbc.OracleDriver");
     }
 
     @Override
