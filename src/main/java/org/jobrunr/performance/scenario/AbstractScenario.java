@@ -94,7 +94,7 @@ public abstract class AbstractScenario implements Scenario {
         Instant startTime = startProcessingJobs();
         Instant endTime = waitForJobsToComplete();
         scenarioResult.setProcessingDuration(Duration.between(startTime, endTime));
-        LOGGER.info("Processed {} jobs in {}", scenarioResult.getCreatedJobs(), scenarioResult.getProcessingDuration());
+        LOGGER.info("Processed {} jobs in {}", scenarioResult.getSucceededJobs(), scenarioResult.getProcessingDuration());
     }
 
     private void appendToLogbook() {
