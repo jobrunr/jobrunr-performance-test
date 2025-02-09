@@ -14,7 +14,7 @@ public interface DataStore {
 
     void stop();
 
-    StorageProvider getStorageProvider();
+    StorageProvider getStorageProvider(boolean logQueries);
 
     Instant getUpdatedAtOfLastSucceededJob();
 

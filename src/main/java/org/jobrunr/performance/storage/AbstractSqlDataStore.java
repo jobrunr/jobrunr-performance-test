@@ -1,7 +1,9 @@
 package org.jobrunr.performance.storage;
 
+import com.p6spy.engine.spy.P6DataSource;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.jobrunr.performance.utils.Memory;
 import org.jobrunr.storage.StorageProvider;
 import org.jobrunr.storage.sql.common.SqlStorageProviderFactory;
 import org.slf4j.Logger;
@@ -20,38 +22,42 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 import static java.time.Instant.now;
+import static org.jobrunr.performance.utils.Memory.Unit.gigabytes;
 
 public abstract class AbstractSqlDataStore implements DataStore {
 
     protected final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
-    private final JdbcDatabaseContainer<?> container;
+    protected final JdbcDatabaseContainer<?> sqlContainer;
     private final String driverClassName;
 
     private HikariDataSource dataSource;
 
-    public AbstractSqlDataStore(JdbcDatabaseContainer<?> container, String driverClassName) {
-        this.container = container;
+    public AbstractSqlDataStore(JdbcDatabaseContainer<?> sqlContainer, String driverClassName) {
+        this.sqlContainer = sqlContainer;
         this.driverClassName = driverClassName;
     }
 
     @Override
     public void start() {
         Instant startTime = Instant.now();
-        container.setShmSize(1024L * 1024L * 1024L * 1024L); // 1GB
-        container.start();
-        logSqlContainerDetails(container, Duration.between(startTime, now()));
-        dataSource = toHikariDataSource(container, driverClassName);
+        sqlContainer.setShmSize(Memory.of(2, gigabytes).toBytes());
+        sqlContainer.start();
+        logSqlContainerDetails(sqlContainer, Duration.between(startTime, now()));
+        dataSource = toHikariDataSource(sqlContainer, driverClassName);
     }
 
     @Override
     public void stop() {
         dataSource.close();
-        container.stop();
+        sqlContainer.stop();
     }
 
     @Override
-    public StorageProvider getStorageProvider() {
+    public StorageProvider getStorageProvider(boolean logQueries) {
+        if (logQueries) {
+            return SqlStorageProviderFactory.using(new P6DataSource(dataSource));
+        }
         return SqlStorageProviderFactory.using(dataSource);
     }
 

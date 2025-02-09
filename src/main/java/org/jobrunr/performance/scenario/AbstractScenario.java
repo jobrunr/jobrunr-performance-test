@@ -7,6 +7,7 @@ import org.jobrunr.performance.storage.DataStore;
 import org.jobrunr.performance.utils.ArgUtils;
 import org.jobrunr.performance.utils.LogBook;
 import org.jobrunr.performance.utils.StringUtils;
+import org.jobrunr.performance.utils.TimingDynamicInvocationHandler;
 import org.jobrunr.server.BackgroundJobServerConfiguration;
 import org.jobrunr.storage.JobStats;
 import org.jobrunr.storage.StorageProvider;
@@ -15,9 +16,12 @@ import org.jobrunr.utils.mapper.jackson.JacksonJsonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Proxy;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 
 import static java.lang.Boolean.parseBoolean;
@@ -32,6 +36,7 @@ public abstract class AbstractScenario implements Scenario {
     protected final String[] args;
     protected final ScenarioResult scenarioResult;
     private StorageProvider storageProvider;
+    private TimingDynamicInvocationHandler storageProviderTimings;
 
     protected AbstractScenario(DataStore dataStore, String[] args) {
         this.scenarioResult = new ScenarioResult(this);
@@ -74,7 +79,15 @@ public abstract class AbstractScenario implements Scenario {
 
     private void startDataStoreAndInitializeJobRunr() {
         dataStore.start();
-        storageProvider = dataStore.getStorageProvider();
+        storageProvider = dataStore.getStorageProvider(getBooleanArg("log_queries"));
+
+        if (getBooleanArg("log_storage_provider_timings")) {
+            storageProviderTimings = new TimingDynamicInvocationHandler(storageProvider);
+            storageProvider = (StorageProvider) Proxy.newProxyInstance(
+                    storageProvider.getClass().getClassLoader(),
+                    new Class[]{StorageProvider.class}, storageProviderTimings);
+        }
+
         initializeJobRunr(storageProvider);
         LOGGER.info("Started JobRunr with BackgroundJobServer paused");
     }
@@ -108,15 +121,21 @@ public abstract class AbstractScenario implements Scenario {
     }
 
     private Instant waitForJobsToComplete() {
-        AllJobsSucceededLatch latch = new AllJobsSucceededLatch(scenarioResult.getCreatedJobs());
+        ScenarioMonitor latch = new ScenarioMonitor(scenarioResult.getCreatedJobs());
         storageProvider.addJobStorageOnChangeListener(latch);
-        Long succeededJobs = latch.awaitForAllJobsToBeProcessed();
+        Long succeededJobs = latch.awaitAndGetSucceededJobs();
         scenarioResult.setSucceededJobs(succeededJobs);
         return dataStore.getUpdatedAtOfLastSucceededJob();
     }
 
     private void stopJobRunrAndDataStore() {
         JobRunrDistribution.current.stop();
+        //LOGGER.info("StorageProvider info: ");
+        // TODO: log to logbook
+        Optional.ofNullable(storageProviderTimings).ifPresent(h -> h.getMethodSummary().entrySet()
+                .stream()
+                .sorted(Comparator.comparing(entry -> entry.getValue().getSum()))
+                .forEach((entry) -> LOGGER.info("{} (count: {}, min: {}, max: {}, avg: {}, totalTime: {})", entry.getKey(), entry.getValue().getCount(), Duration.ofNanos(entry.getValue().getMin()), Duration.ofNanos(entry.getValue().getMax()), Duration.ofNanos((long) entry.getValue().getAverage()), Duration.ofNanos(entry.getValue().getSum()))));
         dataStore.stop();
     }
 
@@ -144,18 +163,22 @@ public abstract class AbstractScenario implements Scenario {
         return ArgUtils.getArg(args, key, null);
     }
 
+    protected boolean getBooleanArg(String key) {
+        return Boolean.parseBoolean(ArgUtils.getArg(args, key, "false"));
+    }
+
     protected String getArg(String key, String defaultValue) {
         return ArgUtils.getArg(args, key, defaultValue);
     }
 
-    private static class AllJobsSucceededLatch implements JobStatsChangeListener {
+    private static class ScenarioMonitor implements JobStatsChangeListener {
 
         private final long totalAmountOfJobs;
         private final CountDownLatch countDownLatch;
         private JobStats jobsStats;
         private int duplicateJobStatsCounter;
 
-        public AllJobsSucceededLatch(long totalAmountOfJobs) {
+        public ScenarioMonitor(long totalAmountOfJobs) {
             this.totalAmountOfJobs = totalAmountOfJobs;
             this.countDownLatch = new CountDownLatch(1);
         }
@@ -175,7 +198,7 @@ public abstract class AbstractScenario implements Scenario {
             this.jobsStats = jobStats;
         }
 
-        public Long awaitForAllJobsToBeProcessed() {
+        public Long awaitAndGetSucceededJobs() {
             try {
                 countDownLatch.await();
                 return jobsStats.getSucceeded();
