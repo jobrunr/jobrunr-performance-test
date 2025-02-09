@@ -44,6 +44,11 @@ public class Main {
             runScenarioInNewJVM(dataStoreType, scenarioName, args);
         } else {
             runScenarioInCurrentJVM(dataStoreType, scenarioName, args);
+            try {
+                Thread.currentThread().join();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

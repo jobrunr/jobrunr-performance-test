@@ -1,11 +1,8 @@
 package org.jobrunr.performance.storage;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.jobrunr.performance.utils.Memory;
 import org.testcontainers.containers.OracleContainer;
 import org.testcontainers.utility.DockerImageName;
-
-import static org.jobrunr.performance.utils.Memory.Unit.gigabytes;
 
 public class OracleDataStore extends AbstractSqlDataStore {
 
@@ -16,8 +13,7 @@ public class OracleDataStore extends AbstractSqlDataStore {
                         .withStartupTimeoutSeconds(900)
                         .withConnectTimeoutSeconds(500)
                         .withEnv("DB_SID", "ORCL")
-                        .withEnv("DB_PASSWD", "oracle")
-                        .withSharedMemorySize(Memory.of(2, gigabytes).toBytes()),
+                        .withEnv("DB_PASSWD", "oracle"),
                 "oracle.jdbc.driver.OracleDriver");
     }
 

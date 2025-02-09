@@ -1,20 +1,26 @@
 package org.jobrunr.performance.storage;
 
+import com.github.dockerjava.api.model.ExposedPort;
+import com.github.dockerjava.api.model.PortBinding;
+import com.github.dockerjava.api.model.Ports;
 import com.zaxxer.hikari.HikariDataSource;
-import org.jobrunr.performance.utils.Memory;
 import org.testcontainers.containers.MySQLContainer;
 
 import java.sql.Connection;
 import java.sql.Statement;
 
-import static org.jobrunr.performance.utils.Memory.Unit.gigabytes;
-
 public class MySQLDataStore extends AbstractSqlDataStore {
 
     public MySQLDataStore() {
         super(new MySQLContainer<>("mysql:9.2")
-                        .withSharedMemorySize(Memory.of(2, gigabytes).toBytes())
-                        .withCommand("--max-allowed-packet=128M"),
+                        .withCreateContainerCmdModifier(cmd ->
+                                cmd.withHostConfig(cmd.getHostConfig().withPortBindings(
+                                                new PortBinding(Ports.Binding.bindPort(33060), new ExposedPort(3306))
+                                        )
+                                ))
+                        .withCommand("--innodb-buffer-pool-size=3G --innodb-log-file-size=717M --innodb-log-buffer-size=8M " +
+                                "--tmp-table-size=256M --sort-buffer-size=256K --read-rnd-buffer-size=512K " +
+                                "--max-connections=80 --thread-cache-size=80 --max-allowed-packet=128M"),
                 "com.mysql.cj.jdbc.Driver");
     }
 
