@@ -1,0 +1,10 @@
+Date & Time,Host name,Java version,JobRunr type,JobRunr version,StorageProvider,amount of created jobs,amount of succeeded jobs,creation duration,processing duration,job throughput (jobs / sec)
+2025-02-10T12:25:11.148573805Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,7.4.0,MariaDbStorageProvider,500000,500000,PT37.99573328S,PT18M6.553989706S,460.41
+2025-02-10T12:28:53.365096463Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,7.4.0,MongoDBStorageProvider,500000,500000,PT27.235210823S,PT3M7.736686182S,2673.80
+2025-02-10T13:02:14.201155483Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,7.4.0,MySqlStorageProvider,500000,500000,PT1M57.945207353S,PT30M29.80392054S,273.37
+2025-02-10T13:45:33.157015885Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,7.4.0,OracleStorageProvider,500000,498414,PT2M53.013483851S,PT39M28.237776626S,210.48
+2025-02-10T13:48:21.691566321Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,7.4.0,PostgresStorageProvider,500000,499926,PT24.15777346S,PT1M47.35642659S,4672.21
+2025-02-10T14:02:04.502851020Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,7.4.0,SQLServerStorageProvider,500000,500000,PT48.730120562S,PT12M38.881442174S,659.63
+2025-02-10T14:06:30.166489545Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/v8/pause-dynamic-queue),MariaDbStorageProvider,500000,500000,PT37.29052742S,PT1M47.623379084S,4672.90
+2025-02-10T14:09:56.192231292Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/v8/pause-dynamic-queue),MongoDBStorageProvider,500000,500000,PT25.948518769S,PT2M49.090880854S,2958.58
+2025-02-10T14:19:09.239627265Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/v8/pause-dynamic-queue),MySqlStorageProvider,500000,500000,PT1M57.549004183S,PT6M25.961466223S,1298.70
