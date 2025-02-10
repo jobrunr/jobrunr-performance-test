@@ -27,7 +27,7 @@ public class LogBook {
         try (CsvWriter csv = CsvWriter.builder().build(logBookPath, StandardOpenOption.CREATE, StandardOpenOption.APPEND)) {
             if (addHeader)
                 csv.writeRecord("Date & Time", "Host name", "Java version", "JobRunr type", "JobRunr version", "StorageProvider", "amount of created jobs", "amount of succeeded jobs", "creation duration", "processing duration", "job throughput (jobs / sec)");
-            csv.writeRecord(Instant.now().toString(), InetAddress.getLocalHost().getHostName(), getJavaVersion(), getJobRunrType(backgroundJobServer), getJobRunrVersion(backgroundJobServer), backgroundJobServer.getStorageProvider().getStorageProviderInfo().getName(), String.valueOf(scenarioResult.getCreatedJobs()), String.valueOf(scenarioResult.getSucceededJobs()), scenarioResult.getCreationDuration().toString(), scenarioResult.getProcessingDuration().toString(), String.format(Locale.US, "%.2f", (double) scenarioResult.getCreatedJobs() / (scenarioResult.getProcessingDuration().toSeconds())));
+            csv.writeRecord(Instant.now().toString(), InetAddress.getLocalHost().getHostName(), getJavaVersion(), getJobRunrType(backgroundJobServer), getJobRunrVersion(backgroundJobServer), backgroundJobServer.getStorageProvider().getStorageProviderInfo().getName(), String.valueOf(scenarioResult.getCreatedJobs()), String.valueOf(scenarioResult.getSucceededJobs()), scenarioResult.getCreationDuration().toString(), scenarioResult.getProcessingDuration().toString(), String.format(Locale.US, "%.2f", (double) scenarioResult.getSucceededJobs() / (scenarioResult.getProcessingDuration().toSeconds())));
         } catch (IOException e) {
             LOGGER.error("Could not create logbook", e);
         }
