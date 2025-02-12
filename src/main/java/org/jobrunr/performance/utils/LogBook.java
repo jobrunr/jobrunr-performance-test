@@ -36,8 +36,9 @@ public class LogBook {
     private static String getJobRunrVersion(BackgroundJobServer backgroundJobServer) {
         String version = JarUtils.getVersion(backgroundJobServer.getClass());
         String branch = JarUtils.getManifestAttributeValue(backgroundJobServer.getClass(), "Git-Branch");
+        String commitId = ofNullable(JarUtils.getManifestAttributeValue(backgroundJobServer.getClass(), "Git-Commit")).map(x -> "@" + x).orElse("");
         if (StringUtils.isNullOrEmpty(branch)) return version;
-        return version + " (" + branch + ")";
+        return version + " (" + branch + commitId + ")";
     }
 
     private static String getJobRunrType(BackgroundJobServer backgroundJobServer) {
