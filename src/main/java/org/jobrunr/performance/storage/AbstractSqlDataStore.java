@@ -85,8 +85,8 @@ public abstract class AbstractSqlDataStore implements DataStore {
         config.setUsername(userName);
         config.setPassword(password);
         config.setDriverClassName(driverClassName);
-        config.setMinimumIdle(40);
-        config.setMaximumPoolSize(80);
+        config.setMinimumIdle(20);
+        config.setMaximumPoolSize(40);
         return new HikariDataSource(config);
     }
 

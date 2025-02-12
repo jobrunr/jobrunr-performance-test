@@ -1,15 +1,20 @@
 package org.jobrunr.performance.storage;
 
+import com.github.dockerjava.api.model.ExposedPort;
+import com.github.dockerjava.api.model.PortBinding;
+import com.github.dockerjava.api.model.Ports;
 import com.zaxxer.hikari.HikariDataSource;
-import org.testcontainers.containers.OracleContainer;
-import org.testcontainers.utility.DockerImageName;
+import org.testcontainers.oracle.OracleContainer;
 
 public class OracleDataStore extends AbstractSqlDataStore {
 
     public OracleDataStore() {
-        super(new OracleContainer(DockerImageName
-                        .parse("gvenzl/oracle-free:latest-faststart")
-                        .asCompatibleSubstituteFor("gvenzl/oracle-xe"))
+        super(new OracleContainer("gvenzl/oracle-free:latest-faststart")
+                        .withCreateContainerCmdModifier(cmd ->
+                                cmd.withHostConfig(cmd.getHostConfig().withPortBindings(
+                                                new PortBinding(Ports.Binding.bindPort(15210), new ExposedPort(1521))
+                                        )
+                                ))
                         .withStartupTimeoutSeconds(900)
                         .withConnectTimeoutSeconds(500)
                         .withEnv("DB_SID", "ORCL")
