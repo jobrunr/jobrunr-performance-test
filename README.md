@@ -1,3 +1,8 @@
+## TODO:
+
+- run Pro tests on hetzner
+- review Postgres Pro query plan v7.4 vs v6.3.10 on Hetzner
+
 ## Project for testing JobRunr Performance
 
 ### Prerequisites
