@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 import static java.lang.Integer.parseInt;
 import static org.jobrunr.scheduling.JobBuilder.aJob;
 
-public class Scenario02ProcessJobsInDynamicQueues extends AbstractScenario {
+public class Scenario02ProcessJobsInDynamicQueues extends AbstractJobRunrProScenario {
 
     public Scenario02ProcessJobsInDynamicQueues(DataStore dataStore, String[] args) {
         super(dataStore, args);

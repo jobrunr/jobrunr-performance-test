@@ -136,7 +136,7 @@ public abstract class AbstractScenario implements Scenario {
                 .stream()
                 .sorted(Comparator.comparing(entry -> entry.getValue().getSum()))
                 .forEach((entry) -> LOGGER.info("{} (count: {}, min: {}, max: {}, avg: {}, totalTime: {})", entry.getKey(), entry.getValue().getCount(), Duration.ofNanos(entry.getValue().getMin()), Duration.ofNanos(entry.getValue().getMax()), Duration.ofNanos((long) entry.getValue().getAverage()), Duration.ofNanos(entry.getValue().getSum()))));
-        dataStore.stop();
+        //dataStore.stop();
     }
 
     private void exitJVMIfRequested() {
@@ -158,6 +158,7 @@ public abstract class AbstractScenario implements Scenario {
                 .useDashboardIf(dashboardWebServerConfiguration != null, dashboardWebServerConfiguration)
                 .initialize();
     }
+
 
     protected String getArg(String key) {
         return ArgUtils.getArg(args, key, null);
@@ -192,6 +193,7 @@ public abstract class AbstractScenario implements Scenario {
                     && Objects.equals(this.jobsStats.getEnqueued(), jobStats.getEnqueued())) {
                 // in case of failure
                 if (duplicateJobStatsCounter++ > 3) {
+                    LoggerFactory.getLogger(ScenarioMonitor.class).warn("Duplicate job stats received - shutting down");
                     countDownLatch.countDown();
                 }
             }

@@ -15,6 +15,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -95,7 +96,9 @@ public abstract class AbstractSqlDataStore implements DataStore {
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("SELECT max(updatedAt) AS last_updated_at from jobrunr_jobs where state = 'SUCCEEDED'");
             if (resultSet.next()) {
-                return resultSet.getTimestamp("last_updated_at", Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC))).toInstant();
+                Timestamp lastUpdatedAt = resultSet.getTimestamp("last_updated_at", Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC)));
+                if (lastUpdatedAt == null) return Instant.EPOCH;
+                return lastUpdatedAt.toInstant();
             }
             throw new RuntimeException("Unable to find last updated at");
         } catch (SQLException e) {
