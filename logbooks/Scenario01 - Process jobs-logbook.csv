@@ -22,3 +22,23 @@ Date & Time,Host name,Java version,JobRunr type,JobRunr version,StorageProvider,
 2025-02-10T10:17:01.040786063Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/v8/pause-dynamic-queue),OracleStorageProvider,500000,32207,PT5M46.519355289S,PT3M26.96324669S,156.34
 2025-02-10T10:18:44.068726946Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/v8/pause-dynamic-queue),PostgresStorageProvider,500000,500000,PT23.157076661S,PT1M12.147297366S,6944.44
 2025-02-10T11:17:35.862652029Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/v8/pause-dynamic-queue),SQLServerStorageProvider,500000,500000,PT38.32690877S,PT14M5.153830361S,591.72
+2025-02-11T10:06:34.313182Z,Ronalds-MacBook-Pro.local,21.0.2+13-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/v8/pause-dynamic-queue),OracleStorageProvider,50000,31858,PT6.258152S,PT58.883366S,549.28
+2025-02-11T10:23:08.145944Z,Ronalds-MacBook-Pro.local,21.0.2+13-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/v8/pause-dynamic-queue),OracleStorageProvider,50000,32301,PT6.356949S,PT42.809414S,769.07
+2025-02-11T10:27:44.616265Z,Ronalds-MacBook-Pro.local,21.0.2+13-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/v8/pause-dynamic-queue),OracleStorageProvider,50000,31174,PT6.579038S,PT35.545011S,890.69
+2025-02-11T10:34:00.138755Z,Ronalds-MacBook-Pro.local,21.0.2+13-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/v8/pause-dynamic-queue),OracleStorageProvider,50000,33019,PT6.492401S,PT39.666121S,846.64
+2025-02-11T10:35:49.590148Z,Ronalds-MacBook-Pro.local,21.0.2+13-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/v8/pause-dynamic-queue),OracleStorageProvider,50000,31233,PT6.416263S,PT35.727304S,892.37
+2025-02-11T10:43:33.137939Z,Ronalds-MacBook-Pro.local,21.0.2+13-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/v8/pause-dynamic-queue),OracleStorageProvider,50000,32551,PT6.690911S,PT16.290087S,2034.44
+2025-02-11T10:50:56.175317Z,Ronalds-MacBook-Pro.local,21.0.2+13-LTS,JobRunr,6.3.5,OracleStorageProvider,50000,50000,PT3.817211S,PT20.329804S,2500.00
+2025-02-11T11:05:04.118051Z,Ronalds-MacBook-Pro.local,21.0.2+13-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/v8/pause-dynamic-queue),OracleStorageProvider,50000,50000,PT6.335287S,PT30.836351S,1666.67
+2025-02-11T11:07:26.016059Z,Ronalds-MacBook-Pro.local,21.0.2+13-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/v8/pause-dynamic-queue),OracleStorageProvider,100000,100000,PT12.039563S,PT1M17.502082S,1298.70
+2025-02-11T14:08:13.579426Z,Ronalds-MacBook-Pro.local,21.0.2+13-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/v8/pause-dynamic-queue),OracleStorageProvider,100000,32325,PT12.728319S,PT17.021865S,1901.47
+2025-02-11T14:23:36.115489Z,Ronalds-MacBook-Pro.local,21.0.2+13-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/v8/pause-dynamic-queue),OracleStorageProvider,100000,100000,PT13.15945S,PT1M19.510012S,1265.82
+2025-02-11T14:47:24.086318Z,Ronalds-MacBook-Pro.local,21.0.2+13-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/v8/pause-dynamic-queue),OracleStorageProvider,100000,31036,PT12.967211S,PT21.926489S,1477.90
+2025-02-11T22:04:06.749628Z,Ryder-s-S22,21.0.2+13-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/v8/pause-dynamic-queue),OracleStorageProvider,100000,100000,PT12.995921S,PT1M29.828339S,1123.60
+2025-02-11T22:30:56.515336Z,Ryder-s-S22,21.0.2+13-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/v8/pause-dynamic-queue),OracleStorageProvider,100000,99302,PT12.919243S,PT1M30.728441S,1103.36
+2025-02-12T00:10:15.698437Z,Ryder-s-S22,21.0.2+13-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/v8/pause-dynamic-queue),OracleStorageProvider,100000,100000,PT12.781629S,PT1M22.052007S,1219.51
+2025-02-12T00:20:33.389522Z,Ryder-s-S22,21.0.2+13-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/v8/pause-dynamic-queue),OracleStorageProvider,100000,100000,PT12.360759S,PT1M21.878757S,1234.57
+2025-02-12T00:28:14.701795Z,Ryder-s-S22,21.0.2+13-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/v8/pause-dynamic-queue),OracleStorageProvider,100000,100000,PT12.856028S,PT1M20.752353S,1250.00
+2025-02-20T10:11:50.560874Z,Ronalds-MacBook-Pro.local,21.0.2+13-LTS,JobRunr Pro,1.0.0-SNAPSHOT (v8@c9cab403f),OracleStorageProvider,5000,5000,PT0.799377S,PT3.390877S,1666.67
+2025-02-20T10:13:28.005902Z,Ronalds-MacBook-Pro.local,21.0.2+13-LTS,JobRunr Pro,1.0.0-SNAPSHOT (v8@c9cab403f),OracleStorageProvider,5000,5000,PT1.065991S,PT3.464944S,1666.67
+2025-02-20T10:19:00.283786Z,Ronalds-MacBook-Pro.local,21.0.2+13-LTS,JobRunr Pro,1.0.0-SNAPSHOT (v8@c9cab403f),OracleStorageProvider,250000,32555,PT31.619563S,PT16.983628S,2034.69
