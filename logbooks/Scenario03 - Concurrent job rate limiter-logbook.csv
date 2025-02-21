@@ -1,0 +1,8 @@
+Date & Time,Host name,Java version,JobRunr type,JobRunr version,StorageProvider,amount of created jobs,amount of succeeded jobs,creation duration,processing duration,job throughput (jobs / sec)
+2025-02-21T11:14:15.606749Z,Ronalds-MacBook-Pro.local,21.0.2+13-LTS,JobRunr Pro,7.4.0,MySqlStorageProvider,100000,100000,PT45.034933S,PT3M34.657518S,467.29
+2025-02-21T11:19:21.838701Z,Ronalds-MacBook-Pro.local,21.0.2+13-LTS,JobRunr Pro,1.0.0-SNAPSHOT (v8@c9cab403f),MySqlStorageProvider,100000,100000,PT45.32514S,PT3M17.427225S,507.61
+2025-02-21T11:34:07.795403Z,Ronalds-MacBook-Pro.local,21.0.2+13-LTS,JobRunr Pro,1.0.0-SNAPSHOT (v8@c9cab403f),MySqlStorageProvider,100000,100000,PT45.107244S,PT3M10.040066S,526.32
+2025-02-21T11:40:23.197619Z,Ronalds-MacBook-Pro.local,21.0.2+13-LTS,JobRunr Pro,1.0.0-SNAPSHOT (v8@c9cab403f),MySqlStorageProvider,100000,100000,PT45.179803S,PT3M1.411236S,552.49
+2025-02-21T13:00:48.951213Z,Ronalds-MacBook-Pro.local,21.0.2+13-LTS,JobRunr Pro,1.0.0-SNAPSHOT (v8@c9cab403f),MySqlStorageProvider,500000,8045,PT2M31.514782S,PT1M29.915115S,90.39
+2025-02-21T13:29:54.715955Z,Ronalds-MacBook-Pro.local,21.0.2+13-LTS,JobRunr Pro,1.0.0-SNAPSHOT (v8@c9cab403f),MySqlStorageProvider,5000,5000,PT1.700705S,PT15.823179S,333.33
+2025-02-21T14:22:17.725796Z,Ronalds-MacBook-Pro.local,21.0.2+13-LTS,JobRunr Pro,1.0.0-SNAPSHOT (v8@c9cab403f),MySqlStorageProvider,500000,500000,PT2M28.707943S,PT21M55.066583S,380.23
