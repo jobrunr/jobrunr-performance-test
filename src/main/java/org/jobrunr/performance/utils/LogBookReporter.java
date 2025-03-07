@@ -16,11 +16,12 @@ import java.util.Locale;
 import static org.jobrunr.performance.utils.JobRunrUtils.getJavaVersion;
 import static org.jobrunr.performance.utils.JobRunrUtils.getJobRunrType;
 import static org.jobrunr.performance.utils.JobRunrUtils.getJobRunrVersion;
+import static org.jobrunr.performance.utils.ReportingUtils.findLogbooksFolder;
 import static org.jobrunr.performance.utils.StringUtils.camelCaseToHumanReadable;
 
-public class LogBook {
+public class LogBookReporter {
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(LogBook.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(LogBookReporter.class);
 
     public static void append(BackgroundJobServer backgroundJobServer, ScenarioResult scenarioResult) {
         Path logBookPath = findLogbooksFolder().resolve(camelCaseToHumanReadable(scenarioResult.getScenario()) + "-logbook.csv");
@@ -32,17 +33,5 @@ public class LogBook {
         } catch (IOException e) {
             LOGGER.error("Could not create logbook", e);
         }
-    }
-
-    public static Path findLogbooksFolder() {
-        Path current = Path.of(".").toAbsolutePath().normalize();
-        while (current != null) {
-            Path logbooks = current.resolve("logbooks");
-            if (Files.isDirectory(logbooks)) {
-                return logbooks;
-            }
-            current = current.getParent();
-        }
-        throw new RuntimeException("Could not find logbooks folder");
     }
 }

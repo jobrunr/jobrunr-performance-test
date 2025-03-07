@@ -7,8 +7,8 @@ import org.jobrunr.performance.storage.AnalysingDataStore;
 import org.jobrunr.performance.storage.DataStore;
 import org.jobrunr.performance.storage.StorageProviderQueryAnalysis;
 import org.jobrunr.performance.utils.ArgUtils;
-import org.jobrunr.performance.utils.LogBook;
-import org.jobrunr.performance.utils.MarkdownRenderer;
+import org.jobrunr.performance.utils.LogBookReporter;
+import org.jobrunr.performance.utils.MarkdownReporter;
 import org.jobrunr.performance.utils.StringUtils;
 import org.jobrunr.server.BackgroundJobServerConfiguration;
 import org.jobrunr.storage.JobStats;
@@ -119,10 +119,10 @@ public abstract class AbstractScenario implements Scenario {
     }
 
     private void appendToLogbook() {
-        LogBook.append(JobRunrDistribution.current.backgroundJobServer(), scenarioResult);
+        LogBookReporter.append(JobRunrDistribution.current.backgroundJobServer(), scenarioResult);
         if (storageProvider instanceof TimedStorageProvider) {
             LOGGER.info(((TimedStorageProvider) storageProvider).getMethodSummaryStatisticsAsString());
-            MarkdownRenderer.render(JobRunrDistribution.current.backgroundJobServer(), scenarioResult, ((TimedStorageProvider) storageProvider).getMethodSummaryStatistics(), queryAnalysisMonitor.queryAnalyses.values());
+            MarkdownReporter.render(JobRunrDistribution.current.backgroundJobServer(), scenarioResult, ((TimedStorageProvider) storageProvider).getMethodSummaryStatistics(), queryAnalysisMonitor.queryAnalyses.values());
         } else {
             LOGGER.error("ERROR - not an instance of TimedStorageProvider {}", storageProvider.getClass().getSimpleName());
         }
