@@ -1,4 +1,4 @@
-package org.jobrunr.performance.storage;
+package org.jobrunr.performance.storage.nosql;
 
 import com.mongodb.MongoClientSettings;
 import com.mongodb.ServerAddress;
@@ -12,6 +12,7 @@ import org.bson.UuidRepresentation;
 import org.bson.codecs.UuidCodec;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
+import org.jobrunr.performance.storage.DataStore;
 import org.jobrunr.storage.StorageProvider;
 import org.jobrunr.storage.nosql.mongo.MongoDBStorageProvider;
 import org.slf4j.Logger;

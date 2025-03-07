@@ -1,4 +1,4 @@
-package org.jobrunr.performance.storage;
+package org.jobrunr.performance.storage.sql;
 
 import org.testcontainers.containers.Db2Container;
 

@@ -11,10 +11,11 @@ import java.net.InetAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.time.Instant;
 import java.util.Locale;
 
-import static java.util.Optional.ofNullable;
+import static org.jobrunr.performance.utils.JobRunrUtils.getJavaVersion;
+import static org.jobrunr.performance.utils.JobRunrUtils.getJobRunrType;
+import static org.jobrunr.performance.utils.JobRunrUtils.getJobRunrVersion;
 import static org.jobrunr.performance.utils.StringUtils.camelCaseToHumanReadable;
 
 public class LogBook {
@@ -27,27 +28,10 @@ public class LogBook {
         try (CsvWriter csv = CsvWriter.builder().build(logBookPath, StandardOpenOption.CREATE, StandardOpenOption.APPEND)) {
             if (addHeader)
                 csv.writeRecord("Date & Time", "Host name", "Java version", "JobRunr type", "JobRunr version", "StorageProvider", "amount of created jobs", "amount of succeeded jobs", "creation duration", "processing duration", "job throughput (jobs / sec)");
-            csv.writeRecord(Instant.now().toString(), InetAddress.getLocalHost().getHostName(), getJavaVersion(), getJobRunrType(backgroundJobServer), getJobRunrVersion(backgroundJobServer), backgroundJobServer.getStorageProvider().getStorageProviderInfo().getName(), String.valueOf(scenarioResult.getCreatedJobs()), String.valueOf(scenarioResult.getSucceededJobs()), scenarioResult.getCreationDuration().toString(), scenarioResult.getProcessingDuration().toString(), String.format(Locale.US, "%.2f", (double) scenarioResult.getSucceededJobs() / (scenarioResult.getProcessingDuration().toSeconds())));
+            csv.writeRecord(scenarioResult.getTimestamp().toString(), InetAddress.getLocalHost().getHostName(), getJavaVersion(), getJobRunrType(backgroundJobServer), getJobRunrVersion(backgroundJobServer), backgroundJobServer.getStorageProvider().getStorageProviderInfo().getName(), String.valueOf(scenarioResult.getCreatedJobs()), String.valueOf(scenarioResult.getSucceededJobs()), scenarioResult.getCreationDuration().toString(), scenarioResult.getProcessingDuration().toString(), String.format(Locale.US, "%.2f", (double) scenarioResult.getSucceededJobs() / (scenarioResult.getProcessingDuration().toSeconds())));
         } catch (IOException e) {
             LOGGER.error("Could not create logbook", e);
         }
-    }
-
-    private static String getJobRunrVersion(BackgroundJobServer backgroundJobServer) {
-        String version = JarUtils.getVersion(backgroundJobServer.getClass());
-        String branch = JarUtils.getManifestAttributeValue(backgroundJobServer.getClass(), "Git-Branch");
-        String commitId = ofNullable(JarUtils.getManifestAttributeValue(backgroundJobServer.getClass(), "Git-Commit")).map(x -> "@" + x).orElse("");
-        if (StringUtils.isNullOrEmpty(branch)) return version;
-        return version + " (" + branch + commitId + ")";
-    }
-
-    private static String getJobRunrType(BackgroundJobServer backgroundJobServer) {
-        return ofNullable(JarUtils.getManifestAttributeValue(backgroundJobServer.getClass(), "Implementation-Title"))
-                .orElse("JobRunr");
-    }
-
-    static String getJavaVersion() throws IOException {
-        return Runtime.version().toString();
     }
 
     public static Path findLogbooksFolder() {

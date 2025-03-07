@@ -23,9 +23,15 @@ public interface DataStore {
 
     static DataStore loadDataStore(String name) {
         if (isNullOrEmpty(name)) throw new IllegalArgumentException("DataStore name must not be null or empty");
-        String packageName = substringBeforeLast(DataStore.class.getName(), ".");
-        String fullyQualifiedClassName = packageName + "." + name;
-        return ReflectionUtils.newInstance(fullyQualifiedClassName);
+        try {
+            String packageName = substringBeforeLast(DataStore.class.getName(), ".") + ".sql";
+            String fullyQualifiedClassName = packageName + "." + name;
+            return ReflectionUtils.newInstance(fullyQualifiedClassName);
+        } catch (IllegalArgumentException e) {
+            String packageName = substringBeforeLast(DataStore.class.getName(), ".") + ".nosql";
+            String fullyQualifiedClassName = packageName + "." + name;
+            return ReflectionUtils.newInstance(fullyQualifiedClassName);
+        }
     }
 
     static DataStore loadDataStore(DataStoreType dataStore) {
