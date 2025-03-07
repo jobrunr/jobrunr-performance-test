@@ -5,17 +5,21 @@ import org.jobrunr.performance.storage.StorageProviderQueryAnalysis;
 import org.jobrunr.server.BackgroundJobServer;
 import org.jobrunr.storage.TimedStorageProvider.MethodSummaryStatistics;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import static org.jobrunr.performance.utils.ReportingUtils.findLogbooksFolder;
 import static org.jobrunr.performance.utils.StringUtils.camelCaseToHumanReadable;
 
-public class MarkdownRenderer {
+public class MarkdownReporter {
 
-    public static String render(BackgroundJobServer backgroundJobServer, ScenarioResult scenarioResult, List<MethodSummaryStatistics> methodSummaryStatistics, Collection<StorageProviderQueryAnalysis> queryAnalyses) {
+    public static void render(BackgroundJobServer backgroundJobServer, ScenarioResult scenarioResult, List<MethodSummaryStatistics> methodSummaryStatistics, Collection<StorageProviderQueryAnalysis> queryAnalyses) {
         StringBuilder markdown = new StringBuilder();
         markdown.append("# JobRunr Scenario ").append(camelCaseToHumanReadable(scenarioResult.getScenario())).append(System.lineSeparator());
         markdown.append(System.lineSeparator());
@@ -55,7 +59,11 @@ public class MarkdownRenderer {
             }
 
         });
-        System.out.println(markdown.toString());
-        return markdown.toString();
+
+        try {
+            Files.writeString(findLogbooksFolder().resolve("details").resolve(scenarioResult.getTimestamp().toString() + ".md"), markdown.toString(), StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+        } catch (IOException e) {
+            System.out.println("Error writing markdown");
+        }
     }
 }
