@@ -33,7 +33,7 @@ public class MarkdownReporter {
 
         markdown.append("## Method summary: ").append(System.lineSeparator());
         methodSummaryStatistics.forEach(mss -> {
-            markdown.append("### ").append(mss.getMethodName()).append(System.lineSeparator());
+            markdown.append("### ").append(mss.getMethodIdentifier()).append(System.lineSeparator());
             markdown.append("#### Timings").append(System.lineSeparator());
             markdown.append("  - invocations: ").append(mss.getCount()).append(System.lineSeparator());
             markdown.append("  - total duration: ").append(Duration.ofNanos(mss.getSum())).append(System.lineSeparator());
@@ -41,7 +41,7 @@ public class MarkdownReporter {
             markdown.append("  - min duration: ").append(Duration.ofNanos(mss.getMin())).append(System.lineSeparator());
             markdown.append("  - max duration: ").append(Duration.ofNanos(mss.getMax())).append(System.lineSeparator());
 
-            List<StorageProviderQueryAnalysis> queries = queryAnalyses.stream().filter(qa -> qa.getStorageProviderMethodName().equals(mss.getMethodName())).toList();
+            List<StorageProviderQueryAnalysis> queries = queryAnalyses.stream().filter(qa -> qa.getStorageProviderMethodName().equals(mss.getMethodIdentifier())).toList();
             if (!queries.isEmpty()) {
                 markdown.append("#### Queries").append(System.lineSeparator());
                 for (int i = 0; i < queries.size(); i++) {
