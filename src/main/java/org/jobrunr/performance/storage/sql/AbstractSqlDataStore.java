@@ -1,8 +1,9 @@
-package org.jobrunr.performance.storage;
+package org.jobrunr.performance.storage.sql;
 
 import com.p6spy.engine.spy.P6DataSource;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.jobrunr.performance.storage.DataStore;
 import org.jobrunr.performance.utils.Memory;
 import org.jobrunr.storage.StorageProvider;
 import org.jobrunr.storage.sql.common.SqlStorageProviderFactory;

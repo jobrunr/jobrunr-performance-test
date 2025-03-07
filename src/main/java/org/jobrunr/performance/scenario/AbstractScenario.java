@@ -3,14 +3,19 @@ package org.jobrunr.performance.scenario;
 import org.jobrunr.dashboard.JobRunrDashboardWebServerConfiguration;
 import org.jobrunr.jobs.mappers.JobMapper;
 import org.jobrunr.performance.JobRunrDistribution;
+import org.jobrunr.performance.storage.AnalysingDataStore;
 import org.jobrunr.performance.storage.DataStore;
+import org.jobrunr.performance.storage.StorageProviderQueryAnalysis;
 import org.jobrunr.performance.utils.ArgUtils;
 import org.jobrunr.performance.utils.LogBook;
+import org.jobrunr.performance.utils.MarkdownRenderer;
 import org.jobrunr.performance.utils.StringUtils;
 import org.jobrunr.server.BackgroundJobServerConfiguration;
 import org.jobrunr.storage.JobStats;
 import org.jobrunr.storage.StorageProvider;
 import org.jobrunr.storage.TimedStorageProvider;
+import org.jobrunr.storage.TimedStorageProvider.MethodSummaryStatistics;
+import org.jobrunr.storage.TimedStorageProvider.Query;
 import org.jobrunr.storage.listeners.JobStatsChangeListener;
 import org.jobrunr.utils.mapper.jackson.JacksonJsonMapper;
 import org.slf4j.Logger;
@@ -18,6 +23,11 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
@@ -33,6 +43,7 @@ public abstract class AbstractScenario implements Scenario {
     protected final String[] args;
     protected final ScenarioResult scenarioResult;
     private StorageProvider storageProvider;
+    private QueryAnalysisMonitor queryAnalysisMonitor;
 
     protected AbstractScenario(DataStore dataStore, String[] args) {
         this.scenarioResult = new ScenarioResult(this);
@@ -94,6 +105,10 @@ public abstract class AbstractScenario implements Scenario {
         LOGGER.info("Successfully created {} jobs in {}. Updating database statistics", totalAmountOfJobsCreated, scenarioResult.getCreationDuration());
         dataStore.updateStatistics();
         LOGGER.info("Successfully updated database statistics");
+        if (storageProvider instanceof TimedStorageProvider && dataStore instanceof AnalysingDataStore) {
+            queryAnalysisMonitor = new QueryAnalysisMonitor((TimedStorageProvider) storageProvider, (AnalysingDataStore) dataStore, 0.0, 0.1, 0.5, 0.9);
+            storageProvider.addJobStorageOnChangeListener(queryAnalysisMonitor);
+        }
     }
 
     private void processJobs() {
@@ -105,6 +120,12 @@ public abstract class AbstractScenario implements Scenario {
 
     private void appendToLogbook() {
         LogBook.append(JobRunrDistribution.current.backgroundJobServer(), scenarioResult);
+        if (storageProvider instanceof TimedStorageProvider) {
+            LOGGER.info(((TimedStorageProvider) storageProvider).getMethodSummaryStatisticsAsString());
+            MarkdownRenderer.render(JobRunrDistribution.current.backgroundJobServer(), scenarioResult, ((TimedStorageProvider) storageProvider).getMethodSummaryStatistics(), queryAnalysisMonitor.queryAnalyses.values());
+        } else {
+            LOGGER.error("ERROR - not an instance of TimedStorageProvider {}", storageProvider.getClass().getSimpleName());
+        }
     }
 
     private Instant startProcessingJobs() {
@@ -123,14 +144,6 @@ public abstract class AbstractScenario implements Scenario {
 
     private void stopJobRunrAndDataStore() {
         JobRunrDistribution.current.stop();
-        //LOGGER.info("StorageProvider info: ");
-        // TODO: log to logbook
-        if (storageProvider instanceof TimedStorageProvider) {
-            LOGGER.info(((TimedStorageProvider) storageProvider).getMethodTimings());
-        } else {
-            LOGGER.error("ERROR: {}", storageProvider.getClass().getSimpleName());
-        }
-
         //dataStore.stop();
     }
 
@@ -194,6 +207,8 @@ public abstract class AbstractScenario implements Scenario {
                 }
             }
             this.jobsStats = jobStats;
+
+
         }
 
         public Long awaitAndGetSucceededJobs() {
@@ -202,6 +217,52 @@ public abstract class AbstractScenario implements Scenario {
                 return jobsStats.getSucceeded();
             } catch (InterruptedException e) {
                 throw new RuntimeException("Exception waiting for " + totalAmountOfJobs + " jobs to succeed", e);
+            }
+        }
+    }
+
+    private static class QueryAnalysisMonitor implements JobStatsChangeListener {
+
+        private final TimedStorageProvider timedStorageProvider;
+        private final AnalysingDataStore analysingDataStore;
+        private final List<Double> explainAnalysePercentages;
+        private final Map<Query, StorageProviderQueryAnalysis> queryAnalyses;
+        private Double currentPercentage;
+
+        public QueryAnalysisMonitor(TimedStorageProvider timedStorageProvider, AnalysingDataStore analysingDataStore, Double... explainAnalysePercentages) {
+            this(timedStorageProvider, analysingDataStore, Arrays.asList(explainAnalysePercentages));
+        }
+
+        public QueryAnalysisMonitor(TimedStorageProvider timedStorageProvider, AnalysingDataStore analysingDataStore, List<Double> explainAnalysePercentages) {
+            this.timedStorageProvider = timedStorageProvider;
+            this.analysingDataStore = analysingDataStore;
+            this.explainAnalysePercentages = new ArrayList<>(explainAnalysePercentages);
+            this.queryAnalyses = new HashMap<>(explainAnalysePercentages.size());
+            this.currentPercentage = this.explainAnalysePercentages.remove(0);
+        }
+
+        @Override
+        public synchronized void onChange(JobStats jobStats) {
+            double actualPercentage = (double) jobStats.getSucceeded() / jobStats.getTotal();
+            if (currentPercentage != null && actualPercentage >= currentPercentage) {
+                List<MethodSummaryStatistics> methodSummaryStatistics = timedStorageProvider.getMethodSummaryStatistics().subList(0, 10);
+                for (MethodSummaryStatistics summaryStatistics : methodSummaryStatistics) {
+                    summaryStatistics.getQueries().keySet().forEach(q -> getSummaryStatisticsForQuery(summaryStatistics.getMethodName(), q));
+                }
+                if (explainAnalysePercentages.isEmpty()) {
+                    currentPercentage = null;
+                } else {
+                    currentPercentage = explainAnalysePercentages.remove(0);
+                }
+            }
+        }
+
+        private void getSummaryStatisticsForQuery(String storageProviderMethodName, Query query) {
+            try {
+                StorageProviderQueryAnalysis storageProviderQueryAnalysis = queryAnalyses.computeIfAbsent(query, k -> new StorageProviderQueryAnalysis(storageProviderMethodName, query));
+                storageProviderQueryAnalysis.addAnalysisAtPercentage(currentPercentage, analysingDataStore.explainQuery(query));
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
             }
         }
     }

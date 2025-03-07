@@ -1,4 +1,4 @@
-package org.jobrunr.performance.storage;
+package org.jobrunr.performance.storage.sql;
 
 import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.PortBinding;
