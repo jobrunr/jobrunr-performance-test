@@ -121,7 +121,6 @@ public abstract class AbstractScenario implements Scenario {
     private void appendToLogbook() {
         LogBookReporter.append(JobRunrDistribution.current.backgroundJobServer(), scenarioResult);
         if (storageProvider instanceof TimedStorageProvider) {
-            LOGGER.info(((TimedStorageProvider) storageProvider).getMethodSummaryStatisticsAsString());
             MarkdownReporter.render(JobRunrDistribution.current.backgroundJobServer(), scenarioResult, ((TimedStorageProvider) storageProvider).getMethodSummaryStatistics(), queryAnalysisMonitor.queryAnalyses.values());
         } else {
             LOGGER.error("ERROR - not an instance of TimedStorageProvider {}", storageProvider.getClass().getSimpleName());
@@ -201,7 +200,7 @@ public abstract class AbstractScenario implements Scenario {
                     && Objects.equals(this.jobsStats.getSucceeded(), jobStats.getSucceeded())
                     && Objects.equals(this.jobsStats.getEnqueued(), jobStats.getEnqueued())) {
                 // in case of failure
-                if (duplicateJobStatsCounter++ > 5) {
+                if (duplicateJobStatsCounter++ > 20) {
                     LoggerFactory.getLogger(ScenarioMonitor.class).warn("Duplicate job stats received - shutting down");
                     countDownLatch.countDown();
                 }
@@ -247,7 +246,7 @@ public abstract class AbstractScenario implements Scenario {
             if (currentPercentage != null && actualPercentage >= currentPercentage) {
                 List<MethodSummaryStatistics> methodSummaryStatistics = timedStorageProvider.getMethodSummaryStatistics().subList(0, 10);
                 for (MethodSummaryStatistics summaryStatistics : methodSummaryStatistics) {
-                    summaryStatistics.getQueries().keySet().forEach(q -> getSummaryStatisticsForQuery(summaryStatistics.getMethodName(), q));
+                    summaryStatistics.getQueries().keySet().forEach(q -> getSummaryStatisticsForQuery(summaryStatistics.getMethodIdentifier(), q));
                 }
                 if (explainAnalysePercentages.isEmpty()) {
                     currentPercentage = null;
@@ -257,9 +256,9 @@ public abstract class AbstractScenario implements Scenario {
             }
         }
 
-        private void getSummaryStatisticsForQuery(String storageProviderMethodName, Query query) {
+        private void getSummaryStatisticsForQuery(String storageProviderMethodNameAndArgs, Query query) {
             try {
-                StorageProviderQueryAnalysis storageProviderQueryAnalysis = queryAnalyses.computeIfAbsent(query, k -> new StorageProviderQueryAnalysis(storageProviderMethodName, query));
+                StorageProviderQueryAnalysis storageProviderQueryAnalysis = queryAnalyses.computeIfAbsent(query, k -> new StorageProviderQueryAnalysis(storageProviderMethodNameAndArgs, query));
                 storageProviderQueryAnalysis.addAnalysisAtPercentage(currentPercentage, analysingDataStore.explainQuery(query));
             } catch (Exception e) {
                 System.out.println(e.getMessage());

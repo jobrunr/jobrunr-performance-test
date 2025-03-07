@@ -4,7 +4,6 @@ import org.jobrunr.performance.scenario.jobs.PerformanceTestJob;
 import org.jobrunr.performance.storage.DataStore;
 import org.jobrunr.scheduling.BackgroundJob;
 import org.jobrunr.scheduling.JobBuilder;
-import org.jobrunr.server.BackgroundJobServerConfiguration;
 import org.jobrunr.server.tasks.zookeeper.ratelimiters.RateLimiterConfiguration;
 
 import java.util.stream.IntStream;
@@ -25,11 +24,6 @@ public class Scenario03ConcurrentJobRateLimiter extends AbstractJobRunrProScenar
     public Scenario03ConcurrentJobRateLimiter(DataStore dataStore, String[] args, int rateLimiters) {
         super(dataStore, args);
         this.rateLimiters = rateLimiters;
-    }
-
-    @Override
-    protected BackgroundJobServerConfiguration getBackgroundJobServerConfiguration() {
-        return super.getBackgroundJobServerConfiguration();
     }
 
     @Override
