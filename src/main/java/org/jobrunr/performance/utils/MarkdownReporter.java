@@ -4,17 +4,15 @@ import org.jobrunr.performance.scenario.ScenarioResult;
 import org.jobrunr.performance.storage.AnalysingDataStore;
 import org.jobrunr.performance.storage.AnalysingDataStore.IndexDetails;
 import org.jobrunr.performance.storage.StorageProviderQueryAnalysis;
+import org.jobrunr.performance.storage.StorageProviderQueryAnalysis.QueryAnalysisAtPercentage;
 import org.jobrunr.server.BackgroundJobServer;
-import org.jobrunr.storage.TimedStorageProvider.MethodSummaryStatistics;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.time.Duration;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import static java.util.stream.Collectors.groupingBy;
 import static org.jobrunr.performance.utils.ReportingUtils.findLogbooksFolder;
@@ -22,7 +20,7 @@ import static org.jobrunr.performance.utils.StringUtils.camelCaseToHumanReadable
 
 public class MarkdownReporter {
 
-    public static void render(BackgroundJobServer backgroundJobServer, AnalysingDataStore dataStore, ScenarioResult scenarioResult, List<MethodSummaryStatistics> methodSummaryStatistics, Collection<StorageProviderQueryAnalysis> queryAnalyses) {
+    public static void render(BackgroundJobServer backgroundJobServer, AnalysingDataStore dataStore, ScenarioResult scenarioResult) {
         StringBuilder markdown = new StringBuilder();
         markdown.append("# JobRunr Scenario ").append(camelCaseToHumanReadable(scenarioResult.getScenario())).append(System.lineSeparator());
         markdown.append(System.lineSeparator());
@@ -32,6 +30,7 @@ public class MarkdownReporter {
         markdown.append("- JobRunr Version  : ").append(JobRunrUtils.getJobRunrVersion(backgroundJobServer)).append(System.lineSeparator());
         markdown.append("- Storage Provider : ").append(backgroundJobServer.getStorageProvider().getStorageProviderInfo().getName()).append(System.lineSeparator());
         markdown.append("- Total time : ").append(scenarioResult.getProcessingDuration()).append(System.lineSeparator());
+        markdown.append("- Jobs processed : ").append(scenarioResult.getSucceededJobs()).append(" / ").append(scenarioResult.getCreatedJobs()).append(System.lineSeparator());
         markdown.append(System.lineSeparator()).append(System.lineSeparator());
 
         markdown.append("## DB Details & indexes: ").append(System.lineSeparator());
@@ -44,7 +43,7 @@ public class MarkdownReporter {
         });
 
         markdown.append("## Method summary: ").append(System.lineSeparator());
-        methodSummaryStatistics.forEach(mss -> {
+        scenarioResult.getMethodSummaryStatistics().forEach(mss -> {
             markdown.append("### ").append(mss.getMethodIdentifier()).append(System.lineSeparator());
             markdown.append("#### Timings").append(System.lineSeparator());
             markdown.append("  - invocations: ").append(mss.getCount()).append(System.lineSeparator());
@@ -53,7 +52,7 @@ public class MarkdownReporter {
             markdown.append("  - min duration: ").append(Duration.ofNanos(mss.getMin())).append(System.lineSeparator());
             markdown.append("  - max duration: ").append(Duration.ofNanos(mss.getMax())).append(System.lineSeparator());
 
-            List<StorageProviderQueryAnalysis> queries = queryAnalyses.stream().filter(qa -> qa.getStorageProviderMethodName().equals(mss.getMethodIdentifier())).toList();
+            List<StorageProviderQueryAnalysis> queries = scenarioResult.getQueryAnalyses().stream().filter(qa -> qa.getStorageProviderMethodName().equals(mss.getMethodIdentifier())).toList();
             if (!queries.isEmpty()) {
                 markdown.append("#### Queries").append(System.lineSeparator());
                 for (int i = 0; i < queries.size(); i++) {
@@ -61,10 +60,9 @@ public class MarkdownReporter {
                     markdown.append("##### Query ").append(i + 1).append(System.lineSeparator());
                     markdown.append(" -  Query identifier: `").append(qa.getQuery().getQueryIdentifier()).append("`").append(System.lineSeparator());
                     markdown.append(" - Query with values: `").append(qa.getQuery().getQueryWithValues()).append("`").append(System.lineSeparator());
-                    TreeMap<Double, String> sortedMap = new TreeMap<>(qa.getAnalysisAtPercentage());
-                    for (Map.Entry<Double, String> entrySet : sortedMap.entrySet()) {
-                        markdown.append("> At percentage: ").append(entrySet.getKey()).append(System.lineSeparator());
-                        markdown.append(System.lineSeparator()).append("```").append(System.lineSeparator()).append(entrySet.getValue()).append("```").append(System.lineSeparator());
+                    for (QueryAnalysisAtPercentage queryAnalysisAtPercentage : qa.getAnalysisAtPercentage()) {
+                        markdown.append("> At percentage: ").append(queryAnalysisAtPercentage.getPercentage()).append(" (").append(queryAnalysisAtPercentage.getInvocationCount()).append(" invocations)").append(System.lineSeparator());
+                        markdown.append(System.lineSeparator()).append("```").append(System.lineSeparator()).append(queryAnalysisAtPercentage.getAnalysis()).append("```").append(System.lineSeparator());
                     }
                     markdown.append(System.lineSeparator());
                 }

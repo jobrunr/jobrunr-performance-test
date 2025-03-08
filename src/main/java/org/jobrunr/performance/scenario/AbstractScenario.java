@@ -3,33 +3,24 @@ package org.jobrunr.performance.scenario;
 import org.jobrunr.dashboard.JobRunrDashboardWebServerConfiguration;
 import org.jobrunr.jobs.mappers.JobMapper;
 import org.jobrunr.performance.JobRunrDistribution;
+import org.jobrunr.performance.scenario.monitor.QueryAnalysisMonitor;
+import org.jobrunr.performance.scenario.monitor.ScenarioMonitor;
 import org.jobrunr.performance.storage.AnalysingDataStore;
 import org.jobrunr.performance.storage.DataStore;
-import org.jobrunr.performance.storage.StorageProviderQueryAnalysis;
 import org.jobrunr.performance.utils.ArgUtils;
 import org.jobrunr.performance.utils.LogBookReporter;
 import org.jobrunr.performance.utils.MarkdownReporter;
 import org.jobrunr.performance.utils.StringUtils;
 import org.jobrunr.server.BackgroundJobServerConfiguration;
-import org.jobrunr.storage.JobStats;
 import org.jobrunr.storage.StorageProvider;
 import org.jobrunr.storage.TimedStorageProvider;
-import org.jobrunr.storage.TimedStorageProvider.MethodSummaryStatistics;
-import org.jobrunr.storage.TimedStorageProvider.Query;
-import org.jobrunr.storage.listeners.JobStatsChangeListener;
 import org.jobrunr.utils.mapper.jackson.JacksonJsonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.CountDownLatch;
+import java.util.Optional;
 
 import static java.lang.Boolean.parseBoolean;
 import static java.lang.Integer.parseInt;
@@ -43,7 +34,6 @@ public abstract class AbstractScenario implements Scenario {
     protected final String[] args;
     protected final ScenarioResult scenarioResult;
     private StorageProvider storageProvider;
-    private QueryAnalysisMonitor queryAnalysisMonitor;
 
     protected AbstractScenario(DataStore dataStore, String[] args) {
         this.scenarioResult = new ScenarioResult(this);
@@ -105,23 +95,34 @@ public abstract class AbstractScenario implements Scenario {
         LOGGER.info("Successfully created {} jobs in {}. Updating database statistics", totalAmountOfJobsCreated, scenarioResult.getCreationDuration());
         dataStore.updateStatistics();
         LOGGER.info("Successfully updated database statistics");
-        if (storageProvider instanceof TimedStorageProvider && dataStore instanceof AnalysingDataStore) {
-            queryAnalysisMonitor = new QueryAnalysisMonitor((TimedStorageProvider) storageProvider, (AnalysingDataStore) dataStore, 0.1, 0.25, 0.5, 0.75, 0.9);
-            storageProvider.addJobStorageOnChangeListener(queryAnalysisMonitor);
-        }
     }
 
     private void processJobs() {
         Instant startTime = startProcessingJobs();
-        Instant endTime = waitForJobsToComplete();
+        Optional<QueryAnalysisMonitor> optionalQueryAnalysisMonitor = initQueryAnalysisIfPossible(startTime);
+        Instant endTime = waitForJobsToComplete(startTime);
+
         scenarioResult.setProcessingDuration(Duration.between(startTime, endTime));
+        optionalQueryAnalysisMonitor.ifPresent(queryAnalysisMonitor -> {
+            scenarioResult.setMethodSummaryStatistics(queryAnalysisMonitor.getMethodSummaryStatistics());
+            scenarioResult.setQueryAnalyses(queryAnalysisMonitor.getQueryAnalyses());
+        });
         LOGGER.info("Processed {} jobs in {}", scenarioResult.getSucceededJobs(), scenarioResult.getProcessingDuration());
+    }
+
+    private Optional<QueryAnalysisMonitor> initQueryAnalysisIfPossible(Instant startTime) {
+        if (storageProvider instanceof TimedStorageProvider && dataStore instanceof AnalysingDataStore) {
+            QueryAnalysisMonitor queryAnalysisMonitor = new QueryAnalysisMonitor((TimedStorageProvider) storageProvider, (AnalysingDataStore) dataStore, startTime, getMaxScenarioDuration(), 0.1, 0.25, 0.5, 0.75, 0.9);
+            storageProvider.addJobStorageOnChangeListener(queryAnalysisMonitor);
+            return Optional.of(queryAnalysisMonitor);
+        }
+        return Optional.empty();
     }
 
     private void appendToLogbook() {
         LogBookReporter.append(JobRunrDistribution.current.backgroundJobServer(), scenarioResult);
         if (storageProvider instanceof TimedStorageProvider && dataStore instanceof AnalysingDataStore) {
-            MarkdownReporter.render(JobRunrDistribution.current.backgroundJobServer(), (AnalysingDataStore) dataStore, scenarioResult, ((TimedStorageProvider) storageProvider).getMethodSummaryStatistics(), queryAnalysisMonitor.queryAnalyses.values());
+            MarkdownReporter.render(JobRunrDistribution.current.backgroundJobServer(), (AnalysingDataStore) dataStore, scenarioResult);
         } else {
             LOGGER.error("ERROR - not an instance of TimedStorageProvider {}", storageProvider.getClass().getSimpleName());
         }
@@ -133,10 +134,10 @@ public abstract class AbstractScenario implements Scenario {
         return startTime;
     }
 
-    private Instant waitForJobsToComplete() {
-        ScenarioMonitor latch = new ScenarioMonitor(scenarioResult.getCreatedJobs());
-        storageProvider.addJobStorageOnChangeListener(latch);
-        Long succeededJobs = latch.awaitAndGetSucceededJobs();
+    private Instant waitForJobsToComplete(Instant startTime) {
+        ScenarioMonitor scenarioMonitor = new ScenarioMonitor(scenarioResult.getCreatedJobs(), startTime, getMaxScenarioDuration());
+        storageProvider.addJobStorageOnChangeListener(scenarioMonitor);
+        Long succeededJobs = scenarioMonitor.awaitAndGetSucceededJobs();
         scenarioResult.setSucceededJobs(succeededJobs);
         return dataStore.getUpdatedAtOfLastSucceededJob();
     }
@@ -166,6 +167,9 @@ public abstract class AbstractScenario implements Scenario {
                 .initialize();
     }
 
+    private Duration getMaxScenarioDuration() {
+        return getDurationArg("max_duration", Duration.ofHours(1));
+    }
 
     protected String getArg(String key) {
         return ArgUtils.getArg(args, key, null);
@@ -175,94 +179,11 @@ public abstract class AbstractScenario implements Scenario {
         return Boolean.parseBoolean(ArgUtils.getArg(args, key, "false"));
     }
 
+    protected Duration getDurationArg(String key, Duration defaultValue) {
+        return Duration.parse(ArgUtils.getArg(args, key, defaultValue.toString()));
+    }
+
     protected String getArg(String key, String defaultValue) {
         return ArgUtils.getArg(args, key, defaultValue);
-    }
-
-    private static class ScenarioMonitor implements JobStatsChangeListener {
-
-        private final long totalAmountOfJobs;
-        private final CountDownLatch countDownLatch;
-        private JobStats jobsStats;
-        private int duplicateJobStatsCounter;
-
-        public ScenarioMonitor(long totalAmountOfJobs) {
-            this.totalAmountOfJobs = totalAmountOfJobs;
-            this.countDownLatch = new CountDownLatch(1);
-        }
-
-        @Override
-        public void onChange(JobStats jobStats) {
-            if (jobStats.getSucceeded() >= totalAmountOfJobs) {
-                countDownLatch.countDown();
-            } else if (this.jobsStats != null
-                    && Objects.equals(this.jobsStats.getAwaiting(), jobStats.getAwaiting())
-                    && Objects.equals(this.jobsStats.getSucceeded(), jobStats.getSucceeded())
-                    && Objects.equals(this.jobsStats.getEnqueued(), jobStats.getEnqueued())) {
-                // in case of failure
-                if (duplicateJobStatsCounter++ > 20) {
-                    LoggerFactory.getLogger(ScenarioMonitor.class).warn("Duplicate job stats received - shutting down");
-                    countDownLatch.countDown();
-                }
-            }
-            this.jobsStats = jobStats;
-
-
-        }
-
-        public Long awaitAndGetSucceededJobs() {
-            try {
-                countDownLatch.await();
-                return jobsStats.getSucceeded();
-            } catch (InterruptedException e) {
-                throw new RuntimeException("Exception waiting for " + totalAmountOfJobs + " jobs to succeed", e);
-            }
-        }
-    }
-
-    private static class QueryAnalysisMonitor implements JobStatsChangeListener {
-
-        private final TimedStorageProvider timedStorageProvider;
-        private final AnalysingDataStore analysingDataStore;
-        private final List<Double> explainAnalysePercentages;
-        private final Map<Query, StorageProviderQueryAnalysis> queryAnalyses;
-        private Double currentPercentage;
-
-        public QueryAnalysisMonitor(TimedStorageProvider timedStorageProvider, AnalysingDataStore analysingDataStore, Double... explainAnalysePercentages) {
-            this(timedStorageProvider, analysingDataStore, Arrays.asList(explainAnalysePercentages));
-        }
-
-        public QueryAnalysisMonitor(TimedStorageProvider timedStorageProvider, AnalysingDataStore analysingDataStore, List<Double> explainAnalysePercentages) {
-            this.timedStorageProvider = timedStorageProvider;
-            this.analysingDataStore = analysingDataStore;
-            this.explainAnalysePercentages = new ArrayList<>(explainAnalysePercentages);
-            this.queryAnalyses = new HashMap<>(explainAnalysePercentages.size());
-            this.currentPercentage = this.explainAnalysePercentages.remove(0);
-        }
-
-        @Override
-        public synchronized void onChange(JobStats jobStats) {
-            double actualPercentage = (double) jobStats.getSucceeded() / jobStats.getTotal();
-            if (currentPercentage != null && actualPercentage >= currentPercentage) {
-                List<MethodSummaryStatistics> methodSummaryStatistics = timedStorageProvider.getMethodSummaryStatistics().subList(0, 10);
-                for (MethodSummaryStatistics summaryStatistics : methodSummaryStatistics) {
-                    summaryStatistics.getQueries().keySet().forEach(q -> getSummaryStatisticsForQuery(summaryStatistics.getMethodIdentifier(), q));
-                }
-                if (explainAnalysePercentages.isEmpty()) {
-                    currentPercentage = null;
-                } else {
-                    currentPercentage = explainAnalysePercentages.remove(0);
-                }
-            }
-        }
-
-        private void getSummaryStatisticsForQuery(String storageProviderMethodNameAndArgs, Query query) {
-            try {
-                StorageProviderQueryAnalysis storageProviderQueryAnalysis = queryAnalyses.computeIfAbsent(query, k -> new StorageProviderQueryAnalysis(storageProviderMethodNameAndArgs, query));
-                storageProviderQueryAnalysis.addAnalysisAtPercentage(currentPercentage, analysingDataStore.explainQuery(query));
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-        }
     }
 }
