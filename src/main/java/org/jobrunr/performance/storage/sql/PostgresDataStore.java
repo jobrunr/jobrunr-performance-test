@@ -39,7 +39,7 @@ public class PostgresDataStore extends AbstractSqlDataStore implements Analysing
             }
             return sb.toString();
         } catch (java.sql.SQLException e) {
-            return "Could not explain query plan for query '" + query.getQueryWithValues() + "' due to " + e.getMessage() + System.lineSeparator();
+            return "Could not explain query plan for query '" + query.getQueryWithValues() + "' due to " + e.getMessage();
         }
     }
 }

@@ -62,7 +62,7 @@ public class MarkdownReporter {
                     markdown.append(" - Query with values: `").append(qa.getQuery().getQueryWithValues()).append("`").append(System.lineSeparator());
                     for (QueryAnalysisAtPercentage queryAnalysisAtPercentage : qa.getAnalysisAtPercentage()) {
                         markdown.append("> At percentage: ").append(queryAnalysisAtPercentage.getPercentage()).append(" (").append(queryAnalysisAtPercentage.getInvocationCount()).append(" invocations)").append(System.lineSeparator());
-                        markdown.append(System.lineSeparator()).append("```").append(System.lineSeparator()).append(queryAnalysisAtPercentage.getAnalysis()).append("```").append(System.lineSeparator());
+                        markdown.append(System.lineSeparator()).append("```").append(System.lineSeparator()).append(queryAnalysisAtPercentage.getAnalysis()).append(queryAnalysisAtPercentage.getAnalysis().endsWith(System.lineSeparator()) ? "" : System.lineSeparator()).append("```").append(System.lineSeparator());
                     }
                     markdown.append(System.lineSeparator());
                 }
