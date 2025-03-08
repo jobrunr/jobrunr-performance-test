@@ -2,8 +2,8 @@ package org.jobrunr.performance.storage;
 
 import org.jobrunr.storage.TimedStorageProvider.Query;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class StorageProviderQueryAnalysis {
@@ -12,12 +12,12 @@ public class StorageProviderQueryAnalysis {
 
     private final Query query;
 
-    private final Map<Double, String> analysisAtPercentage;
+    private final List<QueryAnalysisAtPercentage> analysisAtPercentage;
 
     public StorageProviderQueryAnalysis(String storageProviderMethodName, Query query) {
         this.storageProviderMethodName = storageProviderMethodName;
         this.query = query;
-        this.analysisAtPercentage = new HashMap<>();
+        this.analysisAtPercentage = new ArrayList<>();
     }
 
     public String getStorageProviderMethodName() {
@@ -28,11 +28,11 @@ public class StorageProviderQueryAnalysis {
         return query;
     }
 
-    public void addAnalysisAtPercentage(Double percentage, String analysis) {
-        analysisAtPercentage.put(percentage, analysis);
+    public void addAnalysisAtPercentage(Double percentage, long invocationCount, String analysis) {
+        analysisAtPercentage.add(new QueryAnalysisAtPercentage(percentage, invocationCount, analysis));
     }
 
-    public Map<Double, String> getAnalysisAtPercentage() {
+    public List<QueryAnalysisAtPercentage> getAnalysisAtPercentage() {
         return analysisAtPercentage;
     }
 
@@ -55,5 +55,29 @@ public class StorageProviderQueryAnalysis {
                 ", query=" + query +
                 ", analysisAtPercentage=" + analysisAtPercentage +
                 '}';
+    }
+
+    public static class QueryAnalysisAtPercentage {
+        private final double percentage;
+        private final long invocationCount;
+        private final String analysis;
+
+        public QueryAnalysisAtPercentage(double percentage, long invocationCount, String analysis) {
+            this.percentage = percentage;
+            this.invocationCount = invocationCount;
+            this.analysis = analysis;
+        }
+
+        public double getPercentage() {
+            return percentage;
+        }
+
+        public long getInvocationCount() {
+            return invocationCount;
+        }
+
+        public String getAnalysis() {
+            return analysis;
+        }
     }
 }
