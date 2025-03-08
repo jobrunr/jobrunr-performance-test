@@ -4,12 +4,15 @@ import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.PortBinding;
 import com.github.dockerjava.api.model.Ports;
 import com.zaxxer.hikari.HikariDataSource;
+import org.jobrunr.performance.storage.AnalysingDataStore;
+import org.jobrunr.storage.TimedStorageProvider;
 import org.testcontainers.containers.MySQLContainer;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.Statement;
 
-public class MySQLDataStore extends AbstractSqlDataStore {
+public class MySQLDataStore extends AbstractSqlDataStore implements AnalysingDataStore {
 
     public MySQLDataStore() {
         super(new MySQLContainer<>("mysql:9.2")
@@ -37,6 +40,19 @@ public class MySQLDataStore extends AbstractSqlDataStore {
             LOGGER.info("OPTIMIZED AND ANALYZED MYSQL TABLES");
         } catch (java.sql.SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public String explainQuery(TimedStorageProvider.Query query) {
+        try (Connection connection = getDataSource().getConnection(); Statement statement = connection.createStatement()) {
+            ResultSet resultSet = statement.executeQuery("explain analyze " + query.getQueryWithValues());
+            StringBuilder sb = new StringBuilder();
+            while (resultSet.next()) {
+                sb.append(resultSet.getString(1)).append(System.lineSeparator());
+            }
+            return sb.toString();
+        } catch (java.sql.SQLException e) {
+            throw new RuntimeException("Could not explain query plan for query '" + query.getQueryWithValues() + "'", e);
         }
     }
 }

@@ -106,7 +106,7 @@ public abstract class AbstractScenario implements Scenario {
         dataStore.updateStatistics();
         LOGGER.info("Successfully updated database statistics");
         if (storageProvider instanceof TimedStorageProvider && dataStore instanceof AnalysingDataStore) {
-            queryAnalysisMonitor = new QueryAnalysisMonitor((TimedStorageProvider) storageProvider, (AnalysingDataStore) dataStore, 0.0, 0.1, 0.5, 0.9);
+            queryAnalysisMonitor = new QueryAnalysisMonitor((TimedStorageProvider) storageProvider, (AnalysingDataStore) dataStore, 0.1, 0.25, 0.5, 0.75, 0.9);
             storageProvider.addJobStorageOnChangeListener(queryAnalysisMonitor);
         }
     }
@@ -120,8 +120,8 @@ public abstract class AbstractScenario implements Scenario {
 
     private void appendToLogbook() {
         LogBookReporter.append(JobRunrDistribution.current.backgroundJobServer(), scenarioResult);
-        if (storageProvider instanceof TimedStorageProvider) {
-            MarkdownReporter.render(JobRunrDistribution.current.backgroundJobServer(), scenarioResult, ((TimedStorageProvider) storageProvider).getMethodSummaryStatistics(), queryAnalysisMonitor.queryAnalyses.values());
+        if (storageProvider instanceof TimedStorageProvider && dataStore instanceof AnalysingDataStore) {
+            MarkdownReporter.render(JobRunrDistribution.current.backgroundJobServer(), (AnalysingDataStore) dataStore, scenarioResult, ((TimedStorageProvider) storageProvider).getMethodSummaryStatistics(), queryAnalysisMonitor.queryAnalyses.values());
         } else {
             LOGGER.error("ERROR - not an instance of TimedStorageProvider {}", storageProvider.getClass().getSimpleName());
         }

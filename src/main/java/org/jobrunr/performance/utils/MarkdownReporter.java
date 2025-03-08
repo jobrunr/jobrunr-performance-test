@@ -1,6 +1,8 @@
 package org.jobrunr.performance.utils;
 
 import org.jobrunr.performance.scenario.ScenarioResult;
+import org.jobrunr.performance.storage.AnalysingDataStore;
+import org.jobrunr.performance.storage.AnalysingDataStore.IndexDetails;
 import org.jobrunr.performance.storage.StorageProviderQueryAnalysis;
 import org.jobrunr.server.BackgroundJobServer;
 import org.jobrunr.storage.TimedStorageProvider.MethodSummaryStatistics;
@@ -14,12 +16,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import static java.util.stream.Collectors.groupingBy;
 import static org.jobrunr.performance.utils.ReportingUtils.findLogbooksFolder;
 import static org.jobrunr.performance.utils.StringUtils.camelCaseToHumanReadable;
 
 public class MarkdownReporter {
 
-    public static void render(BackgroundJobServer backgroundJobServer, ScenarioResult scenarioResult, List<MethodSummaryStatistics> methodSummaryStatistics, Collection<StorageProviderQueryAnalysis> queryAnalyses) {
+    public static void render(BackgroundJobServer backgroundJobServer, AnalysingDataStore dataStore, ScenarioResult scenarioResult, List<MethodSummaryStatistics> methodSummaryStatistics, Collection<StorageProviderQueryAnalysis> queryAnalyses) {
         StringBuilder markdown = new StringBuilder();
         markdown.append("# JobRunr Scenario ").append(camelCaseToHumanReadable(scenarioResult.getScenario())).append(System.lineSeparator());
         markdown.append(System.lineSeparator());
@@ -30,6 +33,15 @@ public class MarkdownReporter {
         markdown.append("- Storage Provider : ").append(backgroundJobServer.getStorageProvider().getStorageProviderInfo().getName()).append(System.lineSeparator());
         markdown.append("- Total time : ").append(scenarioResult.getProcessingDuration()).append(System.lineSeparator());
         markdown.append(System.lineSeparator()).append(System.lineSeparator());
+
+        markdown.append("## DB Details & indexes: ").append(System.lineSeparator());
+        Map<String, List<IndexDetails>> indexesByTable = dataStore.getIndexDetails().stream().collect(groupingBy(IndexDetails::table));
+        indexesByTable.forEach((table, indexDetails) -> {
+            markdown.append("#### Table ").append(table).append(System.lineSeparator());
+            indexDetails.forEach(index -> {
+                markdown.append("- index ").append(index.indexName()).append(" on ").append(index.table()).append(" using (").append(String.join(", ", index.columnNames())).append(")").append(System.lineSeparator());
+            });
+        });
 
         markdown.append("## Method summary: ").append(System.lineSeparator());
         methodSummaryStatistics.forEach(mss -> {
