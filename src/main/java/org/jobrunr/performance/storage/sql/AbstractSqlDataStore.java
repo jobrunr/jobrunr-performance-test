@@ -117,7 +117,7 @@ public abstract class AbstractSqlDataStore implements DataStore {
     public String explainQuery(ThreadSafeStorageProvider.Query query) {
         try (Connection connection = getDataSource().getConnection(); Statement statement = connection.createStatement()) {
             boolean canAnalyze = query.getQueryWithValues().toLowerCase().trim().startsWith("select ");
-            ResultSet resultSet = statement.executeQuery(canAnalyze ? "explain analyze " : "explain " + query.getQueryWithValues());
+            ResultSet resultSet = statement.executeQuery((canAnalyze ? "explain analyze " : "explain ") + query.getQueryWithValues());
             StringBuilder sb = new StringBuilder();
             while (resultSet.next()) {
                 sb.append(resultSet.getString(1)).append(System.lineSeparator());
