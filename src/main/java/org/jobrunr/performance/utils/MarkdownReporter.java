@@ -43,7 +43,7 @@ public class MarkdownReporter {
         });
 
         markdown.append("## Method summary: ").append(System.lineSeparator());
-        scenarioResult.getMethodSummaryStatistics().forEach(mss -> {
+        scenarioResult.getMethodStatistics().forEach(mss -> {
             markdown.append("### ").append(mss.getMethodIdentifier()).append(System.lineSeparator());
             markdown.append("#### Timings").append(System.lineSeparator());
             markdown.append("  - invocations: ").append(mss.getCount()).append(System.lineSeparator());

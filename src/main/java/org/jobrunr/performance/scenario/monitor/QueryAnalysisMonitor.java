@@ -4,6 +4,7 @@ import org.jobrunr.performance.storage.AnalysingDataStore;
 import org.jobrunr.performance.storage.StorageProviderQueryAnalysis;
 import org.jobrunr.storage.JobStats;
 import org.jobrunr.storage.ThreadSafeStorageProvider;
+import org.jobrunr.storage.ThreadSafeStorageProvider.MethodStatistics;
 import org.jobrunr.storage.listeners.JobStatsChangeListener;
 
 import java.time.Duration;
@@ -15,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.jobrunr.storage.ThreadSafeStorageProvider.MethodSummaryStatistics;
 import static org.jobrunr.storage.ThreadSafeStorageProvider.Query;
 
 public class QueryAnalysisMonitor implements JobStatsChangeListener {
@@ -40,8 +40,8 @@ public class QueryAnalysisMonitor implements JobStatsChangeListener {
         this.currentPercentage = this.explainAnalysePercentages.remove(0);
     }
 
-    public List<MethodSummaryStatistics> getMethodSummaryStatistics() {
-        return ThreadSafeStorageProvider.getMethodSummaryStatistics();
+    public List<MethodStatistics> getMethodStatistics() {
+        return ThreadSafeStorageProvider.getMethodStatistics();
     }
 
     public Collection<StorageProviderQueryAnalysis> getQueryAnalyses() {
@@ -52,8 +52,8 @@ public class QueryAnalysisMonitor implements JobStatsChangeListener {
     public synchronized void onChange(JobStats jobStats) {
         double actualPercentage = getActualPercentage(jobStats);
         if (currentPercentage != null && actualPercentage >= currentPercentage) {
-            List<MethodSummaryStatistics> methodSummaryStatistics = getMethodSummaryStatistics().subList(0, 10);
-            for (MethodSummaryStatistics summaryStatistics : methodSummaryStatistics) {
+            List<MethodStatistics> methodSummaryStatistics = getMethodStatistics().subList(0, 10);
+            for (MethodStatistics summaryStatistics : methodSummaryStatistics) {
                 summaryStatistics.getQueries().keySet().forEach(q -> getSummaryStatisticsForQuery(summaryStatistics.getMethodIdentifier(), summaryStatistics.getCount(), q));
             }
             if (explainAnalysePercentages.isEmpty()) {
