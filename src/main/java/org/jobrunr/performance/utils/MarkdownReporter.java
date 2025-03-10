@@ -42,13 +42,15 @@ public class MarkdownReporter {
             markdown.append("#### Table ").append(table).append(System.lineSeparator());
             indexDetails.forEach(index -> {
                 markdown.append("- index ").append(index.indexName()).append(" on ").append(index.table()).append(" using (").append(String.join(", ", index.columnNames())).append(")").append(System.lineSeparator());
-                List<IndexUsage> indexUsages = getIndexUsage(scenarioResult, index.indexName());
-                if (indexUsages.isEmpty()) {
-                    markdown.append(" **index not used!!**").append(System.lineSeparator());
-                } else {
-                    for (IndexUsage indexUsage : indexUsages) {
-                        markdown.append("  - by method ").append(indexUsage.storageProviderMethodName()).append(System.lineSeparator());
-                        markdown.append("    query: ").append(indexUsage.queryIdentifier()).append(System.lineSeparator());
+                if (!(index.columnNames().stream().allMatch("id"::equals))) {
+                    List<IndexUsage> indexUsages = getIndexUsage(scenarioResult, index.indexName());
+                    if (indexUsages.isEmpty()) {
+                        markdown.append(" **index not used!!**").append(System.lineSeparator());
+                    } else {
+                        for (IndexUsage indexUsage : indexUsages) {
+                            markdown.append("  - by method ").append(indexUsage.storageProviderMethodName()).append(System.lineSeparator());
+                            markdown.append("    query: ").append(indexUsage.queryIdentifier()).append(System.lineSeparator());
+                        }
                     }
                 }
             });
