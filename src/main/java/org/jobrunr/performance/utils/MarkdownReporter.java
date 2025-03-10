@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -40,6 +42,15 @@ public class MarkdownReporter {
             markdown.append("#### Table ").append(table).append(System.lineSeparator());
             indexDetails.forEach(index -> {
                 markdown.append("- index ").append(index.indexName()).append(" on ").append(index.table()).append(" using (").append(String.join(", ", index.columnNames())).append(")").append(System.lineSeparator());
+                List<IndexUsage> indexUsages = getIndexUsage(scenarioResult, index.indexName());
+                if (indexUsages.isEmpty()) {
+                    markdown.append(" **index not used!!**").append(System.lineSeparator());
+                } else {
+                    for (IndexUsage indexUsage : indexUsages) {
+                        markdown.append("  - by method ").append(indexUsage.storageProviderMethodName()).append(System.lineSeparator());
+                        markdown.append("    query: ").append(indexUsage.queryIdentifier()).append(System.lineSeparator());
+                    }
+                }
             });
         });
 
@@ -79,5 +90,22 @@ public class MarkdownReporter {
         } catch (IOException e) {
             System.out.println("Error writing markdown");
         }
+    }
+
+    private static List<IndexUsage> getIndexUsage(ScenarioResult scenarioResult, String indexName) {
+        List<IndexUsage> indexUsage = new ArrayList<>();
+        Collection<StorageProviderQueryAnalysis> queryAnalyses = scenarioResult.getQueryAnalyses();
+        for (StorageProviderQueryAnalysis queryAnalysis : queryAnalyses) {
+            for (QueryAnalysisAtPercentage analysisAtPercentage : queryAnalysis.getAnalysisAtPercentage()) {
+                if (analysisAtPercentage.getAnalysis().contains(indexName)) {
+                    indexUsage.add(new IndexUsage(indexName, queryAnalysis.getStorageProviderMethodName(), queryAnalysis.getQuery().getQueryIdentifier()));
+                    break;
+                }
+            }
+        }
+        return indexUsage;
+    }
+
+    private record IndexUsage(String indexName, String storageProviderMethodName, String queryIdentifier) {
     }
 }
