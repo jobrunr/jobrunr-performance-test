@@ -26,7 +26,6 @@ import static java.lang.Boolean.parseBoolean;
 import static java.lang.Integer.parseInt;
 import static org.jobrunr.server.BackgroundJobServerConfiguration.usingStandardBackgroundJobServerConfiguration;
 import static org.jobrunr.storage.ThreadSafeStorageProvider.MethodStatisticsConfiguration.DETAILED;
-import static org.jobrunr.storage.ThreadSafeStorageProvider.MethodStatisticsConfiguration.DISABLED;
 
 public abstract class AbstractScenario implements Scenario {
 
@@ -83,8 +82,6 @@ public abstract class AbstractScenario implements Scenario {
         if (getBooleanArg("log_storage_provider_timings")) {
             ThreadSafeStorageProvider.setMethodStatisticsConfiguration(DETAILED);
             LOGGER.warn("Log storage provider timings enabled: {}", ThreadSafeStorageProvider.getMethodStatisticsConfiguration());
-        } else {
-            LOGGER.warn("Log storage provider timings disabled: {}", ThreadSafeStorageProvider.getMethodStatisticsConfiguration());
         }
 
         initializeJobRunr(storageProvider);
@@ -116,7 +113,7 @@ public abstract class AbstractScenario implements Scenario {
     }
 
     private Optional<QueryAnalysisMonitor> initQueryAnalysisIfPossible(Instant startTime) {
-        if (!DISABLED.equals(ThreadSafeStorageProvider.getMethodStatisticsConfiguration()) && dataStore instanceof AnalysingDataStore) {
+        if (getBooleanArg("log_storage_provider_timings") && dataStore instanceof AnalysingDataStore) {
             QueryAnalysisMonitor queryAnalysisMonitor = new QueryAnalysisMonitor((AnalysingDataStore) dataStore, startTime, getMaxScenarioDuration(), 0.1, 0.25, 0.5, 0.75, 0.9);
             storageProvider.addJobStorageOnChangeListener(queryAnalysisMonitor);
             return Optional.of(queryAnalysisMonitor);
@@ -126,11 +123,10 @@ public abstract class AbstractScenario implements Scenario {
 
     private void appendToLogbook() {
         LogBookReporter.append(JobRunrDistribution.current.backgroundJobServer(), scenarioResult);
-        if (!DISABLED.equals(ThreadSafeStorageProvider.getMethodStatisticsConfiguration()) && dataStore instanceof AnalysingDataStore) {
+        if (getBooleanArg("log_storage_provider_timings") && dataStore instanceof AnalysingDataStore) {
             MarkdownReporter.render(JobRunrDistribution.current.backgroundJobServer(), (AnalysingDataStore) dataStore, scenarioResult);
         } else {
-            LOGGER.error("ERROR - not an instance of TimedStorageProvider {}: {} / {}", storageProvider.getClass().getSimpleName(),
-                    ThreadSafeStorageProvider.getMethodStatisticsConfiguration(), dataStore.getClass().getSimpleName());
+            LOGGER.error("ERROR - Could not log results to Markdown: {}", dataStore.getClass().getSimpleName());
         }
     }
 
