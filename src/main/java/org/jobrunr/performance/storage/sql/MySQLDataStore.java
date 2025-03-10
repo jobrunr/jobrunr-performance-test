@@ -8,10 +8,7 @@ import org.jobrunr.performance.storage.AnalysingDataStore;
 import org.testcontainers.containers.MySQLContainer;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.Statement;
-
-import static org.jobrunr.storage.ThreadSafeStorageProvider.Query;
 
 public class MySQLDataStore extends AbstractSqlDataStore implements AnalysingDataStore {
 
@@ -41,19 +38,6 @@ public class MySQLDataStore extends AbstractSqlDataStore implements AnalysingDat
             LOGGER.info("OPTIMIZED AND ANALYZED MYSQL TABLES");
         } catch (java.sql.SQLException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    public String explainQuery(Query query) {
-        try (Connection connection = getDataSource().getConnection(); Statement statement = connection.createStatement()) {
-            ResultSet resultSet = statement.executeQuery("explain analyze " + query.getQueryWithValues());
-            StringBuilder sb = new StringBuilder();
-            while (resultSet.next()) {
-                sb.append(resultSet.getString(1)).append(System.lineSeparator());
-            }
-            return sb.toString();
-        } catch (java.sql.SQLException e) {
-            return "Could not explain query plan for query '" + query.getQueryWithValues() + "' due to " + e.getMessage();
         }
     }
 }

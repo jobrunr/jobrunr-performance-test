@@ -7,6 +7,7 @@ import org.jobrunr.performance.storage.AnalysingDataStore;
 import org.jobrunr.performance.storage.DataStore;
 import org.jobrunr.performance.utils.Memory;
 import org.jobrunr.storage.StorageProvider;
+import org.jobrunr.storage.ThreadSafeStorageProvider;
 import org.jobrunr.storage.sql.common.SqlStorageProviderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,6 +111,20 @@ public abstract class AbstractSqlDataStore implements DataStore {
             throw new RuntimeException("Unable to find last updated at");
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public String explainQuery(ThreadSafeStorageProvider.Query query) {
+        try (Connection connection = getDataSource().getConnection(); Statement statement = connection.createStatement()) {
+            boolean canAnalyze = query.getQueryWithValues().toLowerCase().trim().startsWith("select ");
+            ResultSet resultSet = statement.executeQuery(canAnalyze ? "explain analyze " : "explain " + query.getQueryWithValues());
+            StringBuilder sb = new StringBuilder();
+            while (resultSet.next()) {
+                sb.append(resultSet.getString(1)).append(System.lineSeparator());
+            }
+            return sb.toString();
+        } catch (java.sql.SQLException e) {
+            return "Could not explain query plan for query '" + query.getQueryWithValues() + "' due to " + e.getMessage();
         }
     }
 
