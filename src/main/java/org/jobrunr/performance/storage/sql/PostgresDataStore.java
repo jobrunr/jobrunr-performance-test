@@ -4,7 +4,7 @@ import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.PortBinding;
 import com.github.dockerjava.api.model.Ports;
 import org.jobrunr.performance.storage.AnalysingDataStore;
-import org.jobrunr.storage.TimedStorageProvider.Query;
+import org.jobrunr.storage.ThreadSafeStorageProvider.Query;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 import java.sql.Connection;
