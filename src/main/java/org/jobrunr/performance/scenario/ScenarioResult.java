@@ -1,7 +1,7 @@
 package org.jobrunr.performance.scenario;
 
 import org.jobrunr.performance.storage.StorageProviderQueryAnalysis;
-import org.jobrunr.storage.TimedStorageProvider;
+import org.jobrunr.storage.ThreadSafeStorageProvider.MethodSummaryStatistics;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -15,7 +15,7 @@ public class ScenarioResult {
     private long createdJobs;
     private long succeededJobs;
     private Duration creationDuration, processingDuration;
-    private List<TimedStorageProvider.MethodSummaryStatistics> methodSummaryStatistics;
+    private List<MethodSummaryStatistics> methodSummaryStatistics;
     private Collection<StorageProviderQueryAnalysis> queryAnalyses;
 
     public ScenarioResult(Scenario scenario) {
@@ -60,11 +60,11 @@ public class ScenarioResult {
         return succeededJobs;
     }
 
-    public List<TimedStorageProvider.MethodSummaryStatistics> getMethodSummaryStatistics() {
+    public List<MethodSummaryStatistics> getMethodSummaryStatistics() {
         return methodSummaryStatistics;
     }
 
-    public void setMethodSummaryStatistics(List<TimedStorageProvider.MethodSummaryStatistics> methodSummaryStatistics) {
+    public void setMethodSummaryStatistics(List<MethodSummaryStatistics> methodSummaryStatistics) {
         this.methodSummaryStatistics = methodSummaryStatistics;
     }
 

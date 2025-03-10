@@ -1,12 +1,13 @@
 package org.jobrunr.performance.storage;
 
-import org.jobrunr.storage.TimedStorageProvider;
 
 import java.util.List;
 
+import static org.jobrunr.storage.ThreadSafeStorageProvider.Query;
+
 public interface AnalysingDataStore {
 
-    String explainQuery(TimedStorageProvider.Query query);
+    String explainQuery(Query query);
 
     List<IndexDetails> getIndexDetails();
 

@@ -5,12 +5,13 @@ import com.github.dockerjava.api.model.PortBinding;
 import com.github.dockerjava.api.model.Ports;
 import com.zaxxer.hikari.HikariDataSource;
 import org.jobrunr.performance.storage.AnalysingDataStore;
-import org.jobrunr.storage.TimedStorageProvider;
 import org.testcontainers.containers.MySQLContainer;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+
+import static org.jobrunr.storage.ThreadSafeStorageProvider.Query;
 
 public class MySQLDataStore extends AbstractSqlDataStore implements AnalysingDataStore {
 
@@ -43,7 +44,7 @@ public class MySQLDataStore extends AbstractSqlDataStore implements AnalysingDat
         }
     }
 
-    public String explainQuery(TimedStorageProvider.Query query) {
+    public String explainQuery(Query query) {
         try (Connection connection = getDataSource().getConnection(); Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery("explain analyze " + query.getQueryWithValues());
             StringBuilder sb = new StringBuilder();

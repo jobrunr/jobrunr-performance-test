@@ -1,6 +1,7 @@
 package org.jobrunr.performance.storage;
 
-import org.jobrunr.storage.TimedStorageProvider.Query;
+
+import org.jobrunr.storage.ThreadSafeStorageProvider.Query;
 
 import java.util.ArrayList;
 import java.util.List;
