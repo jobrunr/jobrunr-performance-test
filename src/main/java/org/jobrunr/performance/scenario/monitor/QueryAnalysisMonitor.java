@@ -52,7 +52,7 @@ public class QueryAnalysisMonitor implements JobStatsChangeListener {
     public synchronized void onChange(JobStats jobStats) {
         double actualPercentage = getActualPercentage(jobStats);
         if (currentPercentage != null && actualPercentage >= currentPercentage) {
-            List<MethodStatistics> methodSummaryStatistics = getMethodStatistics().subList(0, 10);
+            List<MethodStatistics> methodSummaryStatistics = getMethodStatistics();
             for (MethodStatistics summaryStatistics : methodSummaryStatistics) {
                 summaryStatistics.getQueries().keySet().forEach(q -> getSummaryStatisticsForQuery(summaryStatistics.getMethodIdentifier(), summaryStatistics.getCount(), q));
             }
