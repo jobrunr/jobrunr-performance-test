@@ -30,7 +30,7 @@ public class MarkdownReporter {
         markdown.append("- JobRunr Version  : ").append(JobRunrUtils.getJobRunrVersion(backgroundJobServer)).append(System.lineSeparator());
         markdown.append("- Storage Provider : ").append(backgroundJobServer.getStorageProvider().getStorageProviderInfo().getName()).append(System.lineSeparator());
         markdown.append("- Total time : ").append(scenarioResult.getProcessingDuration()).append(System.lineSeparator());
-        markdown.append("- Jobs processed : ").append(scenarioResult.getSucceededJobs()).append(" / ").append(scenarioResult.getCreatedJobs()).append(System.lineSeparator());
+        markdown.append("- Jobs processed : ").append(scenarioResult.getSucceededJobs()).append(" / ").append(scenarioResult.getCreatedJobs()).append(" (").append(scenarioResult.getSucceededJobs() / scenarioResult.getCreatedJobs()).append("%)").append(System.lineSeparator());
         markdown.append(System.lineSeparator()).append(System.lineSeparator());
 
         markdown.append("## DB Details & indexes: ").append(System.lineSeparator());
@@ -50,7 +50,7 @@ public class MarkdownReporter {
             markdown.append("  - total duration: ").append(Duration.ofNanos(mss.getSum())).append(System.lineSeparator());
             markdown.append("  - avg duration: ").append(Duration.ofNanos((long) mss.getAverage())).append(System.lineSeparator());
             markdown.append("  - min duration: ").append(Duration.ofNanos(mss.getMin())).append(System.lineSeparator());
-            markdown.append("  - max duration: ").append(Duration.ofNanos(mss.getMax())).append(System.lineSeparator());
+            markdown.append("  - max duration: ").append(Duration.ofNanos(mss.getMax())).append(System.lineSeparator()).append(System.lineSeparator());
 
             List<StorageProviderQueryAnalysis> queries = scenarioResult.getQueryAnalyses().stream().filter(qa -> qa.getStorageProviderMethodName().equals(mss.getMethodIdentifier())).toList();
             if (!queries.isEmpty()) {
@@ -66,6 +66,9 @@ public class MarkdownReporter {
                     }
                     markdown.append(System.lineSeparator());
                 }
+                markdown.append(System.lineSeparator());
+            } else {
+                markdown.append(System.lineSeparator());
             }
 
         });
