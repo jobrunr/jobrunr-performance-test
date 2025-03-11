@@ -24,7 +24,7 @@ public class QueryAnalysisMonitor implements JobStatsChangeListener {
     private final Instant startTime;
     private final Duration maxScenarioDuration;
     private final List<Double> explainAnalysePercentages;
-    private final Map<Query, StorageProviderQueryAnalysis> queryAnalyses;
+    private final Map<String, Map<Query, StorageProviderQueryAnalysis>> storageProviderQueryAnalyses;
     private Double currentPercentage;
 
     public QueryAnalysisMonitor(AnalysingDataStore analysingDataStore, Instant startTime, Duration maxScenarioDuration, Double... explainAnalysePercentages) {
@@ -36,7 +36,7 @@ public class QueryAnalysisMonitor implements JobStatsChangeListener {
         this.startTime = startTime;
         this.maxScenarioDuration = maxScenarioDuration;
         this.explainAnalysePercentages = new ArrayList<>(explainAnalysePercentages);
-        this.queryAnalyses = new HashMap<>(explainAnalysePercentages.size());
+        this.storageProviderQueryAnalyses = new HashMap<>();
         this.currentPercentage = this.explainAnalysePercentages.remove(0);
     }
 
@@ -45,16 +45,18 @@ public class QueryAnalysisMonitor implements JobStatsChangeListener {
     }
 
     public Collection<StorageProviderQueryAnalysis> getQueryAnalyses() {
-        return queryAnalyses.values();
+        return storageProviderQueryAnalyses.values().stream()
+                .flatMap(m -> m.values().stream())
+                .toList();
     }
 
     @Override
     public synchronized void onChange(JobStats jobStats) {
         double actualPercentage = getActualPercentage(jobStats);
         if (currentPercentage != null && actualPercentage >= currentPercentage) {
-            List<MethodStatistics> methodSummaryStatistics = getMethodStatistics();
-            for (MethodStatistics summaryStatistics : methodSummaryStatistics) {
-                summaryStatistics.getQueries().keySet().forEach(q -> getSummaryStatisticsForQuery(summaryStatistics.getMethodIdentifier(), summaryStatistics.getCount(), q));
+            List<MethodStatistics> allMethodStatistics = getMethodStatistics();
+            for (MethodStatistics methodStatistics : allMethodStatistics) {
+                methodStatistics.getQueries().forEach((queryIdentifier, q) -> getSummaryStatisticsForQuery(methodStatistics.getMethodIdentifier(), methodStatistics.getCount(), q));
             }
             if (explainAnalysePercentages.isEmpty()) {
                 currentPercentage = null;
@@ -72,6 +74,7 @@ public class QueryAnalysisMonitor implements JobStatsChangeListener {
 
     private void getSummaryStatisticsForQuery(String storageProviderMethodNameAndArgs, long invocationCount, Query query) {
         try {
+            Map<Query, StorageProviderQueryAnalysis> queryAnalyses = storageProviderQueryAnalyses.computeIfAbsent(storageProviderMethodNameAndArgs, k -> new HashMap<>());
             StorageProviderQueryAnalysis storageProviderQueryAnalysis = queryAnalyses.computeIfAbsent(query, k -> new StorageProviderQueryAnalysis(storageProviderMethodNameAndArgs, query));
             storageProviderQueryAnalysis.addAnalysisAtPercentage(currentPercentage, invocationCount, analysingDataStore.explainQuery(query));
         } catch (Exception e) {
