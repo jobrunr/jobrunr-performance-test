@@ -74,6 +74,15 @@ public class MarkdownReporter {
                     markdown.append("##### Query ").append(i + 1).append(System.lineSeparator());
                     markdown.append(" -  Query identifier: `").append(qa.getQuery().getQueryIdentifier()).append("`").append(System.lineSeparator());
                     markdown.append(" - Query with values: `").append(qa.getQuery().getQueryWithValues()).append("`").append(System.lineSeparator());
+                    qa.getQuery().getQueryTimings().forEach((key, timing) -> {
+                        markdown.append("   - ").append(key).append(" query part timings: ")
+                                .append("invocations: ").append(timing.getCount())
+                                .append(" / total duration: ").append(Duration.ofNanos(timing.getSum()))
+                                .append(" / avg duration: ").append(Duration.ofNanos((long) timing.getAverage()))
+                                .append(" / min duration: ").append(Duration.ofNanos(timing.getMin()))
+                                .append(" / max duration: ").append(Duration.ofNanos(timing.getMax()))
+                                .append(System.lineSeparator());
+                    });
                     for (QueryAnalysisAtPercentage queryAnalysisAtPercentage : qa.getAnalysisAtPercentage()) {
                         markdown.append("> At percentage: ").append(queryAnalysisAtPercentage.getPercentage()).append(" (").append(queryAnalysisAtPercentage.getInvocationCount()).append(" invocations)").append(System.lineSeparator());
                         markdown.append(System.lineSeparator()).append("```").append(System.lineSeparator()).append(queryAnalysisAtPercentage.getAnalysis()).append(queryAnalysisAtPercentage.getAnalysis().endsWith(System.lineSeparator()) ? "" : System.lineSeparator()).append("```").append(System.lineSeparator());
