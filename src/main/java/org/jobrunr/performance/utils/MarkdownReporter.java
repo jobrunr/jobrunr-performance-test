@@ -45,7 +45,7 @@ public class MarkdownReporter {
                 if (!(index.columnNames().stream().allMatch("id"::equals))) {
                     List<IndexUsage> indexUsages = getIndexUsage(scenarioResult, index.indexName());
                     if (indexUsages.isEmpty()) {
-                        markdown.append(" **index not used!!**").append(System.lineSeparator());
+                        markdown.append("  **index not used!!**").append(System.lineSeparator());
                     } else {
                         for (IndexUsage indexUsage : indexUsages) {
                             markdown.append("  - by method ").append(indexUsage.storageProviderMethodName()).append(System.lineSeparator());
