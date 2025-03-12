@@ -56,6 +56,7 @@ public class MarkdownReporter {
             });
         });
 
+        markdown.append(System.lineSeparator()).append(System.lineSeparator());
         markdown.append("## Method summary: ").append(System.lineSeparator());
         scenarioResult.getMethodStatistics().forEach(mss -> {
             markdown.append("### ").append(mss.getMethodIdentifier()).append(System.lineSeparator());
