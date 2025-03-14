@@ -5,6 +5,7 @@ import com.github.dockerjava.api.model.PortBinding;
 import com.github.dockerjava.api.model.Ports;
 import com.zaxxer.hikari.HikariDataSource;
 import org.jobrunr.performance.storage.AnalysingDataStore;
+import org.jobrunr.storage.ThreadSafeStorageProvider;
 import org.testcontainers.containers.MariaDBContainer;
 
 import java.sql.Connection;
@@ -41,5 +42,11 @@ public class MariaDBDataStore extends AbstractSqlDataStore implements AnalysingD
         } catch (java.sql.SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public String explainQuery(ThreadSafeStorageProvider.Query query) {
+        String explainQuery = "ANALYZE FORMAT=JSON " + query.getQueryWithValues();
+        return explainQuery(explainQuery);
     }
 }

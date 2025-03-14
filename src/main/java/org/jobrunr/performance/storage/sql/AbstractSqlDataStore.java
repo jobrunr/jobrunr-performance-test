@@ -115,16 +115,21 @@ public abstract class AbstractSqlDataStore implements DataStore {
     }
 
     public String explainQuery(ThreadSafeStorageProvider.Query query) {
+        boolean canAnalyze = query.getQueryWithValues().toLowerCase().trim().startsWith("select ");
+        String explainQuery = (canAnalyze ? "explain analyze " : "explain ") + query.getQueryWithValues();
+        return explainQuery(explainQuery);
+    }
+
+    public String explainQuery(String analyzeQueryWithValues) {
         try (Connection connection = getDataSource().getConnection(); Statement statement = connection.createStatement()) {
-            boolean canAnalyze = query.getQueryWithValues().toLowerCase().trim().startsWith("select ");
-            ResultSet resultSet = statement.executeQuery((canAnalyze ? "explain analyze " : "explain ") + query.getQueryWithValues());
+            ResultSet resultSet = statement.executeQuery(analyzeQueryWithValues);
             StringBuilder sb = new StringBuilder();
             while (resultSet.next()) {
                 sb.append(resultSet.getString(1)).append(System.lineSeparator());
             }
             return sb.toString();
         } catch (java.sql.SQLException e) {
-            return "Could not explain query plan for query '" + query.getQueryWithValues() + "' due to " + e.getMessage();
+            return "Could not explain query plan for query '" + analyzeQueryWithValues + "' due to " + e.getMessage();
         }
     }
 
