@@ -85,3 +85,7 @@ Date & Time,Host name,Java version,JobRunr type,JobRunr version,StorageProvider,
 2025-03-11T18:22:51.006924Z,Mac,21.0.2+13-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/performance@dbf070d3e),PostgresStorageProvider,50000,50000,PT2.402237S,PT7.373818S,7142.86
 2025-03-11T18:44:22.928177Z,Mac,21.0.2+13-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/performance@dbf070d3e),PostgresStorageProvider,50000,50000,PT2.506927S,PT7.037591S,7142.86
 2025-03-11T18:48:47.569199Z,Mac,21.0.2+13-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/performance@dbf070d3e),PostgresStorageProvider,50000,50000,PT2.44777S,PT7.043649S,7142.86
+2025-03-14T19:49:41.778900Z,Mac,21.0.2+13-LTS,JobRunr Pro,7.4.0,PostgresStorageProvider,500000,500000,PT22.7266S,PT53.51816S,9433.96
+2025-03-14T19:53:54.216570Z,Mac,21.0.2+13-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/performance-bis-sql-fix@972b45b18),PostgresStorageProvider,500000,500000,PT24.574314S,PT57.776676S,8771.93
+2025-03-14T20:06:21.972622Z,Mac,21.0.2+13-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/performance-bis-sql-fix@972b45b18),PostgresStorageProvider,500000,500000,PT24.018669S,PT1M5.180154S,7692.31
+2025-03-14T20:14:02.997759Z,Mac,21.0.2+13-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/performance-bis-sql-fix@972b45b18),PostgresStorageProvider,500000,500000,PT22.77428S,PT1M0.12378S,8333.33

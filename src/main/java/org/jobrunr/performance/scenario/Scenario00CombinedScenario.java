@@ -66,9 +66,9 @@ public class Scenario00CombinedScenario extends AbstractJobRunrProScenario {
 
         int amountOfJobsCreated = 0;
         amountOfJobsCreated += createJobsInDynamicQueues((int) (totalAmountOfJobs * 0.5));
-        amountOfJobsCreated += createScheduledJobs((int) (totalAmountOfJobs * 0.1));
         amountOfJobsCreated += createBatchJobs((int) (totalAmountOfJobs * 0.3));
         amountOfJobsCreated += createAwaitingJobs((int) (totalAmountOfJobs * 0.1));
+        amountOfJobsCreated += createScheduledJobs((int) (totalAmountOfJobs * 0.1));
         return amountOfJobsCreated;
     }
 
@@ -89,17 +89,6 @@ public class Scenario00CombinedScenario extends AbstractJobRunrProScenario {
             BackgroundJob.create(jobBuilderStream);
             LOGGER.info("   Created {} jobs in total | {} for {}", (i + 1) * jobsPerDynamicQueue, jobsPerDynamicQueue, dynamicQueue);
         }
-        return amountOfJobs;
-    }
-
-    private int createScheduledJobs(int amountOfJobs) {
-        Stream<JobBuilder> jobBuilderStream = IntStream.range(0, amountOfJobs).boxed()
-                .map(j -> aJob()
-                        .scheduleAt(Instant.now().plus(30, SECONDS).plus(j, MILLIS))
-                        .withName("Scheduled Job " + j)
-                        .<PerformanceTestJob>withDetails(x -> x.testJob(amountOfJobs, j))
-                        .withLabels("my scheduled job"));
-        BackgroundJob.create(jobBuilderStream);
         return amountOfJobs;
     }
 
@@ -148,6 +137,17 @@ public class Scenario00CombinedScenario extends AbstractJobRunrProScenario {
         return totalAmountOfAwaitingJobs;
     }
 
+    private int createScheduledJobs(int amountOfJobs) {
+        Stream<JobBuilder> jobBuilderStream = IntStream.range(0, amountOfJobs).boxed()
+                .map(j -> aJob()
+                        .scheduleAt(Instant.now().plus(30, SECONDS).plus(j, MILLIS))
+                        .withName("Scheduled Job " + j)
+                        .<PerformanceTestJob>withDetails(x -> x.testJob(amountOfJobs, j))
+                        .withLabels("my scheduled job"));
+        BackgroundJob.create(jobBuilderStream);
+        return amountOfJobs;
+    }
+
     private int createRecurringJobs() {
         int jobsEvery15Seconds = totalAmountOfRecurringJobs / 4;
         int jobsEvery30Seconds = totalAmountOfRecurringJobs / 4;
@@ -161,6 +161,8 @@ public class Scenario00CombinedScenario extends AbstractJobRunrProScenario {
                     .withName("Recurring Job " + finalI)
                     .withCron(Cron.every15seconds())
                     .withLabels("recurring job every 15 seconds " + i)
+                    .withDeleteOnSuccess(Duration.ofSeconds(15))
+                    .withMaxConcurrentJobs(3)
                     .<PerformanceTestJob>withDetails(x -> x.testJob(jobsEvery15Seconds, finalI)));
         }
         for (int i = 0; i < jobsEvery30Seconds; i++) {
