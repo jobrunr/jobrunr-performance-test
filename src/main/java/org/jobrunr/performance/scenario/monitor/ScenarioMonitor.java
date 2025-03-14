@@ -31,7 +31,11 @@ public class ScenarioMonitor implements JobStatsChangeListener {
 
     @Override
     public void onChange(JobStats jobStats) {
-        if (jobStats.getSucceeded() >= totalAmountOfJobs || Duration.between(startedAt, Instant.now()).compareTo(maxDuration) > 0) {
+        if (jobStats.getSucceeded() >= totalAmountOfJobs) {
+            LoggerFactory.getLogger(ScenarioMonitor.class).warn("All jobs were processed ({} / {})", jobStats.getSucceeded(), totalAmountOfJobs);
+            countDownLatch.countDown();
+        } else if (Duration.between(startedAt, Instant.now()).compareTo(maxDuration) > 0) {
+            LoggerFactory.getLogger(ScenarioMonitor.class).warn("Test duration exceeded: {}", maxDuration);
             countDownLatch.countDown();
         } else if (this.jobsStats != null
                 && Objects.equals(this.jobsStats.getAwaiting(), jobStats.getAwaiting())
@@ -39,7 +43,7 @@ public class ScenarioMonitor implements JobStatsChangeListener {
                 && Objects.equals(this.jobsStats.getEnqueued(), jobStats.getEnqueued())) {
             // in case of failure
             if (duplicateJobStatsCounter++ > 20) {
-                LoggerFactory.getLogger(ScenarioMonitor.class).warn("Duplicate job stats received - shutting down");
+                LoggerFactory.getLogger(ScenarioMonitor.class).warn("Duplicate job stats received too many times - shutting down");
                 countDownLatch.countDown();
             }
         }
