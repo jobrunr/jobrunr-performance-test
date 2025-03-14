@@ -4,12 +4,13 @@ import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.PortBinding;
 import com.github.dockerjava.api.model.Ports;
 import com.zaxxer.hikari.HikariDataSource;
+import org.jobrunr.performance.storage.AnalysingDataStore;
 import org.testcontainers.containers.MariaDBContainer;
 
 import java.sql.Connection;
 import java.sql.Statement;
 
-public class MariaDBDataStore extends AbstractSqlDataStore {
+public class MariaDBDataStore extends AbstractSqlDataStore implements AnalysingDataStore {
 
     public MariaDBDataStore() {
         super(

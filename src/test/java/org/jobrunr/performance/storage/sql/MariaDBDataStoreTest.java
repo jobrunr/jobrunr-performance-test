@@ -28,16 +28,16 @@ import static org.jobrunr.jobs.JobTestBuilder.anEnqueuedJobWithName;
 import static org.jobrunr.storage.Paging.OffsetBasedPage.ascOnPriorityAndUpdatedAt;
 import static org.jobrunr.storage.ThreadSafeStorageProvider.MethodStatisticsConfiguration.DETAILED;
 
-class PostgresDataStoreTest {
+class MariaDBDataStoreTest {
 
     BackgroundJobServer backgroundJobServer = Mocks.ofBackgroundJobServer();
 
-    PostgresDataStore dataStore;
+    MariaDBDataStore dataStore;
     StorageProvider storageProvider;
 
     @BeforeEach
     void setUp() {
-        dataStore = new PostgresDataStore();
+        dataStore = new MariaDBDataStore();
         dataStore.start();
         storageProvider = new ThreadSafeStorageProvider(SqlStorageProviderFactory.using(dataStore.getDataSource()));
         storageProvider.setJobMapper(new JobMapper(new JacksonJsonMapper()));
