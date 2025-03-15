@@ -2,6 +2,7 @@ package org.jobrunr.performance.scenario;
 
 import org.jobrunr.dashboard.JobRunrDashboardWebServerConfiguration;
 import org.jobrunr.jobs.mappers.JobMapper;
+import org.jobrunr.jobs.queues.Queues;
 import org.jobrunr.performance.JobRunrDistribution;
 import org.jobrunr.performance.storage.DataStore;
 import org.jobrunr.server.BackgroundJobServerConfiguration;
@@ -16,6 +17,7 @@ public abstract class AbstractJobRunrProScenario extends AbstractScenario {
     }
 
     protected void initializeJobRunr(StorageProvider storageProvider) {
+        Queues queues = getQueues();
         BackgroundJobServerConfiguration backgroundJobServerConfiguration = getBackgroundJobServerConfiguration();
         JobRunrDashboardWebServerConfiguration dashboardWebServerConfiguration = getDashboardWebServerConfiguration();
         RateLimiterConfiguration[] rateLimiterConfigurations = getRateLimiterConfigurations();
@@ -24,11 +26,16 @@ public abstract class AbstractJobRunrProScenario extends AbstractScenario {
 
         JobRunrDistribution.JobRunrPro.saveLicense(storageProvider);
         JobRunrDistribution.JobRunrPro.getConfiguration()
+                .useQueues(Queues.DEFAULT_QUEUE, queues.getAllQueues().toArray(new String[0]))
                 .useStorageProvider(storageProvider)
                 .useRateLimiter(rateLimiterConfigurations)
                 .useBackgroundJobServer(backgroundJobServerConfiguration, false)
                 .useDashboardIf(dashboardWebServerConfiguration != null, dashboardWebServerConfiguration)
                 .initialize();
+    }
+
+    protected Queues getQueues() {
+        return new Queues(Queues.DEFAULT_QUEUE, Queues.DEFAULT_QUEUE);
     }
 
     protected RateLimiterConfiguration[] getRateLimiterConfigurations() {
