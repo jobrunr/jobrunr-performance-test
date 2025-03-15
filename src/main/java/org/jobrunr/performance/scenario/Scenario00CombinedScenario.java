@@ -167,7 +167,7 @@ public class Scenario00CombinedScenario extends AbstractJobRunrProScenario {
             int finalI = i;
             BackgroundJob.createRecurrently(aRecurringJob()
                     .withId("rec-job-15s-" + finalI)
-                    .withName("Recurring Job " + finalI)
+                    .withName("Recurring Job (*/15s)" + finalI)
                     .withCron(Cron.every15seconds())
                     .withLabels("recurring job every 15 seconds " + i)
                     .withDeleteOnSuccess(Duration.ofSeconds(15))
@@ -179,7 +179,7 @@ public class Scenario00CombinedScenario extends AbstractJobRunrProScenario {
             int finalI = i;
             BackgroundJob.createRecurrently(aRecurringJob()
                     .withId("rec-job-30s-" + finalI)
-                    .withName("Recurring Job " + finalI)
+                    .withName("Recurring Job (*/30s)" + finalI)
                     .withCron(Cron.every30seconds())
                     .withLabels("recurring job every 30 seconds " + i)
                     .<PerformanceTestJob>withDetails(x -> x.testJob(jobsEvery30Seconds, finalI)));
@@ -188,7 +188,7 @@ public class Scenario00CombinedScenario extends AbstractJobRunrProScenario {
             int finalI = i;
             BackgroundJob.createRecurrently(aRecurringJob()
                     .withId("rec-job-8pm-" + finalI)
-                    .withName("Recurring Job " + finalI)
+                    .withName("Recurring Job 8pm" + finalI)
                     .withCron(Cron.daily(20))
                     .withLabels("recurring job at 8pm " + i)
                     .<PerformanceTestJob>withDetails(x -> x.testJob(jobsEveryEveningAt8pm, finalI)));
@@ -197,7 +197,7 @@ public class Scenario00CombinedScenario extends AbstractJobRunrProScenario {
             int finalI = i;
             BackgroundJob.createRecurrently(aRecurringJob()
                     .withId("rec-job-duration-1h-" + finalI)
-                    .withName("Recurring Job " + finalI)
+                    .withName("Recurring Job (1min dur)" + finalI)
                     .withInterval(Duration.ofHours(1))
                     .withLabels("recurring job using duration, " + i)
                     .<PerformanceTestJob>withDetails(x -> x.testJob(jobsEveryEveningWithDuration, finalI)));

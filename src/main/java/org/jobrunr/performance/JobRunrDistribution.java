@@ -15,7 +15,7 @@ public enum JobRunrDistribution {
     JobRunrPro("JobRunrPro", "PRO") {
         @Override
         public void saveLicense(StorageProvider storageProvider) {
-            String license = "1.0.0-SNAPSHOT".equals(getVersion())
+            String license = getVersion().endsWith("-SNAPSHOT")
                     ? "eyJhbGciOiJFQyIsImNydiI6ICJQLTI1NiIsInR5cCI6ICJKV1QifQ.eyJzdWJzY3JpcHRpb25JZCI6IjMxOTI5ZDYzLWRhMDItNDYwMi04ZjliLWYyMzk1YTY3YzUwOSIsImNvbXBhbnkiOiJSb3NvY28gQlYiLCJ0cmlhbCI6ZmFsc2UsInZhbGlkVW50aWwiOiIyMDI1LTAzLTAyIn0.Rhpzb8IotGK4ejni83CAllJ-VLwi3CNMo9UA-gl2swRisqyTeLxAjC-ESyJR0j_OdYzRB09L6kY8cG-w88n8_w=="
                     : "eyJhbGciOiJFQyIsImNydiI6ICJQLTI1NiIsInR5cCI6ICJKV1QifQ.eyJzdWJzY3JpcHRpb25JZCI6IjY5ODU5YTllLTQyNTAtNDQ4Zi04MmZjLTVkZWU1MDdlYjBlMyIsImNvbXBhbnkiOiJMaWZlLkNodXJjaCIsInRyaWFsIjpmYWxzZSwidmFsaWRVbnRpbCI6IjIwMjUtMDMtMTgifQ.XqwPVgcaFhV4_me9MwqHKOOgzpN-opR-jM0TndZyq5M4mBA0MTrbcY55VsnghkaVRFuuwFyZJWkPEg7pbopsng==";
 
