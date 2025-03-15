@@ -1,6 +1,7 @@
 package org.jobrunr.performance.scenario;
 
 import org.jobrunr.dashboard.JobRunrDashboardWebServerConfiguration;
+import org.jobrunr.jobs.queues.Queues;
 import org.jobrunr.performance.scenario.jobs.PerformanceTestJob;
 import org.jobrunr.performance.storage.DataStore;
 import org.jobrunr.scheduling.BackgroundJob;
@@ -25,6 +26,9 @@ import static org.jobrunr.scheduling.RecurringJobBuilder.aRecurringJob;
 import static org.jobrunr.server.tasks.zookeeper.ratelimiters.ConcurrentJobRateLimiterConfiguration.concurrentJobRateLimiter;
 
 public class Scenario00CombinedScenario extends AbstractJobRunrProScenario {
+
+    private static final String HIGH_PRIO = "High Prio";
+    private static final String LOW_PRIO = "Low Prio";
 
     private final int amountOfDynamicQueues;
     private final int amountOfBatchJobs;
@@ -55,6 +59,11 @@ public class Scenario00CombinedScenario extends AbstractJobRunrProScenario {
                 .map(Scenario00CombinedScenario::getRateLimiterName)
                 .map(name -> concurrentJobRateLimiter(name, 5))
                 .toArray(RateLimiterConfiguration[]::new);
+    }
+
+    @Override
+    protected Queues getQueues() {
+        return new Queues(Queues.DEFAULT_QUEUE, HIGH_PRIO, Queues.DEFAULT_QUEUE, LOW_PRIO);
     }
 
     @Override
@@ -162,6 +171,7 @@ public class Scenario00CombinedScenario extends AbstractJobRunrProScenario {
                     .withCron(Cron.every15seconds())
                     .withLabels("recurring job every 15 seconds " + i)
                     .withDeleteOnSuccess(Duration.ofSeconds(15))
+                    .withQueue(HIGH_PRIO)
                     .withMaxConcurrentJobs(3)
                     .<PerformanceTestJob>withDetails(x -> x.testJob(jobsEvery15Seconds, finalI)));
         }
