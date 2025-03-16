@@ -182,6 +182,8 @@ public class Scenario00CombinedScenario extends AbstractJobRunrProScenario {
                     .withName("Recurring Job (*/30s)" + finalI)
                     .withCron(Cron.every30seconds())
                     .withLabels("recurring job every 30 seconds " + i)
+                    .withDeleteOnSuccess(Duration.ofSeconds(25))
+                    .withQueue(HIGH_PRIO)
                     .<PerformanceTestJob>withDetails(x -> x.testJob(jobsEvery30Seconds, finalI)));
         }
         for (int i = 0; i < jobsEveryEveningAt8pm; i++) {

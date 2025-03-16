@@ -5,6 +5,10 @@ import com.github.dockerjava.api.model.PortBinding;
 import com.github.dockerjava.api.model.Ports;
 import com.zaxxer.hikari.HikariDataSource;
 import org.testcontainers.oracle.OracleContainer;
+import org.testcontainers.utility.MountableFile;
+
+import java.sql.CallableStatement;
+import java.sql.Connection;
 
 public class OracleDataStore extends AbstractSqlDataStore {
 
@@ -17,6 +21,7 @@ public class OracleDataStore extends AbstractSqlDataStore {
                                 ))
                         .withStartupTimeoutSeconds(900)
                         .withConnectTimeoutSeconds(500)
+                        .withCopyFileToContainer(MountableFile.forClasspathResource("/oracle/container-entrypoint-initdb.d"), "/container-entrypoint-initdb.d")
                         .withEnv("DB_SID", "ORCL")
                         .withEnv("DB_PASSWD", "oracle"),
                 "oracle.jdbc.OracleDriver");
@@ -27,14 +32,14 @@ public class OracleDataStore extends AbstractSqlDataStore {
         return super.toHikariDataSource(jdbcUrl.replace("xepdb1", "FREEPDB1"), userName, password, driverClassName);
     }
 
-//    @Override
-//    public void updateStatistics() {
-//        try (Connection connection = getDataSource().getConnection();
-//             CallableStatement statement = connection.prepareCall("{call DBMS_STATS.GATHER_DATABASE_STATS}")) {
-//            statement.execute();
-//            LOGGER.info("UPDATED Oracle STATISTICS");
-//        } catch (java.sql.SQLException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
+    @Override
+    public void updateStatistics() {
+        try (Connection connection = getDataSource().getConnection();
+             CallableStatement statement = connection.prepareCall("BEGIN dbms_stats.gather_schema_stats(ownname => 'TEST', cascade => TRUE); END;")) {
+            statement.execute();
+            LOGGER.info("UPDATED Oracle STATISTICS");
+        } catch (java.sql.SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
