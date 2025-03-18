@@ -31,7 +31,7 @@ public class ScenarioMonitor implements JobStatsChangeListener {
 
     @Override
     public void onChange(JobStats jobStats) {
-        if (jobStats.getSucceeded() >= totalAmountOfJobs) {
+        if (jobStats.getAwaiting() <= 0 && jobStats.getScheduled() <= 0 && jobStats.getEnqueued() <= 0) {
             LoggerFactory.getLogger(ScenarioMonitor.class).warn("All jobs were processed ({} / {})", jobStats.getSucceeded(), totalAmountOfJobs);
             countDownLatch.countDown();
         } else if (Duration.between(startedAt, Instant.now()).compareTo(maxDuration) > 0) {

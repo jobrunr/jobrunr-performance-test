@@ -15,12 +15,13 @@ public class PostgresDataStore extends AbstractSqlDataStore implements Analysing
         super(new PostgreSQLContainer<>("postgres:15-alpine")
                 .withCreateContainerCmdModifier(cmd ->
                         cmd.withHostConfig(cmd.getHostConfig().withPortBindings(new PortBinding(Ports.Binding.bindPort(54320), new ExposedPort(5432)))
-                        )).withCommand("-c max_wal_size=2GB"), "org.postgresql.Driver");
+                        )).withCommand("postgres", "-c", "shared_preload_libraries=pg_stat_statements", "-c", "pg_stat_statements.track=all", "-c", "max_wal_size=2GB"), "org.postgresql.Driver");
     }
 
     @Override
     public void updateStatistics() {
         try (Connection connection = getDataSource().getConnection(); Statement statement = connection.createStatement()) {
+            statement.execute("CREATE EXTENSION pg_stat_statements;");
             statement.executeUpdate("VACUUM (VERBOSE, ANALYZE) jobrunr_jobs;");
             LOGGER.info("VACUUMED POSTGRES TABLES");
         } catch (java.sql.SQLException e) {

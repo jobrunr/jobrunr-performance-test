@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
 import static org.jobrunr.performance.utils.ReportingUtils.findLogbooksFolder;
@@ -47,11 +48,12 @@ public class MarkdownReporter {
                     if (indexUsages.isEmpty()) {
                         markdown.append("  - **index not used!!**").append(System.lineSeparator());
                     } else {
-                        for (IndexUsage indexUsage : indexUsages) {
-                            markdown.append("  - by method ").append(indexUsage.storageProviderMethodName()).append(System.lineSeparator());
+                        for (String indexUsageStrorageProviderMethodName : indexUsages.stream().map(IndexUsage::storageProviderMethodName).collect(Collectors.toSet())) {
+                            markdown.append("  - by method ").append(indexUsageStrorageProviderMethodName).append(System.lineSeparator());
                         }
                     }
                 }
+                markdown.append(System.lineSeparator());
             });
         });
 
