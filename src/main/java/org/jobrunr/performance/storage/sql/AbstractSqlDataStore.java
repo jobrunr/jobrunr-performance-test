@@ -114,11 +114,27 @@ public abstract class AbstractSqlDataStore implements DataStore {
         }
     }
 
-    public String explainQuery(ThreadSafeStorageProvider.Query query) {
-        boolean canAnalyze = query.getQueryWithValues().toLowerCase().trim().startsWith("select ");
-        String explainQuery = (canAnalyze ? "explain analyze " : "explain ") + query.getQueryWithValues();
-        return explainQuery(explainQuery);
-    }
+    // public String explainQuery(ThreadSafeStorageProvider.Query query) {
+    //     boolean canAnalyze = query.getQueryWithValues().toLowerCase().trim().startsWith("select ");
+    //     String explainQuery = (canAnalyze ? "explain analyze " : "explain ") + query.getQueryWithValues();
+    //     return explainQuery(explainQuery);
+    // }
+
+            public String explainQuery(ThreadSafeStorageProvider.Query query) {
+                String actualQuery = query.getQueryWithValues().toLowerCase().trim();
+                boolean isDeleteQuery = actualQuery.startsWith("delete "); 
+                if(isDeleteQuery) actualQuery = actualQuery.replace("delete ", "select "); 
+                boolean canAnalyze = actualQuery.startsWith("select ");
+                if(canAnalyze) {
+                    String explainQuery = "explain analyze " + actualQuery;
+                    return isDeleteQuery 
+                        ? "-- delete replaced with select for query analysis" + System.lineSeparator() + explainQuery(explainQuery)
+                        : explainQuery(explainQuery);
+                } else {
+                    String explainQuery = "explain " + actualQuery;
+                    return explainQuery(explainQuery);
+                }
+            }
 
     public String explainQuery(String analyzeQueryWithValues) {
         try (Connection connection = getDataSource().getConnection(); Statement statement = connection.createStatement()) {

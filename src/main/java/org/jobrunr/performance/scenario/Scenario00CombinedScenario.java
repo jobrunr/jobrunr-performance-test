@@ -96,8 +96,8 @@ public class Scenario00CombinedScenario extends AbstractJobRunrProScenario {
                             .withRateLimiter(finalI >= 10 && finalI < 20 ? getRateLimiterName(finalI - 10) : null)
                             .withLabels(label));
             BackgroundJob.create(jobBuilderStream);
-            LOGGER.info("   Created {} jobs in total | {} for {}", (i + 1) * jobsPerDynamicQueue, jobsPerDynamicQueue, dynamicQueue);
         }
+        LOGGER.info("   Created {} jobs in {} dynamic queues", amountOfJobs, amountOfDynamicQueues);
         return amountOfJobs;
     }
 
@@ -111,6 +111,7 @@ public class Scenario00CombinedScenario extends AbstractJobRunrProScenario {
                     .withLabels("my-batch-job-" + i)
                     .<PerformanceTestJob>withDetails(x -> x.batchJob(childJobsPerBatchJob, finalI)));
         }
+        LOGGER.info("   Created {} batch jobs with each {} child jobs", amountOfBatchJobs, childJobsPerBatchJob);
         return amountOfBatchJobs + totalAmountOfChildJobs;
     }
 
@@ -154,6 +155,7 @@ public class Scenario00CombinedScenario extends AbstractJobRunrProScenario {
                         .<PerformanceTestJob>withDetails(x -> x.testJob(amountOfJobs, j))
                         .withLabels("my scheduled job"));
         BackgroundJob.create(jobBuilderStream);
+        LOGGER.info("   Created {} scheduled jobs", amountOfJobs);
         return amountOfJobs;
     }
 
@@ -181,9 +183,9 @@ public class Scenario00CombinedScenario extends AbstractJobRunrProScenario {
                     .withId("rec-job-30s-" + finalI)
                     .withName("Recurring Job (*/30s)" + finalI)
                     .withCron(Cron.every30seconds())
-                    .withLabels("recurring job every 30 seconds " + i)
                     .withDeleteOnSuccess(Duration.ofSeconds(25))
                     .withQueue(HIGH_PRIO)
+                    .withLabels("recurring job every 30 seconds " + i)
                     .<PerformanceTestJob>withDetails(x -> x.testJob(jobsEvery30Seconds, finalI)));
         }
         for (int i = 0; i < jobsEveryEveningAt8pm; i++) {
@@ -204,6 +206,7 @@ public class Scenario00CombinedScenario extends AbstractJobRunrProScenario {
                     .withLabels("recurring job using duration, " + i)
                     .<PerformanceTestJob>withDetails(x -> x.testJob(jobsEveryEveningWithDuration, finalI)));
         }
+        LOGGER.info("   Created {} recurring jobs", totalAmountOfRecurringJobs);
         return 0;
     }
 
