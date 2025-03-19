@@ -3,7 +3,7 @@ package org.jobrunr.performance.storage.sql;
 import com.p6spy.engine.spy.P6DataSource;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.jobrunr.performance.storage.AnalysingDataStore;
+import org.jobrunr.performance.storage.AnalysingDataStore.IndexDetails;
 import org.jobrunr.performance.storage.DataStore;
 import org.jobrunr.performance.utils.Memory;
 import org.jobrunr.storage.StorageProvider;
@@ -114,27 +114,21 @@ public abstract class AbstractSqlDataStore implements DataStore {
         }
     }
 
-    // public String explainQuery(ThreadSafeStorageProvider.Query query) {
-    //     boolean canAnalyze = query.getQueryWithValues().toLowerCase().trim().startsWith("select ");
-    //     String explainQuery = (canAnalyze ? "explain analyze " : "explain ") + query.getQueryWithValues();
-    //     return explainQuery(explainQuery);
-    // }
-
-            public String explainQuery(ThreadSafeStorageProvider.Query query) {
-                String actualQuery = query.getQueryWithValues().toLowerCase().trim();
-                boolean isDeleteQuery = actualQuery.startsWith("delete "); 
-                if(isDeleteQuery) actualQuery = actualQuery.replace("delete ", "select "); 
-                boolean canAnalyze = actualQuery.startsWith("select ");
-                if(canAnalyze) {
-                    String explainQuery = "explain analyze " + actualQuery;
-                    return isDeleteQuery 
-                        ? "-- delete replaced with select for query analysis" + System.lineSeparator() + explainQuery(explainQuery)
-                        : explainQuery(explainQuery);
-                } else {
-                    String explainQuery = "explain " + actualQuery;
-                    return explainQuery(explainQuery);
-                }
-            }
+    public String explainQuery(ThreadSafeStorageProvider.Query query) {
+        String actualQuery = query.getQueryWithValues().toLowerCase().trim();
+        boolean isDeleteQuery = actualQuery.startsWith("delete ");
+        if (isDeleteQuery) actualQuery = actualQuery.replace("delete ", "select ");
+        boolean canAnalyze = actualQuery.startsWith("select ");
+        if (canAnalyze) {
+            String explainQuery = "explain analyze " + actualQuery;
+            return isDeleteQuery
+                    ? "-- delete replaced with select for query analysis" + System.lineSeparator() + explainQuery(explainQuery)
+                    : explainQuery(explainQuery);
+        } else {
+            String explainQuery = "explain " + actualQuery;
+            return explainQuery(explainQuery);
+        }
+    }
 
     public String explainQuery(String analyzeQueryWithValues) {
         try (Connection connection = getDataSource().getConnection(); Statement statement = connection.createStatement()) {
@@ -149,12 +143,11 @@ public abstract class AbstractSqlDataStore implements DataStore {
         }
     }
 
-    public List<AnalysingDataStore.IndexDetails> getIndexDetails() {
+    public List<IndexDetails> getIndexDetails() {
         try (Connection connection = getDataSource().getConnection()) {
             DatabaseMetaData metaData = connection.getMetaData();
-            List<AnalysingDataStore.IndexDetails> indexDetailsList = new ArrayList<>();
+            List<IndexDetails> indexDetailsList = new ArrayList<>();
 
-            // Retrieve all tables (adjust catalog, schema, and tablePattern as needed)
             try (ResultSet tables = metaData.getTables(null, null, "%", new String[]{"TABLE"})) {
                 while (tables.next()) {
                     String tableName = tables.getString("TABLE_NAME");
@@ -178,7 +171,7 @@ public abstract class AbstractSqlDataStore implements DataStore {
                     }
                     // Convert the grouped index info into IndexDetails records.
                     for (Map.Entry<String, List<String>> entry : indexMap.entrySet()) {
-                        indexDetailsList.add(new AnalysingDataStore.IndexDetails(tableName, entry.getKey(), entry.getValue()));
+                        indexDetailsList.add(toIndexDetails(tableName, entry.getKey(), entry.getValue()));
                     }
                 }
             }
@@ -186,5 +179,9 @@ public abstract class AbstractSqlDataStore implements DataStore {
         } catch (java.sql.SQLException e) {
             throw new RuntimeException("Could not get indexes for DB", e);
         }
+    }
+
+    protected IndexDetails toIndexDetails(String tableName, String indexName, List<String> columnNames) {
+        return new IndexDetails(tableName, indexName, columnNames, "unknown");
     }
 }

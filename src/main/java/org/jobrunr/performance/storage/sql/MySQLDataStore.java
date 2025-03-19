@@ -8,7 +8,10 @@ import org.jobrunr.performance.storage.AnalysingDataStore;
 import org.testcontainers.containers.MySQLContainer;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.List;
 
 public class MySQLDataStore extends AbstractSqlDataStore implements AnalysingDataStore {
 
@@ -36,6 +39,33 @@ public class MySQLDataStore extends AbstractSqlDataStore implements AnalysingDat
             statement.execute("OPTIMIZE TABLE jobrunr_jobs;");
             statement.execute("ANALYZE TABLE jobrunr_jobs;");
             LOGGER.info("OPTIMIZED AND ANALYZED MYSQL TABLES");
+        } catch (java.sql.SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    protected IndexDetails toIndexDetails(String tableName, String indexName, List<String> columnNames) {
+        try (Connection connection = DriverManager.getConnection(sqlContainer.getJdbcUrl(), "root", sqlContainer.getPassword()); Statement statement = connection.createStatement()) {
+            ResultSet resultSet = statement.executeQuery(String.format("""
+                        SELECT p.OBJECT_SCHEMA, p.OBJECT_NAME, p.INDEX_NAME, p.COUNT_READ
+                        FROM performance_schema.table_io_waits_summary_by_index_usage p
+                        INNER JOIN information_schema.STATISTICS i
+                            ON
+                                    p.OBJECT_SCHEMA = i.TABLE_SCHEMA
+                                AND p.OBJECT_NAME   = i.TABLE_NAME
+                                AND p.INDEX_NAME    = i.INDEX_NAME
+                        WHERE i.TABLE_NAME = '%s'
+                        AND i.INDEX_NAME = '%s'
+                        ORDER BY p.object_schema, p.object_name, p.index_name;
+                    """, tableName, indexName));
+            while (resultSet.next()) {
+                String nbrOfReads = resultSet.getString("COUNT_READ");
+                return new IndexDetails(tableName, indexName, columnNames, nbrOfReads.startsWith("0")
+                        ? "** index not used!!**"
+                        : "index has " + nbrOfReads + " read operations");
+            }
+            return super.toIndexDetails(tableName, indexName, columnNames);
         } catch (java.sql.SQLException e) {
             throw new RuntimeException(e);
         }
