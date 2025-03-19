@@ -60,7 +60,7 @@ public class MySQLDataStore extends AbstractSqlDataStore implements AnalysingDat
                         ORDER BY p.object_schema, p.object_name, p.index_name;
                     """, tableName, indexName));
             while (resultSet.next()) {
-                String nbrOfReads = resultSet.getString("COUNT_READ");
+                String nbrOfReads = resultSet.getString("COUNT_READ").trim().replaceAll(",", "");
                 return new IndexDetails(tableName, indexName, columnNames, nbrOfReads.startsWith("0")
                         ? "** index not used!!**"
                         : "index has " + nbrOfReads + " read operations");
