@@ -40,7 +40,8 @@ public class ScenarioMonitor implements JobStatsChangeListener {
         } else if (this.jobsStats != null
                 && Objects.equals(this.jobsStats.getAwaiting(), jobStats.getAwaiting())
                 && Objects.equals(this.jobsStats.getSucceeded(), jobStats.getSucceeded())
-                && Objects.equals(this.jobsStats.getEnqueued(), jobStats.getEnqueued())) {
+                && Objects.equals(this.jobsStats.getEnqueued(), jobStats.getEnqueued())
+                && Duration.between(startedAt, Instant.now()).compareTo(Duration.ofMinutes(2)) > 0) {
             // in case of failure
             if (duplicateJobStatsCounter++ > 20) {
                 LoggerFactory.getLogger(ScenarioMonitor.class).warn("Duplicate job stats received too many times - shutting down");
@@ -48,8 +49,6 @@ public class ScenarioMonitor implements JobStatsChangeListener {
             }
         }
         this.jobsStats = jobStats;
-
-
     }
 
     public Long awaitAndGetSucceededJobs() {

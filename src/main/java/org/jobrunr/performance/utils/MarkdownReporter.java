@@ -3,6 +3,7 @@ package org.jobrunr.performance.utils;
 import org.jobrunr.performance.scenario.ScenarioResult;
 import org.jobrunr.performance.storage.AnalysingDataStore;
 import org.jobrunr.performance.storage.AnalysingDataStore.IndexDetails;
+import org.jobrunr.performance.storage.AnalysingDataStore.IndexUsage;
 import org.jobrunr.performance.storage.StorageProviderQueryAnalysis;
 import org.jobrunr.performance.storage.StorageProviderQueryAnalysis.QueryAnalysisAtPercentage;
 import org.jobrunr.server.BackgroundJobServer;
@@ -11,8 +12,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -44,10 +43,11 @@ public class MarkdownReporter {
             indexDetails.forEach(index -> {
                 markdown.append("- index ").append(index.indexName()).append(" on ").append(index.table()).append(" using (").append(String.join(", ", index.columnNames())).append(")").append(System.lineSeparator());
                 if (!(index.columnNames().stream().allMatch("id"::equals))) {
-                    List<IndexUsage> indexUsages = getIndexUsage(scenarioResult, index.indexName());
+                    List<IndexUsage> indexUsages = dataStore.getIndexUsage(scenarioResult, index.indexName());
                     if (indexUsages.isEmpty()) {
-                        markdown.append("  - **index not used!!**").append(System.lineSeparator());
+                        markdown.append("  - ").append(index.usageDetails()).append(" (could not be found in query analysis)").append(System.lineSeparator());
                     } else {
+                        markdown.append("  - ").append(index.usageDetails()).append(System.lineSeparator());
                         for (String indexUsageStrorageProviderMethodName : indexUsages.stream().map(IndexUsage::storageProviderMethodName).collect(Collectors.toSet())) {
                             markdown.append("  - by method ").append(indexUsageStrorageProviderMethodName).append(System.lineSeparator());
                         }
@@ -103,22 +103,5 @@ public class MarkdownReporter {
         } catch (IOException e) {
             System.out.println("Error writing markdown");
         }
-    }
-
-    private static List<IndexUsage> getIndexUsage(ScenarioResult scenarioResult, String indexName) {
-        List<IndexUsage> indexUsage = new ArrayList<>();
-        Collection<StorageProviderQueryAnalysis> queryAnalyses = scenarioResult.getQueryAnalyses();
-        for (StorageProviderQueryAnalysis queryAnalysis : queryAnalyses) {
-            for (QueryAnalysisAtPercentage analysisAtPercentage : queryAnalysis.getAnalysisAtPercentage()) {
-                if (analysisAtPercentage.getAnalysis().contains(indexName)) {
-                    indexUsage.add(new IndexUsage(indexName, queryAnalysis.getStorageProviderMethodName(), queryAnalysis.getQuery().getQueryIdentifier()));
-                    break;
-                }
-            }
-        }
-        return indexUsage;
-    }
-
-    private record IndexUsage(String indexName, String storageProviderMethodName, String queryIdentifier) {
     }
 }
