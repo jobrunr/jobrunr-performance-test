@@ -56,7 +56,7 @@ public class PostgresDataStore extends AbstractSqlDataStore implements Analysing
                      ORDER BY 1;;
                     """, tableName, indexName));
             while (resultSet.next()) {
-                String nbrOfScans = resultSet.getString("TotalNumberOfScan");
+                String nbrOfScans = resultSet.getString("TotalNumberOfScan").trim();
                 return new IndexDetails(tableName, indexName, columnNames, nbrOfScans.equals("0")
                         ? "** index not used!!**"
                         : "index was used " + nbrOfScans + " times");

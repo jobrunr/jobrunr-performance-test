@@ -27,7 +27,7 @@ public class MariaDBDataStore extends AbstractSqlDataStore implements AnalysingD
                         .withCommand("--innodb-buffer-pool-size=3G --innodb-log-file-size=717M --innodb-log-buffer-size=8M " +
                                 "--tmp-table-size=256M --sort-buffer-size=256K --read-rnd-buffer-size=512K " +
                                 "--max-connections=80 --thread-cache-size=80 --max-allowed-packet=128M " +
-                                "--query-cache-type=0 --query-cache-size=0"),
+                                "--query-cache-type=0 --query-cache-size=0 --performance-schema"),
                 "org.mariadb.jdbc.Driver");
     }
 
@@ -79,7 +79,7 @@ public class MariaDBDataStore extends AbstractSqlDataStore implements AnalysingD
                         ORDER BY p.object_schema, p.object_name, p.index_name;
                     """, tableName, indexName));
             while (resultSet.next()) {
-                String nbrOfReads = resultSet.getString("COUNT_READ");
+                String nbrOfReads = resultSet.getString("COUNT_READ").trim().replaceAll(",", "");
                 return new IndexDetails(tableName, indexName, columnNames, nbrOfReads.startsWith("0")
                         ? "** index not used!!**"
                         : "index has " + nbrOfReads + " read operations");
