@@ -30,7 +30,7 @@ public class MySQLDataStore extends AbstractSqlDataStore implements AnalysingDat
 
     @Override
     protected HikariDataSource toHikariDataSource(String jdbcUrl, String userName, String password, String driverClassName) {
-        return super.toHikariDataSource(jdbcUrl + "?useServerPrepStmts=true&cachePrepStmts=true&prepStmtCacheSize=500&prepStmtCacheSqlLimit=1024", userName, password, driverClassName);
+        return super.toHikariDataSource(jdbcUrl + "?rewriteBatchedStatements=true&useServerPrepStmts=true&cachePrepStmts=true&prepStmtCacheSize=500&prepStmtCacheSqlLimit=1024", userName, password, driverClassName);
     }
 
     @Override

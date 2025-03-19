@@ -33,7 +33,7 @@ public class MariaDBDataStore extends AbstractSqlDataStore implements AnalysingD
 
     @Override
     protected HikariDataSource toHikariDataSource(String jdbcUrl, String userName, String password, String driverClassName) {
-        return super.toHikariDataSource(jdbcUrl + "?useServerPrepStmts=true", userName, password, driverClassName);
+        return super.toHikariDataSource(jdbcUrl + "?rewriteBatchedStatements=true&useServerPrepStmts=true", userName, password, driverClassName);
     }
 
     @Override
