@@ -130,17 +130,18 @@ public class Scenario00CombinedScenario extends AbstractJobRunrProScenario {
                     .<PerformanceTestJob>withDetails(x -> x.testJob(totalAmountOfAwaitingJobs, finalI))
                     .withLabels("an awaited job"));
 
-            JobProId anAwaitedJob3 = BackgroundJob.create(aJob()
-                    .runAfter(anAwaitedJob2)
-                    .withName("Awaited Job " + i + " 3/4 awaiting " + anAwaitedJob1.asUUID() + " (2/4)")
-                    .<PerformanceTestJob>withDetails(x -> x.testJob(totalAmountOfAwaitingJobs, finalI))
-                    .withLabels("an awaited job"));
-
-            JobProId anAwaitedJob4 = BackgroundJob.create(aJob()
-                    .runAfter(anAwaitedJob2)
-                    .withName("Awaited Job " + i + " 4/4 awaiting " + anAwaitedJob1.asUUID() + " (2/4)")
-                    .<PerformanceTestJob>withDetails(x -> x.testJob(totalAmountOfAwaitingJobs, finalI))
-                    .withLabels("an awaited job"));
+            BackgroundJob.create(Stream.of(
+                    aJob()
+                            .runAfter(anAwaitedJob2)
+                            .withName("Awaited Job " + i + " 3/4 awaiting " + anAwaitedJob1.asUUID() + " (2/4)")
+                            .<PerformanceTestJob>withDetails(x -> x.testJob(totalAmountOfAwaitingJobs, finalI))
+                            .withLabels("an awaited job"),
+                    aJob()
+                            .runAfter(anAwaitedJob2)
+                            .withName("Awaited Job " + i + " 4/4 awaiting " + anAwaitedJob1.asUUID() + " (2/4)")
+                            .<PerformanceTestJob>withDetails(x -> x.testJob(totalAmountOfAwaitingJobs, finalI))
+                            .withLabels("an awaited job")
+            ));
 
             anAwaitedJob1.<PerformanceTestJob>onFailure(x -> x.testJob(totalAmountOfAwaitingJobs, finalI));
         }
