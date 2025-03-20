@@ -18,7 +18,10 @@ public class PostgresDataStore extends AbstractSqlDataStore implements Analysing
         super(new PostgreSQLContainer<>("postgres:15-alpine")
                 .withCreateContainerCmdModifier(cmd ->
                         cmd.withHostConfig(cmd.getHostConfig().withPortBindings(new PortBinding(Ports.Binding.bindPort(54320), new ExposedPort(5432)))
-                        )).withCommand("postgres", "-c", "shared_preload_libraries=pg_stat_statements", "-c", "pg_stat_statements.track=all", "-c", "max_wal_size=2GB"), "org.postgresql.Driver");
+                        )), "org.postgresql.Driver");
+                        // .withCreateContainerCmdModifier(cmd ->
+                        // cmd.withHostConfig(cmd.getHostConfig().withPortBindings(new PortBinding(Ports.Binding.bindPort(54320), new ExposedPort(5432)))
+                        // )).withCommand("postgres", "-c", "shared_preload_libraries=pg_stat_statements", "-c", "pg_stat_statements.track=all", "-c", "max_wal_size=2GB"), "org.postgresql.Driver");
     }
 
     @Override
