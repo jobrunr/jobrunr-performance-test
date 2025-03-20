@@ -7,7 +7,7 @@ import org.jobrunr.performance.storage.AnalysingDataStore.IndexDetails;
 import org.jobrunr.performance.storage.DataStore;
 import org.jobrunr.performance.utils.Memory;
 import org.jobrunr.storage.StorageProvider;
-import org.jobrunr.storage.ThreadSafeStorageProvider;
+import org.jobrunr.storage.ThreadSafeStorageProvider.Query;
 import org.jobrunr.storage.sql.common.SqlStorageProviderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,23 +114,25 @@ public abstract class AbstractSqlDataStore implements DataStore {
         }
     }
 
-    public String explainQuery(ThreadSafeStorageProvider.Query query) {
-        String actualQuery = query.getQueryWithValues().toLowerCase().trim();
+    public String explainQuery(Query query) {
+        String actualQuery = query.getQueryWithValues();
         boolean isDeleteQuery = actualQuery.startsWith("delete ");
-        if (isDeleteQuery) actualQuery = actualQuery.replace("delete ", "select ");
+        if (isDeleteQuery) actualQuery = actualQuery.replace("delete ", "select * ");
         boolean canAnalyze = actualQuery.startsWith("select ");
         if (canAnalyze) {
-            String explainQuery = "explain analyze " + actualQuery;
             return isDeleteQuery
-                    ? "-- delete replaced with select for query analysis" + System.lineSeparator() + explainQuery(explainQuery)
-                    : explainQuery(explainQuery);
+                    ? "-- delete replaced with select for query analysis" + System.lineSeparator() + explainQuery(actualQuery)
+                    : explainQuery(actualQuery);
         } else {
-            String explainQuery = "explain " + actualQuery;
-            return explainQuery(explainQuery);
+            return explainQuery(actualQuery);
         }
     }
 
-    public String explainQuery(String analyzeQueryWithValues) {
+    public String explainQuery(String queryWithValues) {
+        return explainAnalyseQuery("explain analyze " + queryWithValues);
+    }
+
+    public String explainAnalyseQuery(String analyzeQueryWithValues) {
         try (Connection connection = getDataSource().getConnection(); Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery(analyzeQueryWithValues);
             StringBuilder sb = new StringBuilder();
