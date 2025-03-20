@@ -4,13 +4,16 @@ import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.PortBinding;
 import com.github.dockerjava.api.model.Ports;
 import com.zaxxer.hikari.HikariDataSource;
+import org.jobrunr.performance.storage.AnalysingDataStore;
 import org.testcontainers.oracle.OracleContainer;
 import org.testcontainers.utility.MountableFile;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
-public class OracleDataStore extends AbstractSqlDataStore {
+public class OracleDataStore extends AbstractSqlDataStore implements AnalysingDataStore {
 
     public OracleDataStore() {
         super(new OracleContainer("gvenzl/oracle-free:latest-faststart")
@@ -40,6 +43,30 @@ public class OracleDataStore extends AbstractSqlDataStore {
             LOGGER.info("UPDATED Oracle STATISTICS");
         } catch (java.sql.SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public String explainQuery(String queryWithValues) {
+        return explainAnalyseQuery(queryWithValues);
+    }
+
+    @Override
+    public String explainAnalyseQuery(String analyzeQueryWithValues) {
+        try (Connection connection = getDataSource().getConnection(); Statement statement = connection.createStatement()) {
+            String sqlStatement = analyzeQueryWithValues.replaceFirst(" ", " /*+ garther_plan_statistics*/ ");
+
+            statement.execute(sqlStatement);
+            // Retrieve the plan for the given sqlId and childNumber.
+            StringBuilder sb = new StringBuilder();
+            try (ResultSet resultSet = statement.executeQuery("SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY_CURSOR(null, null, 'LAST ALLSTATS ALL +COST'))")) {
+                while (resultSet.next()) {
+                    sb.append(resultSet.getString(1)).append(System.lineSeparator());
+                }
+                return sb.toString();
+            }
+        } catch (java.sql.SQLException e) {
+            return "Could not explain query plan for query '" + analyzeQueryWithValues + "' due to " + e.getMessage();
         }
     }
 }

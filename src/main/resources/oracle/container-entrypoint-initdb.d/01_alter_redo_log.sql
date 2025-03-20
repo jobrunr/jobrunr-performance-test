@@ -5,3 +5,11 @@ alter system switch logfile;
 
 alter database drop logfile group 1;
 alter database drop logfile group 2;
+
+ALTER SESSION SET CONTAINER=FREEPDB1;
+
+GRANT SELECT ON v_$session TO "TEST";
+GRANT SELECT ON v_$sql_plan_statistics_all TO "TEST";
+GRANT SELECT ON v_$sql_plan TO "TEST";
+GRANT SELECT ON v_$sql TO "TEST";
+GRANT SELECT on V_$SESSION to "TEST";

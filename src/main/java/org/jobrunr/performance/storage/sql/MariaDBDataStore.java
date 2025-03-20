@@ -49,9 +49,9 @@ public class MariaDBDataStore extends AbstractSqlDataStore implements AnalysingD
 
     @Override
     public String explainQuery(ThreadSafeStorageProvider.Query query) {
-        String actualQuery = query.getQueryWithValues().toLowerCase().trim();
+        String actualQuery = query.getQueryWithValues();
         boolean isDeleteQuery = actualQuery.startsWith("delete ");
-        if (isDeleteQuery) actualQuery = actualQuery.replace("delete ", "select ");
+        if (isDeleteQuery) actualQuery = actualQuery.replace("delete ", "select * ");
         boolean canAnalyze = actualQuery.startsWith("select ");
         if (canAnalyze) {
             String explainQuery = "ANALYZE FORMAT=JSON " + actualQuery;
