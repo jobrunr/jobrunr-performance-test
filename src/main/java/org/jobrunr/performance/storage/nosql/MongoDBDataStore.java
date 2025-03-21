@@ -23,6 +23,9 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 
+import static com.mongodb.client.model.Filters.exists;
+import static com.mongodb.client.model.Filters.not;
+import static org.jobrunr.storage.StorageProviderUtils.Jobs.FIELD_RECURRING_JOB_ID;
 import static org.jobrunr.storage.StorageProviderUtils.Jobs.FIELD_UPDATED_AT;
 
 public class MongoDBDataStore implements DataStore {
@@ -57,7 +60,7 @@ public class MongoDBDataStore implements DataStore {
     @Override
     public Instant getUpdatedAtOfLastSucceededJob() {
         MongoDatabase jobrunrDatabase = mongoClient.getDatabase("jobrunr");
-        FindIterable<Document> lastSucceededJob = jobrunrDatabase.getCollection("jobs").find().sort(Sorts.descending(FIELD_UPDATED_AT)).limit(1);
+        FindIterable<Document> lastSucceededJob = jobrunrDatabase.getCollection("jobs").find(not(exists(FIELD_RECURRING_JOB_ID))).sort(Sorts.descending(FIELD_UPDATED_AT)).limit(1);
         Long microseconds = lastSucceededJob.first().getLong(FIELD_UPDATED_AT);
         return Instant.EPOCH.plus(microseconds, ChronoUnit.MICROS);
     }
