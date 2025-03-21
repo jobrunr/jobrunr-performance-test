@@ -15,13 +15,10 @@ import java.util.List;
 public class PostgresDataStore extends AbstractSqlDataStore implements AnalysingDataStore {
 
     public PostgresDataStore() {
-        super(new PostgreSQLContainer<>("postgres:15-alpine")
+        super(new PostgreSQLContainer<>("postgres:17-alpine")
                 .withCreateContainerCmdModifier(cmd ->
                         cmd.withHostConfig(cmd.getHostConfig().withPortBindings(new PortBinding(Ports.Binding.bindPort(54320), new ExposedPort(5432)))
-                        )), "org.postgresql.Driver");
-                        // .withCreateContainerCmdModifier(cmd ->
-                        // cmd.withHostConfig(cmd.getHostConfig().withPortBindings(new PortBinding(Ports.Binding.bindPort(54320), new ExposedPort(5432)))
-                        // )).withCommand("postgres", "-c", "shared_preload_libraries=pg_stat_statements", "-c", "pg_stat_statements.track=all", "-c", "max_wal_size=2GB"), "org.postgresql.Driver");
+                        )).withCommand("postgres", "-c", "max_wal_size=2GB", "-c", "random_page_cost=1.1"));
     }
 
     @Override

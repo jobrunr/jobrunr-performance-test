@@ -17,17 +17,16 @@ public class OracleDataStore extends AbstractSqlDataStore implements AnalysingDa
 
     public OracleDataStore() {
         super(new OracleContainer("gvenzl/oracle-free:latest-faststart")
-                        .withCreateContainerCmdModifier(cmd ->
-                                cmd.withHostConfig(cmd.getHostConfig().withPortBindings(
-                                                new PortBinding(Ports.Binding.bindPort(15210), new ExposedPort(1521))
-                                        )
-                                ))
-                        .withStartupTimeoutSeconds(900)
-                        .withConnectTimeoutSeconds(500)
-                        .withCopyFileToContainer(MountableFile.forClasspathResource("/oracle/container-entrypoint-initdb.d"), "/container-entrypoint-initdb.d")
-                        .withEnv("DB_SID", "ORCL")
-                        .withEnv("DB_PASSWD", "oracle"),
-                "oracle.jdbc.OracleDriver");
+                .withCreateContainerCmdModifier(cmd ->
+                        cmd.withHostConfig(cmd.getHostConfig().withPortBindings(
+                                        new PortBinding(Ports.Binding.bindPort(15210), new ExposedPort(1521))
+                                )
+                        ))
+                .withStartupTimeoutSeconds(900)
+                .withConnectTimeoutSeconds(500)
+                .withCopyFileToContainer(MountableFile.forClasspathResource("/oracle/container-entrypoint-initdb.d"), "/container-entrypoint-initdb.d")
+                .withEnv("DB_SID", "ORCL")
+                .withEnv("DB_PASSWD", "oracle"));
     }
 
     @Override

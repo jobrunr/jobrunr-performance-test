@@ -13,11 +13,10 @@ public class SQLServerDataStore extends AbstractSqlDataStore {
 
     public SQLServerDataStore() {
         super(new MSSQLServerContainer<>(DockerImageName
-                        .parse("mcr.microsoft.com/azure-sql-edge")
-                        .asCompatibleSubstituteFor("mcr.microsoft.com/mssql/server"))
-                        .waitingFor(Wait.forListeningPort())
-                        .withStartupCheckStrategy(new MinimumDurationRunningStartupCheckStrategy(Duration.ofSeconds(10))),
-                "com.microsoft.sqlserver.jdbc.SQLServerDriver");
+                .parse("mcr.microsoft.com/azure-sql-edge")
+                .asCompatibleSubstituteFor("mcr.microsoft.com/mssql/server"))
+                .waitingFor(Wait.forListeningPort())
+                .withStartupCheckStrategy(new MinimumDurationRunningStartupCheckStrategy(Duration.ofSeconds(10))));
     }
 
     @Override

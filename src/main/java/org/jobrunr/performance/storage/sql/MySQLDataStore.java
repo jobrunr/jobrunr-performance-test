@@ -17,15 +17,14 @@ public class MySQLDataStore extends AbstractSqlDataStore implements AnalysingDat
 
     public MySQLDataStore() {
         super(new MySQLContainer<>("mysql:9.2")
-                        .withCreateContainerCmdModifier(cmd ->
-                                cmd.withHostConfig(cmd.getHostConfig().withPortBindings(
-                                                new PortBinding(Ports.Binding.bindPort(33060), new ExposedPort(3306))
-                                        )
-                                ))
-                        .withCommand("--innodb-buffer-pool-size=3G --innodb-log-file-size=717M --innodb-log-buffer-size=8M " +
-                                "--tmp-table-size=256M --sort-buffer-size=256K --read-rnd-buffer-size=512K " +
-                                "--max-connections=80 --thread-cache-size=80 --max-allowed-packet=128M"),
-                "com.mysql.cj.jdbc.Driver");
+                .withCreateContainerCmdModifier(cmd ->
+                        cmd.withHostConfig(cmd.getHostConfig().withPortBindings(
+                                        new PortBinding(Ports.Binding.bindPort(33060), new ExposedPort(3306))
+                                )
+                        ))
+                .withCommand("--innodb-buffer-pool-size=3G --innodb-log-file-size=717M --innodb-log-buffer-size=8M " +
+                        "--tmp-table-size=256M --sort-buffer-size=256K --read-rnd-buffer-size=512K " +
+                        "--max-connections=80 --thread-cache-size=80 --max-allowed-packet=128M"));
     }
 
     @Override

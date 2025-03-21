@@ -42,6 +42,10 @@ public abstract class AbstractSqlDataStore implements DataStore {
 
     private HikariDataSource dataSource;
 
+    public AbstractSqlDataStore(JdbcDatabaseContainer<?> sqlContainer) {
+        this(sqlContainer, sqlContainer.getDriverClassName());
+    }
+
     public AbstractSqlDataStore(JdbcDatabaseContainer<?> sqlContainer, String driverClassName) {
         this.sqlContainer = sqlContainer;
         this.driverClassName = driverClassName;
@@ -102,7 +106,7 @@ public abstract class AbstractSqlDataStore implements DataStore {
     public Instant getUpdatedAtOfLastSucceededJob() {
         try (Connection connection = dataSource.getConnection()) {
             Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT max(updatedAt) AS last_updated_at from jobrunr_jobs where state = 'SUCCEEDED'");
+            ResultSet resultSet = statement.executeQuery("SELECT max(updatedAt) AS last_updated_at from jobrunr_jobs where state = 'SUCCEEDED' AND recurringJobId IS NULL");
             if (resultSet.next()) {
                 Timestamp lastUpdatedAt = resultSet.getTimestamp("last_updated_at", Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC)));
                 if (lastUpdatedAt == null) return Instant.EPOCH;
@@ -154,7 +158,7 @@ public abstract class AbstractSqlDataStore implements DataStore {
                 while (tables.next()) {
                     String tableName = tables.getString("TABLE_NAME");
 
-                    if (!tableName.startsWith("jobrunr_")) continue;
+                    if (!tableName.toLowerCase().startsWith("jobrunr_")) continue;
 
                     // Map to group column names by index name for the current table.
                     Map<String, List<String>> indexMap = new HashMap<>();
