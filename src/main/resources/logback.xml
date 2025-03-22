@@ -21,6 +21,7 @@
     <logger name="org.jobrunr.server.BackgroundJobPerformer" level="WARN"/>
     <logger name="org.jobrunr.server.queue" level="DEBUG"/>
     <logger name="org.jobrunr.server.tasks.steward.OnboardNewWorkTask" level="ERROR"/>
+    <logger name="org.jobrunr.server.tasks.zookeeper.ProcessRecurringJobsTask" level="ERROR"/>
     <logger name="org.jobrunr.server.tasks.zookeeper.ProcessJobsAwaitingRateLimiterTask" level="TRACE"/>
     <logger name="org.jobrunr.server.tasks.zookeeper.ProcessAwaitingJobsTask" level="TRACE"/>
     <logger name="org.jobrunr.server.tasks.zookeeper.ratelimiters.ConcurrentJobRateLimiter" level="TRACE"/>
