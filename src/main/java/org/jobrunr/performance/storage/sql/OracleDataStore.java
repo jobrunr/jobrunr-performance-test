@@ -51,6 +51,11 @@ public class OracleDataStore extends AbstractSqlDataStore implements AnalysingDa
     }
 
     @Override
+    public String explainExecute(String queryWithValues) {
+        return explainAnalyseQuery(queryWithValues);
+    }
+
+    @Override
     public String explainAnalyseQuery(String analyzeQueryWithValues) {
         try (Connection connection = getDataSource().getConnection(); Statement statement = connection.createStatement()) {
             String sqlStatement = analyzeQueryWithValues.replaceFirst(" ", " /*+ garther_plan_statistics*/ ");

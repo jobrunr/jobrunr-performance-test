@@ -120,19 +120,27 @@ public abstract class AbstractSqlDataStore implements DataStore {
 
     public String explainQuery(Query query) {
         String actualQuery = query.getQueryWithValues();
-        boolean isDeleteQuery = actualQuery.startsWith("delete ");
-        if (isDeleteQuery) actualQuery = actualQuery.replace("delete ", "select * ");
-        boolean canAnalyze = actualQuery.startsWith("select ");
+        boolean isDeleteQuery = actualQuery.startsWith("delete ") || actualQuery.startsWith("DELETE ");
+        if (isDeleteQuery) {
+            actualQuery = actualQuery
+                    .replace("delete ", "select * ")
+                    .replace("DELETE ", "select * ");
+        }
+        boolean canAnalyze = actualQuery.toLowerCase().startsWith("select ");
         if (canAnalyze) {
             return isDeleteQuery
                     ? "-- delete replaced with select for query analysis" + System.lineSeparator() + explainQuery(actualQuery)
                     : explainQuery(actualQuery);
         } else {
-            return explainQuery(actualQuery);
+            return explainExecute(actualQuery);
         }
     }
 
     public String explainQuery(String queryWithValues) {
+        return explainAnalyseQuery("explain analyze " + queryWithValues);
+    }
+
+    public String explainExecute(String queryWithValues) {
         return explainAnalyseQuery("explain analyze " + queryWithValues);
     }
 
