@@ -58,7 +58,7 @@ public class OracleDataStore extends AbstractSqlDataStore implements AnalysingDa
     @Override
     public String explainAnalyseQuery(String analyzeQueryWithValues) {
         try (Connection connection = getDataSource().getConnection(); Statement statement = connection.createStatement()) {
-            String sqlStatement = analyzeQueryWithValues.replaceFirst(" ", " /*+ garther_plan_statistics*/ ");
+            String sqlStatement = analyzeQueryWithValues.replaceFirst(" ", " /*+ gather_plan_statistics*/ ");
 
             statement.execute(sqlStatement);
             // Retrieve the plan for the given sqlId and childNumber.
