@@ -5,7 +5,6 @@ import com.github.dockerjava.api.model.PortBinding;
 import com.github.dockerjava.api.model.Ports;
 import com.zaxxer.hikari.HikariDataSource;
 import org.jobrunr.performance.storage.AnalysingDataStore;
-import org.jobrunr.storage.ThreadSafeStorageProvider;
 import org.testcontainers.containers.MariaDBContainer;
 
 import java.sql.Connection;
@@ -47,19 +46,13 @@ public class MariaDBDataStore extends AbstractSqlDataStore implements AnalysingD
     }
 
     @Override
-    public String explainQuery(ThreadSafeStorageProvider.Query query) {
-        String actualQuery = query.getQueryWithValues();
-        boolean isDeleteQuery = actualQuery.startsWith("delete ");
-        if (isDeleteQuery) actualQuery = actualQuery.replace("delete ", "select * ");
-        boolean canAnalyze = actualQuery.startsWith("select ");
-        if (canAnalyze) {
-            String explainQuery = "ANALYZE FORMAT=JSON " + actualQuery;
-            return isDeleteQuery
-                    ? "-- delete replaced with select for query analysis" + System.lineSeparator() + explainQuery(explainQuery)
-                    : explainQuery(explainQuery);
-        } else {
-            return "Not analyzing insert / update statements";
-        }
+    public String explainQuery(String queryWithValues) {
+        return explainAnalyseQuery("ANALYZE FORMAT=JSON " + queryWithValues);
+    }
+
+    @Override
+    public String explainExecute(String queryWithValues) {
+        return "Not analyzing insert / update statements";
     }
 
     @Override
