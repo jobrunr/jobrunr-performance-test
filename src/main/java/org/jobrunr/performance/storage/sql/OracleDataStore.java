@@ -22,6 +22,7 @@ public class OracleDataStore extends AbstractSqlDataStore implements AnalysingDa
                                         new PortBinding(Ports.Binding.bindPort(15210), new ExposedPort(1521))
                                 )
                         ))
+                .withSharedMemorySize(4294967296L)
                 .withStartupTimeoutSeconds(900)
                 .withConnectTimeoutSeconds(500)
                 .withCopyFileToContainer(MountableFile.forClasspathResource("/oracle/container-entrypoint-initdb.d"), "/container-entrypoint-initdb.d")
