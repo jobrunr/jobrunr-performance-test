@@ -3,7 +3,7 @@ package org.jobrunr.performance.storage.sql;
 import com.p6spy.engine.spy.P6DataSource;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.jobrunr.performance.storage.AnalysingDataStore.IndexDetails;
+import org.jobrunr.performance.storage.AnalysingDataStore;
 import org.jobrunr.performance.storage.DataStore;
 import org.jobrunr.performance.utils.Memory;
 import org.jobrunr.storage.StorageProvider;
@@ -27,13 +27,14 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.LongSummaryStatistics;
 import java.util.Map;
 import java.util.TimeZone;
 
 import static java.time.Instant.now;
 import static org.jobrunr.performance.utils.Memory.Unit.gigabytes;
 
-public abstract class AbstractSqlDataStore implements DataStore {
+public abstract class AbstractSqlDataStore implements DataStore, AnalysingDataStore {
 
     protected final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
@@ -41,6 +42,7 @@ public abstract class AbstractSqlDataStore implements DataStore {
     private final String driverClassName;
 
     private HikariDataSource dataSource;
+    private LongSummaryStatistics connectionStatistics = new LongSummaryStatistics();
 
     public AbstractSqlDataStore(JdbcDatabaseContainer<?> sqlContainer) {
         this(sqlContainer, sqlContainer.getDriverClassName());
@@ -86,6 +88,21 @@ public abstract class AbstractSqlDataStore implements DataStore {
         LOGGER.info("     password: " + sqlContainer.getPassword());
         LOGGER.info(" startup time: " + duration.getSeconds());
         LOGGER.info("=========================================================");
+    }
+
+    @Override
+    public String getDataStoreSettings() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("- connection pool size: ").append(dataSource.getMinimumIdle()).append(" min idle / ").append(dataSource.getMaximumPoolSize()).append(" max").append(System.lineSeparator());
+        sb.append("   ").append(" connection timings (for analysis): ")
+                .append("invocations: ").append(connectionStatistics.getCount())
+                .append(" / total duration: ").append(Duration.ofNanos(connectionStatistics.getSum()))
+                .append(" / avg duration: ").append(Duration.ofNanos((long) connectionStatistics.getAverage()))
+                .append(" / min duration: ").append(Duration.ofNanos(connectionStatistics.getMin()))
+                .append(" / max duration: ").append(Duration.ofNanos(connectionStatistics.getMax()))
+                .append(System.lineSeparator());
+        return sb.toString();
+
     }
 
     protected HikariDataSource toHikariDataSource(JdbcDatabaseContainer<?> container, String driverClassName) {
@@ -145,15 +162,24 @@ public abstract class AbstractSqlDataStore implements DataStore {
     }
 
     public String explainAnalyseQuery(String analyzeQueryWithValues) {
-        try (Connection connection = getDataSource().getConnection(); Statement statement = connection.createStatement()) {
+        long startTime = System.nanoTime();
+        try (Connection connection = dataSource.getConnection();) {
+            long endTime = System.nanoTime();
+            connectionStatistics.accept(endTime - startTime);
+            return explainAnalyseQuery(connection, analyzeQueryWithValues);
+        } catch (SQLException e) {
+            return "Could not explain query plan for query '" + analyzeQueryWithValues + "' due to " + e.getMessage();
+        }
+    }
+
+    public String explainAnalyseQuery(Connection connection, String analyzeQueryWithValues) throws SQLException {
+        try (Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery(analyzeQueryWithValues);
             StringBuilder sb = new StringBuilder();
             while (resultSet.next()) {
                 sb.append(resultSet.getString(1)).append(System.lineSeparator());
             }
             return sb.toString();
-        } catch (java.sql.SQLException e) {
-            return "Could not explain query plan for query '" + analyzeQueryWithValues + "' due to " + e.getMessage();
         }
     }
 
