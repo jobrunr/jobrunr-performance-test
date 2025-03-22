@@ -4,7 +4,6 @@ import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.PortBinding;
 import com.github.dockerjava.api.model.Ports;
 import com.zaxxer.hikari.HikariDataSource;
-import org.jobrunr.performance.storage.AnalysingDataStore;
 import org.testcontainers.oracle.OracleContainer;
 import org.testcontainers.utility.MountableFile;
 
@@ -13,7 +12,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-public class OracleDataStore extends AbstractSqlDataStore implements AnalysingDataStore {
+public class OracleDataStore extends AbstractSqlDataStore {
 
     public OracleDataStore() {
         super(new OracleContainer("gvenzl/oracle-free:latest-faststart")

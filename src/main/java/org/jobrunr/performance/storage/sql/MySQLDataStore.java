@@ -4,7 +4,6 @@ import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.PortBinding;
 import com.github.dockerjava.api.model.Ports;
 import com.zaxxer.hikari.HikariDataSource;
-import org.jobrunr.performance.storage.AnalysingDataStore;
 import org.testcontainers.containers.MySQLContainer;
 
 import java.sql.Connection;
@@ -13,7 +12,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.List;
 
-public class MySQLDataStore extends AbstractSqlDataStore implements AnalysingDataStore {
+public class MySQLDataStore extends AbstractSqlDataStore {
 
     public MySQLDataStore() {
         super(new MySQLContainer<>("mysql:9.2")

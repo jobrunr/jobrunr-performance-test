@@ -3,7 +3,6 @@ package org.jobrunr.performance.storage.sql;
 import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.PortBinding;
 import com.github.dockerjava.api.model.Ports;
-import org.jobrunr.performance.storage.AnalysingDataStore;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 import java.sql.Connection;
@@ -12,7 +11,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.List;
 
-public class PostgresDataStore extends AbstractSqlDataStore implements AnalysingDataStore {
+public class PostgresDataStore extends AbstractSqlDataStore {
 
     public PostgresDataStore() {
         super(new PostgreSQLContainer<>("postgres:17-alpine")

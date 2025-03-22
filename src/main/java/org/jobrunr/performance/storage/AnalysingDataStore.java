@@ -11,6 +11,10 @@ import static org.jobrunr.storage.ThreadSafeStorageProvider.Query;
 
 public interface AnalysingDataStore {
 
+    default String getDataStoreSettings() {
+        return "";
+    }
+
     String explainQuery(Query query);
 
     List<IndexDetails> getIndexDetails();
