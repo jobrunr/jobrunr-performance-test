@@ -10,6 +10,7 @@ import org.testcontainers.utility.MountableFile;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 public class OracleDataStore extends AbstractSqlDataStore {
@@ -56,8 +57,8 @@ public class OracleDataStore extends AbstractSqlDataStore {
     }
 
     @Override
-    public String explainAnalyseQuery(String analyzeQueryWithValues) {
-        try (Connection connection = getDataSource().getConnection(); Statement statement = connection.createStatement()) {
+    public String explainAnalyseQuery(Connection connection, String analyzeQueryWithValues) throws SQLException {
+        try (Statement statement = connection.createStatement()) {
             String sqlStatement = analyzeQueryWithValues.replaceFirst(" ", " /*+ gather_plan_statistics*/ ");
 
             statement.execute(sqlStatement);
