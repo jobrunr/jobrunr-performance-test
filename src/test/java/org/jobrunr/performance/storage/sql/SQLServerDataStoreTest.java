@@ -69,7 +69,7 @@ class SQLServerDataStoreTest {
         savedJob.succeeded();
         storageProvider.save(savedJob);
 
-        SleepUtils.sleep(35000);
+        SleepUtils.sleep(3500);
         Collection<StorageProviderQueryAnalysis> queryAnalyses = queryAnalysisMonitor.getQueryAnalyses();
         assertThat(queryAnalyses).hasSize(5);
     }

@@ -1,5 +1,8 @@
 package org.jobrunr.performance.storage.sql;
 
+import com.github.dockerjava.api.model.ExposedPort;
+import com.github.dockerjava.api.model.PortBinding;
+import com.github.dockerjava.api.model.Ports;
 import org.testcontainers.containers.MSSQLServerContainer;
 import org.testcontainers.containers.startupcheck.MinimumDurationRunningStartupCheckStrategy;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -17,6 +20,8 @@ public class SQLServerDataStore extends AbstractSqlDataStore {
         super(new MSSQLServerContainer<>(DockerImageName
                 .parse("mcr.microsoft.com/azure-sql-edge")
                 .asCompatibleSubstituteFor("mcr.microsoft.com/mssql/server"))
+                .withCreateContainerCmdModifier(cmd ->
+                        cmd.withHostConfig(cmd.getHostConfig().withPortBindings(new PortBinding(Ports.Binding.bindPort(14330), new ExposedPort(1433)))))
                 .waitingFor(Wait.forListeningPort())
                 .withStartupCheckStrategy(new MinimumDurationRunningStartupCheckStrategy(Duration.ofSeconds(10))));
     }
