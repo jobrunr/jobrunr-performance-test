@@ -16,7 +16,7 @@ public enum JobRunrDistribution {
         @Override
         public void saveLicense(StorageProvider storageProvider) {
             String license = getVersion().endsWith("-SNAPSHOT")
-                    ? "eyJhbGciOiJFQyIsImNydiI6ICJQLTI1NiIsInR5cCI6ICJKV1QifQ.eyJzdWJzY3JpcHRpb25JZCI6IjMxOTI5ZDYzLWRhMDItNDYwMi04ZjliLWYyMzk1YTY3YzUwOSIsImNvbXBhbnkiOiJSb3NvY28gQlYiLCJ0cmlhbCI6ZmFsc2UsInZhbGlkVW50aWwiOiIyMDI1LTAzLTAyIn0.Rhpzb8IotGK4ejni83CAllJ-VLwi3CNMo9UA-gl2swRisqyTeLxAjC-ESyJR0j_OdYzRB09L6kY8cG-w88n8_w=="
+                    ? "eyJhbGciOiJFQyIsImNydiI6ICJQLTI1NiIsInR5cCI6ICJKV1QifQ.eyJzdWJzY3JpcHRpb25JZCI6IjMxOTI5ZDYzLWRhMDItNDYwMi04ZjliLWYyMzk1YTY3YzUwOSIsImNvbXBhbnkiOiJSb3NvY28gQlYiLCJ0cmlhbCI6ZmFsc2UsInZhbGlkVW50aWwiOiIyMDI1LTA2LTMwIn0.zMBypBCY9n3qX4d7KXyGsHGLmfeauGVmOq5sz7Lszeo0sKXsoTyu4djKCcnWIbO9BOpye65i4QUJRwjT73Yu3w=="
                     : "eyJhbGciOiJFQyIsImNydiI6ICJQLTI1NiIsInR5cCI6ICJKV1QifQ.eyJzdWJzY3JpcHRpb25JZCI6IjY5ODU5YTllLTQyNTAtNDQ4Zi04MmZjLTVkZWU1MDdlYjBlMyIsImNvbXBhbnkiOiJMaWZlLkNodXJjaCIsInRyaWFsIjpmYWxzZSwidmFsaWRVbnRpbCI6IjIwMjUtMDMtMTgifQ.XqwPVgcaFhV4_me9MwqHKOOgzpN-opR-jM0TndZyq5M4mBA0MTrbcY55VsnghkaVRFuuwFyZJWkPEg7pbopsng==";
 
             // To be compatible with v6

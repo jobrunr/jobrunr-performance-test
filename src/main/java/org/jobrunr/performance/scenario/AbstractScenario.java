@@ -34,7 +34,7 @@ public abstract class AbstractScenario implements Scenario {
     private final DataStore dataStore;
     protected final String[] args;
     protected final ScenarioResult scenarioResult;
-    private StorageProvider storageProvider;
+    protected StorageProvider storageProvider;
 
     protected AbstractScenario(DataStore dataStore, String[] args) {
         this.scenarioResult = new ScenarioResult(this);
@@ -136,7 +136,7 @@ public abstract class AbstractScenario implements Scenario {
         return startTime;
     }
 
-    private Instant waitForJobsToComplete(Instant startTime) {
+    protected Instant waitForJobsToComplete(Instant startTime) {
         ScenarioMonitor scenarioMonitor = new ScenarioMonitor(scenarioResult.getCreatedJobs(), startTime, getMaxScenarioDuration());
         storageProvider.addJobStorageOnChangeListener(scenarioMonitor);
         Long succeededJobs = scenarioMonitor.awaitAndGetSucceededJobs();
