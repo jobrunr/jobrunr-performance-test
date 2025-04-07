@@ -105,11 +105,11 @@ public abstract class AbstractSqlDataStore implements DataStore, AnalysingDataSt
 
     }
 
-    protected static HikariDataSource toHikariDataSource(JdbcDatabaseContainer<?> container, String driverClassName) {
+    protected HikariDataSource toHikariDataSource(JdbcDatabaseContainer<?> container, String driverClassName) {
         return toHikariDataSource(container.getJdbcUrl(), container.getUsername(), container.getPassword(), driverClassName);
     }
 
-    protected static HikariDataSource toHikariDataSource(String jdbcUrl, String userName, String password, String driverClassName) {
+    protected HikariDataSource toHikariDataSource(String jdbcUrl, String userName, String password, String driverClassName) {
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(jdbcUrl);
         config.setUsername(userName);

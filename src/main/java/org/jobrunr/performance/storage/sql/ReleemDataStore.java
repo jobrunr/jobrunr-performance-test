@@ -1,5 +1,6 @@
 package org.jobrunr.performance.storage.sql;
 
+import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.jobrunr.performance.storage.DataStore;
 import org.jobrunr.storage.StorageProvider;
@@ -14,8 +15,6 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.Calendar;
 import java.util.TimeZone;
-
-import static org.jobrunr.performance.storage.sql.AbstractSqlDataStore.toHikariDataSource;
 
 public class ReleemDataStore implements DataStore {
 
@@ -51,5 +50,16 @@ public class ReleemDataStore implements DataStore {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    protected HikariDataSource toHikariDataSource(String jdbcUrl, String userName, String password, String driverClassName) {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(jdbcUrl);
+        config.setUsername(userName);
+        config.setPassword(password);
+        config.setDriverClassName(driverClassName);
+        config.setMinimumIdle(20);
+        config.setMaximumPoolSize(40);
+        return new HikariDataSource(config);
     }
 }

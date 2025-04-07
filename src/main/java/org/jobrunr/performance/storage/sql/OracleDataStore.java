@@ -30,7 +30,6 @@ public class OracleDataStore extends AbstractSqlDataStore {
                 .withEnv("DB_PASSWD", "oracle"));
     }
 
-    @Override
     protected HikariDataSource toHikariDataSource(String jdbcUrl, String userName, String password, String driverClassName) {
         return super.toHikariDataSource(jdbcUrl.replace("xepdb1", "FREEPDB1"), userName, password, driverClassName);
     }
