@@ -46,7 +46,8 @@ public interface DataStore {
         MySQLDataStore,
         OracleDataStore,
         PostgresDataStore,
-        SQLServerDataStore;
+        SQLServerDataStore,
+        ReleemDataStore;
 
         public static DataStoreType[] all() {
             return DataStoreType.values();
