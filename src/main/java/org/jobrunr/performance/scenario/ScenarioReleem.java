@@ -44,7 +44,9 @@ public class ScenarioReleem extends AbstractJobRunrProScenario {
     @Override
     protected BackgroundJobServerConfiguration getBackgroundJobServerConfiguration() {
         return super.getBackgroundJobServerConfiguration()
-                .andDynamicQueuePolicy(new RoundRobinDynamicQueuePolicy("tenant"));
+                .andDynamicQueuePolicy(new RoundRobinDynamicQueuePolicy("tenant"))
+                .andDeleteSucceededJobsAfter(Duration.ofHours(4))
+                .andPermanentlyDeleteDeletedJobsAfter(Duration.ofMinutes(150));
     }
 
     @Override
