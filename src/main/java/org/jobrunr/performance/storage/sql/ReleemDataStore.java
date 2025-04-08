@@ -40,7 +40,7 @@ public class ReleemDataStore implements DataStore {
     public Instant getUpdatedAtOfLastSucceededJob() {
         try (Connection connection = dataSource.getConnection()) {
             Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT max(updatedAt) AS last_updated_at from jobrunr_jobs where state = 'SUCCEEDED' AND recurringJobId IS NULL");
+            ResultSet resultSet = statement.executeQuery("SELECT updatedAt from jobrunr_jobs where id = (select max(id) from jobrunr_jobs where state = 'SUCCEEDED' AND recurringJobId IS NULL)");
             if (resultSet.next()) {
                 Timestamp lastUpdatedAt = resultSet.getTimestamp("last_updated_at", Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC)));
                 if (lastUpdatedAt == null) return Instant.EPOCH;
