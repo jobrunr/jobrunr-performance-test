@@ -22,8 +22,8 @@ public class ReleemDataStore implements DataStore {
 
     @Override
     public void start() {
-        dataSource = toHikariDataSource("jdbc:mysql://localhost:3306/mysql",
-                "root", "w41tebg99n1zf4k7ypT1OdUJ",
+        dataSource = toHikariDataSource("jdbc:mysql://localhost:3306/jobrunr",
+                "jobrunr_user", "Z4iibp20BU88lYSsUuCC983B",
                 "com.mysql.cj.jdbc.Driver");
     }
 
