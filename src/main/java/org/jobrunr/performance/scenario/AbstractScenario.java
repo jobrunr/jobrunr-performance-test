@@ -169,7 +169,7 @@ public abstract class AbstractScenario implements Scenario {
                 .initialize();
     }
 
-    private Duration getMaxScenarioDuration() {
+    protected Duration getMaxScenarioDuration() {
         return getDurationArg("max_duration", Duration.ofHours(1));
     }
 
