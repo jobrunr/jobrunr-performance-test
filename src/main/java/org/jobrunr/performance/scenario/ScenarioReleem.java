@@ -69,6 +69,11 @@ public class ScenarioReleem extends AbstractJobRunrProScenario {
     }
 
     @Override
+    protected Duration getMaxScenarioDuration() {
+        return Duration.ofDays(7);
+    }
+
+    @Override
     protected long loadJobs() {
         int totalAmountOfJobs = parseInt(getArg("amount", "0").replace("_", ""));
         if (totalAmountOfJobs < 1) return 0;
