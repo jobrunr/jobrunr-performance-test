@@ -47,7 +47,8 @@ public interface DataStore {
         OracleDataStore,
         PostgresDataStore,
         SQLServerDataStore,
-        ReleemDataStore;
+        ReleemDataStore,
+        PostgresViaDockerDataStore;
 
         public static DataStoreType[] all() {
             return DataStoreType.values();

@@ -1,12 +1,12 @@
 package org.jobrunr.performance.scenario;
 
 import org.jobrunr.dashboard.JobRunrDashboardWebServerConfiguration;
+import org.jobrunr.jobs.Job;
 import org.jobrunr.jobs.queues.Queues;
 import org.jobrunr.performance.scenario.jobs.PerformanceTestJob;
 import org.jobrunr.performance.storage.DataStore;
 import org.jobrunr.scheduling.BackgroundJob;
 import org.jobrunr.scheduling.JobBuilder;
-import org.jobrunr.scheduling.JobProId;
 import org.jobrunr.scheduling.cron.Cron;
 import org.jobrunr.server.BackgroundJobServerConfiguration;
 import org.jobrunr.server.configuration.RoundRobinDynamicQueuePolicy;
@@ -14,6 +14,9 @@ import org.jobrunr.server.tasks.zookeeper.ratelimiters.RateLimiterConfiguration;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -117,34 +120,51 @@ public class Scenario00CombinedScenario extends AbstractJobRunrProScenario {
 
     private int createAwaitingJobs(int totalAmountOfAwaitingJobs) {
         int totalAmountOfJobsBeingAwaited = totalAmountOfAwaitingJobs / 4;
+
+        List<JobBuilder> jobsToCreate = new ArrayList<>();
         for (int i = 0; i < totalAmountOfJobsBeingAwaited; i++) {
             int finalI = i;
-            JobProId anAwaitedJob1 = BackgroundJob.create(aJob()
+            UUID jobId1 = Job.newUUID();
+            UUID jobId2 = Job.newUUID();
+
+            jobsToCreate.add(aJob()
+                    .withId(jobId1)
                     .withName("Awaited Job " + i + " 1/4")
                     .<PerformanceTestJob>withDetails(x -> x.testJob(totalAmountOfAwaitingJobs, finalI))
                     .withLabels("an awaited job"));
 
-            JobProId anAwaitedJob2 = BackgroundJob.create(aJob()
-                    .runAfter(anAwaitedJob1)
-                    .withName("Awaited Job " + i + " 2/4 awaiting " + anAwaitedJob1.asUUID() + " (1/4)")
+            jobsToCreate.add(aJob()
+                    .withId(jobId2)
+                    .runAfterSuccessOf(jobId1)
+                    .withName("Awaited Job " + i + " 2/4 awaiting " + jobId1 + " (1/4)")
                     .<PerformanceTestJob>withDetails(x -> x.testJob(totalAmountOfAwaitingJobs, finalI))
                     .withLabels("an awaited job"));
 
-            BackgroundJob.create(Stream.of(
-                    aJob()
-                            .runAfter(anAwaitedJob2)
-                            .withName("Awaited Job " + i + " 3/4 awaiting " + anAwaitedJob1.asUUID() + " (2/4)")
-                            .<PerformanceTestJob>withDetails(x -> x.testJob(totalAmountOfAwaitingJobs, finalI))
-                            .withLabels("an awaited job"),
-                    aJob()
-                            .runAfter(anAwaitedJob2)
-                            .withName("Awaited Job " + i + " 4/4 awaiting " + anAwaitedJob1.asUUID() + " (2/4)")
-                            .<PerformanceTestJob>withDetails(x -> x.testJob(totalAmountOfAwaitingJobs, finalI))
-                            .withLabels("an awaited job")
-            ));
+            jobsToCreate.add(aJob()
+                    .runAfterSuccessOf(jobId2)
+                    .withName("Awaited Job " + i + " 3/4 awaiting " + jobId2 + " (2/4)")
+                    .<PerformanceTestJob>withDetails(x -> x.testJob(totalAmountOfAwaitingJobs, finalI))
+                    .withLabels("an awaited job"));
 
-            anAwaitedJob1.<PerformanceTestJob>onFailure(x -> x.testJob(totalAmountOfAwaitingJobs, finalI));
+            jobsToCreate.add(aJob()
+                    .runAfterSuccessOf(jobId2)
+                    .withName("Awaited Job " + i + " 4/4 awaiting " + jobId2 + " (2/4)")
+                    .<PerformanceTestJob>withDetails(x -> x.testJob(totalAmountOfAwaitingJobs, finalI))
+                    .withLabels("an awaited job"));
+
+            jobsToCreate.add(aJob()
+                    .runAfterFailureOf(jobId1)
+                    .withName("Awaited Job " + i + " 4/4 awaiting " + jobId2 + " (2/4)")
+                    .<PerformanceTestJob>withDetails(x -> x.testJob(totalAmountOfAwaitingJobs, finalI))
+                    .withLabels("an awaited job"));
+
+            if (jobsToCreate.size() >= 1000) {
+                BackgroundJob.create(jobsToCreate.stream());
+                jobsToCreate.clear();
+            }
         }
+        BackgroundJob.create(jobsToCreate.stream());
+        jobsToCreate.clear();
         return totalAmountOfAwaitingJobs;
     }
 

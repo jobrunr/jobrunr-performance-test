@@ -31,7 +31,7 @@ public class ScenarioMonitor implements JobStatsChangeListener {
 
     @Override
     public void onChange(JobStats jobStats) {
-        if (jobStats.getAwaiting() <= 0 && jobStats.getScheduled() <= 0 && jobStats.getEnqueued() <= 0) {
+        if (jobStats.getSucceeded() >= totalAmountOfJobs) {
             LoggerFactory.getLogger(ScenarioMonitor.class).warn("All jobs were processed ({} / {})", jobStats.getSucceeded(), totalAmountOfJobs);
             countDownLatch.countDown();
         } else if (Duration.between(startedAt, Instant.now()).compareTo(maxDuration) > 0) {
@@ -39,14 +39,17 @@ public class ScenarioMonitor implements JobStatsChangeListener {
             countDownLatch.countDown();
         } else if (this.jobsStats != null
                 && Objects.equals(this.jobsStats.getAwaiting(), jobStats.getAwaiting())
+                && Objects.equals(this.jobsStats.getScheduled(), jobStats.getScheduled())
                 && Objects.equals(this.jobsStats.getSucceeded(), jobStats.getSucceeded())
                 && Objects.equals(this.jobsStats.getEnqueued(), jobStats.getEnqueued())
                 && Duration.between(startedAt, Instant.now()).compareTo(Duration.ofMinutes(2)) > 0) {
             // in case of failure
-            if (duplicateJobStatsCounter++ > 20) {
+            if (duplicateJobStatsCounter++ > 20 && duplicateJobStatsCounter < 25) {
                 LoggerFactory.getLogger(ScenarioMonitor.class).warn("Duplicate job stats received too many times - shutting down");
                 countDownLatch.countDown();
             }
+        } else {
+            duplicateJobStatsCounter = 0;
         }
         this.jobsStats = jobStats;
     }
