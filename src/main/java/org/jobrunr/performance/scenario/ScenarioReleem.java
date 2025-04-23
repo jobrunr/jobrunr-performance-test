@@ -3,12 +3,9 @@ package org.jobrunr.performance.scenario;
 import org.jobrunr.dashboard.JobRunrDashboardWebServerConfiguration;
 import org.jobrunr.jobs.Job;
 import org.jobrunr.jobs.queues.Queues;
-import org.jobrunr.jobs.states.AwaitingState;
-import org.jobrunr.jobs.states.StateName;
 import org.jobrunr.performance.scenario.jobs.PerformanceTestJob;
 import org.jobrunr.performance.storage.DataStore;
 import org.jobrunr.scheduling.BackgroundJob;
-import org.jobrunr.scheduling.CustomJobBuilder;
 import org.jobrunr.scheduling.JobBuilder;
 import org.jobrunr.scheduling.cron.Cron;
 import org.jobrunr.server.BackgroundJobServerConfiguration;
@@ -51,8 +48,8 @@ public class ScenarioReleem extends AbstractJobRunrProScenario {
     protected BackgroundJobServerConfiguration getBackgroundJobServerConfiguration() {
         return super.getBackgroundJobServerConfiguration()
                 .andDynamicQueuePolicy(new RoundRobinDynamicQueuePolicy("tenant"))
-                .andDeleteSucceededJobsAfter(Duration.ofHours(5))
-                .andPermanentlyDeleteDeletedJobsAfter(Duration.ofHours(4));
+                .andDeleteSucceededJobsAfter(Duration.ofHours(4))
+                .andPermanentlyDeleteDeletedJobsAfter(Duration.ofHours(2));
     }
 
     @Override
@@ -164,27 +161,28 @@ public class ScenarioReleem extends AbstractJobRunrProScenario {
 
             jobsToCreate.add(aJob()
                     .withId(jobId2)
-                    .runAfter(jobId1)
+                    .runAfterSuccessOf(jobId1)
                     .withName("Awaited Job " + i + " 2/4 awaiting " + jobId1 + " (1/4)")
                     .<PerformanceTestJob>withDetails(x -> x.testJob(totalAmountOfAwaitingJobs, finalI))
                     .withLabels("an awaited job"));
 
             jobsToCreate.add(aJob()
-                    .runAfter(jobId2)
+                    .runAfterSuccessOf(jobId2)
                     .withName("Awaited Job " + i + " 3/4 awaiting " + jobId2 + " (2/4)")
                     .<PerformanceTestJob>withDetails(x -> x.testJob(totalAmountOfAwaitingJobs, finalI))
                     .withLabels("an awaited job"));
 
             jobsToCreate.add(aJob()
-                    .runAfter(jobId2)
+                    .runAfterSuccessOf(jobId2)
                     .withName("Awaited Job " + i + " 4/4 awaiting " + jobId2 + " (2/4)")
                     .<PerformanceTestJob>withDetails(x -> x.testJob(totalAmountOfAwaitingJobs, finalI))
                     .withLabels("an awaited job"));
 
-            jobsToCreate.add(CustomJobBuilder.setInitialState(aJob()
+            jobsToCreate.add(aJob()
+                    .runAfterFailureOf(jobId1)
                     .withName("Awaited Job " + i + " 4/4 awaiting " + jobId2 + " (2/4)")
                     .<PerformanceTestJob>withDetails(x -> x.testJob(totalAmountOfAwaitingJobs, finalI))
-                    .withLabels("an awaited job"), new AwaitingState(jobId1, StateName.FAILED)));
+                    .withLabels("an awaited job"));
 
             if (jobsToCreate.size() >= 1000) {
                 BackgroundJob.create(jobsToCreate.stream());

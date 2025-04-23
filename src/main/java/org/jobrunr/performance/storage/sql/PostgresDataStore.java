@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.time.Instant;
 import java.util.List;
 
 public class PostgresDataStore extends AbstractSqlDataStore {
@@ -29,6 +30,17 @@ public class PostgresDataStore extends AbstractSqlDataStore {
         } catch (java.sql.SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public Instant getUpdatedAtOfLastSucceededJob() {
+        Instant updatedAtOfLastSucceededJob = getUpdatedAtOfLastSucceededJob("SELECT updatedAt as last_updated_at from jobrunr_jobs where state = 'SUCCEEDED' AND recurringJobId IS NULL order by id desc limit 1");
+        if (updatedAtOfLastSucceededJob != null) return updatedAtOfLastSucceededJob;
+
+        updatedAtOfLastSucceededJob = getUpdatedAtOfLastSucceededJob("SELECT updatedAt as last_updated_at from jobrunr_jobs where state = 'SUCCEEDED' order by id desc limit 1");
+        if (updatedAtOfLastSucceededJob != null) return updatedAtOfLastSucceededJob;
+
+        return Instant.now();
     }
 
     @Override
