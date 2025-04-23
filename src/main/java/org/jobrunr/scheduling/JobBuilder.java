@@ -16,6 +16,7 @@ import org.jobrunr.jobs.states.InitialState;
 import org.jobrunr.jobs.states.JobState;
 import org.jobrunr.jobs.states.ScheduledState;
 import org.jobrunr.jobs.states.StateName;
+import org.jobrunr.performance.JobRunrDistribution;
 import org.jobrunr.utils.JobUtils;
 import org.mockito.internal.util.reflection.Whitebox;
 
@@ -512,7 +513,11 @@ public class JobBuilder {
 
     private void setLabels(Job job) {
         if (labels != null) {
-            Whitebox.setInternalState(job, "labels", new HashSet<>(labels));
+            if (JobRunrDistribution.current.getVersion().contains("7")) {
+                Whitebox.setInternalState(job, "labels", new HashSet<>(labels));
+            } else {
+                job.setLabels(labels);
+            }
         }
     }
 
