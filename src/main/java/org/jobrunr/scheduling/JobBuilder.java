@@ -17,9 +17,11 @@ import org.jobrunr.jobs.states.JobState;
 import org.jobrunr.jobs.states.ScheduledState;
 import org.jobrunr.jobs.states.StateName;
 import org.jobrunr.utils.JobUtils;
+import org.mockito.internal.util.reflection.Whitebox;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -510,7 +512,7 @@ public class JobBuilder {
 
     private void setLabels(Job job) {
         if (labels != null) {
-            job.setLabels(labels);
+            Whitebox.setInternalState(job, "labels", new HashSet<>(labels));
         }
     }
 
