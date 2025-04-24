@@ -57,7 +57,7 @@ public class ScenarioMonitor implements JobStatsChangeListener {
     public Long awaitAndGetSucceededJobs() {
         try {
             countDownLatch.await();
-            return jobsStats.getSucceeded();
+            return jobsStats.getSucceeded() + jobsStats.getAllTimeSucceeded();
         } catch (InterruptedException e) {
             throw new RuntimeException("Exception waiting for " + totalAmountOfJobs + " jobs to succeed", e);
         }

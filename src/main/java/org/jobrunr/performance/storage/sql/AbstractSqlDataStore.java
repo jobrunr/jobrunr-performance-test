@@ -19,17 +19,13 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.LongSummaryStatistics;
 import java.util.Map;
-import java.util.TimeZone;
 
 import static java.time.Instant.now;
 import static org.jobrunr.performance.utils.Memory.Unit.gigabytes;
@@ -118,31 +114,6 @@ public abstract class AbstractSqlDataStore implements DataStore, AnalysingDataSt
         config.setMinimumIdle(20);
         config.setMaximumPoolSize(40);
         return new HikariDataSource(config);
-    }
-
-    public Instant getUpdatedAtOfLastSucceededJob() {
-        Instant updatedAtOfLastSucceededJob = getUpdatedAtOfLastSucceededJob("SELECT updatedAt as last_updated_at from jobrunr_jobs where id = (select max(id) from jobrunr_jobs where state = 'SUCCEEDED' AND recurringJobId IS NULL)");
-        if (updatedAtOfLastSucceededJob != null) return updatedAtOfLastSucceededJob;
-
-        updatedAtOfLastSucceededJob = getUpdatedAtOfLastSucceededJob("SELECT updatedAt as last_updated_at from jobrunr_jobs where id = (select max(id) from jobrunr_jobs where state = 'SUCCEEDED')");
-        if (updatedAtOfLastSucceededJob != null) return updatedAtOfLastSucceededJob;
-
-        return Instant.now();
-    }
-
-    protected Instant getUpdatedAtOfLastSucceededJob(String sqlQuery) {
-        try (Connection connection = dataSource.getConnection()) {
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(sqlQuery);
-            if (resultSet.next()) {
-                Timestamp lastUpdatedAt = resultSet.getTimestamp("last_updated_at", Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC)));
-                if (lastUpdatedAt == null) return null;
-                return lastUpdatedAt.toInstant();
-            }
-            return null;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public String explainQuery(Query query) {
