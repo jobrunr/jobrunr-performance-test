@@ -7,9 +7,12 @@ import org.jobrunr.performance.storage.AnalysingDataStore.IndexUsage;
 import org.jobrunr.performance.storage.StorageProviderQueryAnalysis;
 import org.jobrunr.performance.storage.StorageProviderQueryAnalysis.QueryAnalysisAtPercentage;
 import org.jobrunr.server.BackgroundJobServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.time.Duration;
 import java.util.List;
@@ -21,6 +24,8 @@ import static org.jobrunr.performance.utils.ReportingUtils.findLogbooksFolder;
 import static org.jobrunr.performance.utils.StringUtils.camelCaseToHumanReadable;
 
 public class MarkdownReporter {
+
+    protected static final Logger LOGGER = LoggerFactory.getLogger(MarkdownReporter.class);
 
     public static void render(BackgroundJobServer backgroundJobServer, AnalysingDataStore dataStore, ScenarioResult scenarioResult) {
         StringBuilder markdown = new StringBuilder();
@@ -99,10 +104,12 @@ public class MarkdownReporter {
 
         });
 
+        Path fileName = findLogbooksFolder().resolve("details").resolve(scenarioResult.getTimestamp().toString() + ".md");
         try {
-            Files.writeString(findLogbooksFolder().resolve("details").resolve(scenarioResult.getTimestamp().toString() + ".md"), markdown.toString(), StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+            Files.writeString(fileName, markdown.toString(), StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+            LOGGER.info("Successfully wrote details for scenario {} to {}", camelCaseToHumanReadable(scenarioResult.getScenario()), fileName);
         } catch (IOException e) {
-            System.out.println("Error writing markdown");
+            LOGGER.error("Error writing details for scenario {} to {}", camelCaseToHumanReadable(scenarioResult.getScenario()), fileName);
         }
     }
 }

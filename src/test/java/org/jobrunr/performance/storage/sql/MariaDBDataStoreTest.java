@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.jobrunr.jobs.JobTestBuilder.aJobInProgress;
 import static org.jobrunr.jobs.JobTestBuilder.anEnqueuedJobWithName;
 import static org.jobrunr.storage.Paging.OffsetBasedPage.ascOnPriorityAndUpdatedAt;
 import static org.jobrunr.storage.ThreadSafeStorageProvider.MethodStatisticsConfiguration.DETAILED;
@@ -54,6 +55,14 @@ class MariaDBDataStoreTest {
         List<AnalysingDataStore.IndexDetails> indexDetails = dataStore.getIndexDetails();
         indexDetails.forEach(System.out::println);
         dataStore.stop();
+    }
+
+    @Test
+    void shouldGetLastUpdatedAtOfSucceededJob() {
+        Instant instant = Instant.parse("2025-04-23T22:00:00Z");
+        Job job = aJobInProgress().withSucceededState(instant).build();
+        storageProvider.save(job);
+        assertThat(dataStore.getUpdatedAtOfLastSucceededJob()).isEqualTo(instant);
     }
 
     @Test
