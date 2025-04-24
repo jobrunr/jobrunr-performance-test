@@ -24,6 +24,7 @@ import java.util.Optional;
 
 import static java.lang.Boolean.parseBoolean;
 import static java.lang.Integer.parseInt;
+import static java.time.Instant.now;
 import static org.jobrunr.server.BackgroundJobServerConfiguration.usingStandardBackgroundJobServerConfiguration;
 import static org.jobrunr.storage.ThreadSafeStorageProvider.MethodStatisticsConfiguration.DETAILED;
 
@@ -90,9 +91,9 @@ public abstract class AbstractScenario implements Scenario {
 
     private void createJobsAndUpdateStatistics() {
         LOGGER.info("Creating jobs");
-        Instant startTime = Instant.now();
+        Instant startTime = now();
         long totalAmountOfJobsCreated = loadJobs();
-        Instant endTime = Instant.now();
+        Instant endTime = now();
         scenarioResult.setAmountOfJobsCreated(totalAmountOfJobsCreated, Duration.between(startTime, endTime));
         LOGGER.info("Successfully created {} jobs in {}. Updating database statistics", totalAmountOfJobsCreated, scenarioResult.getCreationDuration());
         dataStore.updateStatistics();
@@ -131,7 +132,7 @@ public abstract class AbstractScenario implements Scenario {
     }
 
     private Instant startProcessingJobs() {
-        Instant startTime = Instant.now();
+        Instant startTime = now();
         JobRunrDistribution.current.backgroundJobServer().start();
         return startTime;
     }
@@ -141,7 +142,7 @@ public abstract class AbstractScenario implements Scenario {
         storageProvider.addJobStorageOnChangeListener(scenarioMonitor);
         Long succeededJobs = scenarioMonitor.awaitAndGetSucceededJobs();
         scenarioResult.setSucceededJobs(succeededJobs);
-        return dataStore.getUpdatedAtOfLastSucceededJob();
+        return now();
     }
 
     private void stopJobRunrAndDataStore() {
