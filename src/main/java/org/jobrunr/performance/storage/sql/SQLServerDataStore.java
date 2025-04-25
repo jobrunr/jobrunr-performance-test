@@ -18,8 +18,7 @@ public class SQLServerDataStore extends AbstractSqlDataStore {
 
     public SQLServerDataStore() {
         super(new MSSQLServerContainer<>(DockerImageName
-                .parse("mcr.microsoft.com/azure-sql-edge")
-                .asCompatibleSubstituteFor("mcr.microsoft.com/mssql/server"))
+                .parse("mcr.microsoft.com/mssql/server:2022-latest"))
                 .withCreateContainerCmdModifier(cmd ->
                         cmd.withHostConfig(cmd.getHostConfig().withPortBindings(new PortBinding(Ports.Binding.bindPort(14330), new ExposedPort(1433)))))
                 .waitingFor(Wait.forListeningPort())

@@ -2,12 +2,8 @@ package org.jobrunr.performance.storage.nosql;
 
 import com.mongodb.MongoClientSettings;
 import com.mongodb.ServerAddress;
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Sorts;
-import org.bson.Document;
 import org.bson.UuidRepresentation;
 import org.bson.codecs.UuidCodec;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -19,13 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.MongoDBContainer;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
-
-import static com.mongodb.client.model.Filters.eq;
-import static org.jobrunr.storage.StorageProviderUtils.Jobs.FIELD_RECURRING_JOB_ID;
-import static org.jobrunr.storage.StorageProviderUtils.Jobs.FIELD_UPDATED_AT;
 
 public class MongoDBDataStore implements DataStore {
 
@@ -54,14 +44,6 @@ public class MongoDBDataStore implements DataStore {
     public StorageProvider getStorageProvider(boolean logQueries) {
         // TODO: log queries for MongoDB somehow
         return new MongoDBStorageProvider(mongoClient());
-    }
-
-    @Override
-    public Instant getUpdatedAtOfLastSucceededJob() {
-        MongoDatabase jobrunrDatabase = mongoClient.getDatabase("jobrunr");
-        FindIterable<Document> lastSucceededJob = jobrunrDatabase.getCollection("jobs").find(eq(FIELD_RECURRING_JOB_ID, null)).sort(Sorts.descending(FIELD_UPDATED_AT)).limit(1);
-        Long microseconds = lastSucceededJob.first().getLong(FIELD_UPDATED_AT);
-        return Instant.EPOCH.plus(microseconds, ChronoUnit.MICROS);
     }
 
     protected MongoClient mongoClient() {

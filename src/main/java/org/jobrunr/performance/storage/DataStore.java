@@ -3,8 +3,6 @@ package org.jobrunr.performance.storage;
 import org.jobrunr.storage.StorageProvider;
 import org.jobrunr.utils.reflection.ReflectionUtils;
 
-import java.time.Instant;
-
 import static org.jobrunr.performance.utils.StringUtils.isNullOrEmpty;
 import static org.jobrunr.performance.utils.StringUtils.substringBeforeLast;
 
@@ -15,8 +13,6 @@ public interface DataStore {
     void stop();
 
     StorageProvider getStorageProvider(boolean logQueries);
-
-    Instant getUpdatedAtOfLastSucceededJob();
 
     default void updateStatistics() {
     }
