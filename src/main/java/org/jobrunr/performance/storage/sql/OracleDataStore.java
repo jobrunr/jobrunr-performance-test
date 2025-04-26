@@ -9,9 +9,11 @@ import org.testcontainers.utility.MountableFile;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.UUID;
 
 public class OracleDataStore extends AbstractSqlDataStore {
 
@@ -58,16 +60,35 @@ public class OracleDataStore extends AbstractSqlDataStore {
     @Override
     public String explainAnalyseQuery(Connection connection, String analyzeQueryWithValues) throws SQLException {
         try (Statement statement = connection.createStatement()) {
-            String sqlStatement = analyzeQueryWithValues.replaceFirst(" ", " /*+ gather_plan_statistics*/ ");
+            String uuid = UUID.randomUUID().toString();
+            String sqlStatement = analyzeQueryWithValues.replaceFirst(" ", " /*+ gather_plan_statistics*/ /* " + uuid + " */");
 
             statement.execute(sqlStatement);
-            // Retrieve the plan for the given sqlId and childNumber.
-            StringBuilder sb = new StringBuilder();
-            try (ResultSet resultSet = statement.executeQuery("SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY_CURSOR(null, null, 'LAST ALLSTATS ALL +COST'))")) {
-                while (resultSet.next()) {
-                    sb.append(resultSet.getString(1)).append(System.lineSeparator());
+
+            String sqlId;
+            int childNumber;
+            String lookup = "SELECT sql_id, child_number FROM v$sql WHERE sql_text LIKE ? AND rownum = 1";
+            try (PreparedStatement ps = connection.prepareStatement(lookup)) {
+                ps.setString(1, "%" + uuid + "%");
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (!rs.next()) {
+                        throw new SQLException("Could not locate SQL_ID/child for UUID=" + uuid + " and query=" + analyzeQueryWithValues);
+                    }
+                    sqlId = rs.getString("sql_id");
+                    childNumber = rs.getInt("child_number");
                 }
-                return sb.toString();
+            }
+
+            try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY_CURSOR(?, ?, 'LAST ALLSTATS ALL +COST'))")) {
+                ps.setString(1, sqlId);
+                ps.setInt(2, childNumber);
+                try (ResultSet rs = ps.executeQuery()) {
+                    StringBuilder sb = new StringBuilder();
+                    while (rs.next()) {
+                        sb.append(rs.getString(1)).append(System.lineSeparator());
+                    }
+                    return sb.toString();
+                }
             }
         } catch (java.sql.SQLException e) {
             return "Could not explain query plan for query '" + analyzeQueryWithValues + "' due to " + e.getMessage();
