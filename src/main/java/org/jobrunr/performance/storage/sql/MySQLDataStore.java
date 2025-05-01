@@ -23,7 +23,7 @@ public class MySQLDataStore extends AbstractSqlDataStore {
                         ))
                 .withCommand("--innodb-buffer-pool-size=3G --innodb-log-file-size=1G --innodb-log-buffer-size=8M " +
                         "--tmp-table-size=256M --sort-buffer-size=256K --read-rnd-buffer-size=512K " +
-                        "--max-connections=80 --thread-cache-size=80 --max-allowed-packet=128M" + 
+                        "--max-connections=80 --thread-cache-size=80 --max-allowed-packet=128M --binlog-expire-logs-seconds=18000 " +
                         "--performance-schema-consumer-events-waits-history=ON --performance-schema-consumer-events_transactions_history=ON"));
     }
 

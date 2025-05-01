@@ -122,8 +122,8 @@ public abstract class AbstractScenario implements Scenario {
         return Optional.empty();
     }
 
-    private void appendToLogbook() {
-        LogBookReporter.append(JobRunrDistribution.current.backgroundJobServer(), scenarioResult);
+    protected void appendToLogbook(String... extraParams) {
+        LogBookReporter.append(JobRunrDistribution.current.backgroundJobServer(), scenarioResult, extraParams);
         if (getBooleanArg("log_storage_provider_timings") && dataStore instanceof AnalysingDataStore) {
             MarkdownReporter.render(JobRunrDistribution.current.backgroundJobServer(), (AnalysingDataStore) dataStore, scenarioResult);
         } else {
@@ -131,7 +131,7 @@ public abstract class AbstractScenario implements Scenario {
         }
     }
 
-    private Instant startProcessingJobs() {
+    protected Instant startProcessingJobs() {
         Instant startTime = now();
         JobRunrDistribution.current.backgroundJobServer().start();
         return startTime;

@@ -33,6 +33,11 @@ public class PerformanceTestJob {
         LOGGER.info("Batch job {} finished", batchJob);
     }
 
+    public void slowJob(int totalAmountOfJobs, int index, long sleepDuration) throws InterruptedException {
+        Thread.sleep(sleepDuration);
+        this.testJob(totalAmountOfJobs, index);
+    }
+
     public void testJob(int totalAmountOfJobs, int index) {
         long currentTime = System.currentTimeMillis();
         startTime.compareAndSet(-1L, currentTime);
