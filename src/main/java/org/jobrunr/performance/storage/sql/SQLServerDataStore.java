@@ -58,4 +58,9 @@ public class SQLServerDataStore extends AbstractSqlDataStore {
             return sb.toString();
         }
     }
+
+    @Override
+    public boolean isQueryUsingIndex(String analysis, String indexName) {
+        return analysis.contains("Index=\"[" + indexName + "]\"");
+    }
 }
