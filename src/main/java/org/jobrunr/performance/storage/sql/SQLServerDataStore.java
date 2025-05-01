@@ -48,8 +48,6 @@ public class SQLServerDataStore extends AbstractSqlDataStore {
             // Enable XML query plan mode; the query itself won't be executed
             statement.execute("SET SHOWPLAN_XML ON");
             ResultSet resultSet = statement.executeQuery(analyzeQueryWithValues);
-            //statement.getMoreResults();
-            //ResultSet explainPlanResultSet = statement.getResultSet();
             StringBuilder sb = new StringBuilder();
             while (resultSet.next()) {
                 sb.append(resultSet.getString(1)).append(System.lineSeparator());
@@ -61,6 +59,6 @@ public class SQLServerDataStore extends AbstractSqlDataStore {
 
     @Override
     public boolean isQueryUsingIndex(String analysis, String indexName) {
-        return analysis.contains("Index=\"[" + indexName + "]\"");
+        return analysis.contains("Index=\"[" + indexName + "]\" IndexKind");
     }
 }
