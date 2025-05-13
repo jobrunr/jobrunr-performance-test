@@ -4,14 +4,14 @@ import org.jobrunr.performance.scenario.jobs.PerformanceTestJob;
 import org.jobrunr.performance.storage.DataStore;
 import org.jobrunr.scheduling.BackgroundJob;
 import org.jobrunr.scheduling.JobBuilder;
-import org.jobrunr.server.tasks.zookeeper.ratelimiters.RateLimiterConfiguration;
+import org.jobrunr.storage.JobRunrMetadata;
 
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.lang.Integer.parseInt;
+import static org.jobrunr.performance.util.RateLimiterConfiguration.concurrentJobRateLimiter;
 import static org.jobrunr.scheduling.JobBuilder.aJob;
-import static org.jobrunr.server.tasks.zookeeper.ratelimiters.ConcurrentJobRateLimiterConfiguration.concurrentJobRateLimiter;
 
 public class Scenario03ConcurrentJobRateLimiter extends AbstractJobRunrProScenario {
 
@@ -27,14 +27,14 @@ public class Scenario03ConcurrentJobRateLimiter extends AbstractJobRunrProScenar
     }
 
     @Override
-    protected RateLimiterConfiguration[] getRateLimiterConfigurations() {
+    protected JobRunrMetadata[] getRateLimiterConfigurationsAsMetadata() {
         int totalAmountOfThreads = Runtime.getRuntime().availableProcessors() * 8;
         int amountOfThreadsPerRateLimiter = totalAmountOfThreads / rateLimiters;
 
         return IntStream.range(0, rateLimiters).boxed()
                 .map(Scenario03ConcurrentJobRateLimiter::getRateLimiterName)
                 .map(name -> concurrentJobRateLimiter(name, amountOfThreadsPerRateLimiter))
-                .toArray(RateLimiterConfiguration[]::new);
+                .toArray(JobRunrMetadata[]::new);
     }
 
     @Override
