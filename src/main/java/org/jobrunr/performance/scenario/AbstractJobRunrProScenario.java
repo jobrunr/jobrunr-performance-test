@@ -6,9 +6,11 @@ import org.jobrunr.jobs.queues.Queues;
 import org.jobrunr.performance.JobRunrDistribution;
 import org.jobrunr.performance.storage.DataStore;
 import org.jobrunr.server.BackgroundJobServerConfiguration;
-import org.jobrunr.server.tasks.zookeeper.ratelimiters.RateLimiterConfiguration;
+import org.jobrunr.storage.JobRunrMetadata;
 import org.jobrunr.storage.StorageProvider;
 import org.jobrunr.utils.mapper.jackson.JacksonJsonMapper;
+
+import static java.util.Arrays.stream;
 
 public abstract class AbstractJobRunrProScenario extends AbstractScenario {
 
@@ -20,15 +22,16 @@ public abstract class AbstractJobRunrProScenario extends AbstractScenario {
         Queues queues = getQueues();
         BackgroundJobServerConfiguration backgroundJobServerConfiguration = getBackgroundJobServerConfiguration();
         JobRunrDashboardWebServerConfiguration dashboardWebServerConfiguration = getDashboardWebServerConfiguration();
-        RateLimiterConfiguration[] rateLimiterConfigurations = getRateLimiterConfigurations();
+        JobRunrMetadata[] rateLimiterConfigurations = getRateLimiterConfigurationsAsMetadata();
 
         storageProvider.setJobMapper(new JobMapper(new JacksonJsonMapper()));
+
+        stream(rateLimiterConfigurations).forEach(storageProvider::saveMetadata);
 
         JobRunrDistribution.JobRunrPro.saveLicense(storageProvider);
         JobRunrDistribution.JobRunrPro.getConfiguration()
                 .useQueues(Queues.DEFAULT_QUEUE, queues.getAllQueues().toArray(new String[0]))
                 .useStorageProvider(storageProvider)
-                .useRateLimiter(rateLimiterConfigurations)
                 .useBackgroundJobServer(backgroundJobServerConfiguration, false)
                 .useDashboardIf(dashboardWebServerConfiguration != null, dashboardWebServerConfiguration)
                 .initialize();
@@ -38,7 +41,7 @@ public abstract class AbstractJobRunrProScenario extends AbstractScenario {
         return new Queues(Queues.DEFAULT_QUEUE, Queues.DEFAULT_QUEUE);
     }
 
-    protected RateLimiterConfiguration[] getRateLimiterConfigurations() {
-        return new RateLimiterConfiguration[]{};
+    protected JobRunrMetadata[] getRateLimiterConfigurationsAsMetadata() {
+        return new JobRunrMetadata[]{};
     }
 }

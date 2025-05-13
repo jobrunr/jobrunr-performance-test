@@ -10,7 +10,7 @@ import org.jobrunr.scheduling.JobBuilder;
 import org.jobrunr.scheduling.cron.Cron;
 import org.jobrunr.server.BackgroundJobServerConfiguration;
 import org.jobrunr.server.configuration.RoundRobinDynamicQueuePolicy;
-import org.jobrunr.server.tasks.zookeeper.ratelimiters.RateLimiterConfiguration;
+import org.jobrunr.storage.JobRunrMetadata;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -23,10 +23,10 @@ import java.util.stream.Stream;
 import static java.lang.Integer.parseInt;
 import static java.time.temporal.ChronoUnit.MILLIS;
 import static java.time.temporal.ChronoUnit.SECONDS;
+import static org.jobrunr.performance.util.RateLimiterConfiguration.concurrentJobRateLimiter;
 import static org.jobrunr.scheduling.JobBuilder.aBatchJob;
 import static org.jobrunr.scheduling.JobBuilder.aJob;
 import static org.jobrunr.scheduling.RecurringJobBuilder.aRecurringJob;
-import static org.jobrunr.server.tasks.zookeeper.ratelimiters.ConcurrentJobRateLimiterConfiguration.concurrentJobRateLimiter;
 
 public class ScenarioReleem extends AbstractJobRunrProScenario {
 
@@ -59,11 +59,11 @@ public class ScenarioReleem extends AbstractJobRunrProScenario {
     }
 
     @Override
-    protected RateLimiterConfiguration[] getRateLimiterConfigurations() {
+    protected JobRunrMetadata[] getRateLimiterConfigurationsAsMetadata() {
         return IntStream.range(0, 10).boxed()
                 .map(ScenarioReleem::getRateLimiterName)
                 .map(name -> concurrentJobRateLimiter(name, 5))
-                .toArray(RateLimiterConfiguration[]::new);
+                .toArray(JobRunrMetadata[]::new);
     }
 
     @Override
