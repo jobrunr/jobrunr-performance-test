@@ -10,7 +10,7 @@ public interface RateLimiterConfiguration {
     static JobRunrMetadata concurrentJobRateLimiter(String rateLimiterName, Integer amount) {
         Object concurrentJobRateLimiter = backwardsCompatibleMethod(
                 "org.jobrunr.server.tasks.zookeeper.ratelimiters.ConcurrentJobRateLimiterConfiguration",
-                "org.jobrunr.jobs.ratelimiters.ConcurrentJobRateLimiterConfiguration"
+                "org.jobrunr.server.tasks.zookeeper.ratelimiters.ConcurrentJobRateLimiterConfiguration"
         ).invoke("concurrentJobRateLimiter", rateLimiterName, amount);
         return toMetadata(concurrentJobRateLimiter);
     }

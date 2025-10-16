@@ -59,6 +59,6 @@ public class SQLServerDataStore extends AbstractSqlDataStore {
 
     @Override
     public boolean isQueryUsingIndex(String analysis, String indexName) {
-        return analysis.contains("Index=\"[" + indexName + "]\" IndexKind");
+        return !analysis.contains("update jobrunr") && analysis.contains("Index=\"[" + indexName + "]\" IndexKind") || analysis.contains("Index=\"[" + indexName + "]\" Filtered");
     }
 }

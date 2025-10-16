@@ -1,0 +1,3 @@
+Date & Time,Host name,Java version,JobRunr type,JobRunr version,StorageProvider,amount of created jobs,amount of succeeded jobs,creation duration,processing duration,job throughput (jobs / sec)
+2025-05-02T14:01:44.185522032Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/v8/performance-improvement-sql-server@3ba51ef91),PostgresStorageProvider,500000,500000,PT27.479927417S,PT1M56.905761915S,4310.34
+2025-05-02T14:09:23.932652620Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/v8/performance-improvement-sql-server@3ba51ef91),PostgresStorageProvider,500000,500000,PT26.53461204S,PT2M23.163250657S,3496.50

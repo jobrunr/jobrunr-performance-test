@@ -25,6 +25,7 @@
     <logger name="org.jobrunr.server.tasks.zookeeper.ProcessScheduledJobsTask" level="DEBUG"/>
     <logger name="org.jobrunr.server.tasks.zookeeper.ProcessJobsAwaitingRateLimiterTask" level="TRACE"/>
     <logger name="org.jobrunr.server.tasks.zookeeper.ProcessAwaitingJobsTask" level="TRACE"/>
+    <logger name="org.jobrunr.server.tasks.zookeeper.UpdateBatchJobsWithChildJobDetailsTask" level="TRACE"/>
     <logger name="org.jobrunr.server.tasks.zookeeper.ratelimiters.ConcurrentJobRateLimiter" level="DEBUG"/>
 
     <root level="info">

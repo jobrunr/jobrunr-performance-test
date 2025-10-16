@@ -1,0 +1,13 @@
+Date & Time,Host name,Java version,JobRunr type,JobRunr version,StorageProvider,amount of created jobs,amount of succeeded jobs,creation duration,processing duration,job throughput (jobs / sec)
+2025-04-25T21:47:41.542461796Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,7.5.0 (HEAD),MariaDbStorageProvider,500000,500000,PT28.209461228S,PT3M8.232777979S,2659.57
+2025-04-25T21:51:54.327935896Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,7.5.0 (HEAD),MongoDBStorageProvider,500000,500000,PT12.947623956S,PT3M53.241177233S,2145.92
+2025-04-25T21:56:08.629668065Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,7.5.0 (HEAD),MySqlStorageProvider,500000,500000,PT1M0.36067052S,PT10M3.119471443S,829.19
+2025-04-25T22:08:16.261877473Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,7.5.0 (HEAD),OracleStorageProvider,500000,31068,PT2M2.561542452S,PT4M16.35248627S,121.36
+2025-04-25T22:15:50.743637704Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,7.5.0 (HEAD),PostgresStorageProvider,500000,500000,PT27.44078325S,PT2M48.072485986S,2976.19
+2025-04-25T22:19:11.705979241Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,7.5.0 (HEAD),SQLServerStorageProvider,500000,500000,PT58.671563037S,PT24M23.181728452S,341.76
+2025-04-25T22:44:53.429020874Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/v8/performance-improvement@22f276014),MariaDbStorageProvider,500000,500000,PT25.48499327S,PT3M13.220112212S,2590.67
+2025-04-25T22:49:12.390428793Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/v8/performance-improvement@22f276014),MongoDBStorageProvider,500000,500000,PT13.014185016S,PT3M48.254595662S,2192.98
+2025-04-25T22:53:22.001658375Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/v8/performance-improvement@22f276014),MySqlStorageProvider,500000,500000,PT51.278146525S,PT10M8.138169377S,822.37
+2025-04-25T23:05:26.224133137Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/v8/performance-improvement@22f276014),OracleStorageProvider,500000,40344,PT1M15.272549161S,PT4M11.097435719S,160.73
+2025-04-25T23:12:10.747625654Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/v8/performance-improvement@22f276014),PostgresStorageProvider,500000,500000,PT26.439930823S,PT3M3.062355033S,2732.24
+2025-04-25T23:15:45.483428568Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/v8/performance-improvement@22f276014),SQLServerStorageProvider,500000,500000,PT51.823094099S,PT9M3.068584122S,920.81
