@@ -10,6 +10,7 @@ import org.jobrunr.scheduling.JobBuilder;
 import org.jobrunr.scheduling.cron.Cron;
 import org.jobrunr.server.BackgroundJobServerConfiguration;
 import org.jobrunr.server.configuration.RoundRobinDynamicQueuePolicy;
+import org.jobrunr.server.configuration.SmartQueueBackgroundJobServerWorkerPolicy;
 import org.jobrunr.storage.JobRunrMetadata;
 
 import java.time.Duration;
@@ -47,6 +48,7 @@ public class Scenario00CombinedScenario extends AbstractJobRunrProScenario {
     @Override
     protected BackgroundJobServerConfiguration getBackgroundJobServerConfiguration() {
         return super.getBackgroundJobServerConfiguration()
+                //.andBackgroundJobServerWorkerPolicy(new SmartQueueBackgroundJobServerWorkerPolicy())
                 .andDynamicQueuePolicy(new RoundRobinDynamicQueuePolicy("tenant"));
     }
 

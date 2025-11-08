@@ -3,6 +3,9 @@ package org.jobrunr.performance.scenario;
 import org.jobrunr.performance.scenario.jobs.PerformanceTestJob;
 import org.jobrunr.performance.storage.DataStore;
 import org.jobrunr.scheduling.BackgroundJob;
+import org.jobrunr.server.BackgroundJobServerConfiguration;
+import org.jobrunr.server.configuration.RoundRobinDynamicQueuePolicy;
+import org.jobrunr.server.configuration.SmartQueueBackgroundJobServerWorkerPolicy;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -16,6 +19,12 @@ public class Scenario01ProcessJobs extends AbstractScenario {
 
     public Scenario01ProcessJobs(DataStore dataStore, String[] args) {
         super(dataStore, args);
+    }
+
+    @Override
+    protected BackgroundJobServerConfiguration getBackgroundJobServerConfiguration() {
+        return super.getBackgroundJobServerConfiguration()
+                .andBackgroundJobServerWorkerPolicy(new SmartQueueBackgroundJobServerWorkerPolicy());
     }
 
     @Override
