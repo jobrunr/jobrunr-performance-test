@@ -2,6 +2,7 @@ package org.quartz.performance;
 
 import org.performance.datastore.DataStore;
 import org.performance.datastore.sql.AbstractSqlDataStore;
+import org.performance.scenario.Scenario;
 import org.performance.scenario.ScenarioMonitor;
 import org.performance.tools.Tool;
 import org.performance.utils.JarUtils;
@@ -27,7 +28,7 @@ public class QuartzTool implements Tool {
     }
 
     @Override
-    public void initialize(DataStore dataStore) throws Exception {
+    public void initialize(DataStore dataStore, Scenario scenario) throws Exception {
         if (!(dataStore instanceof AbstractSqlDataStore<?>)) {
             throw new IllegalArgumentException("Quartz DataStore must be an instance of AbstractSqlDataStore");
         }
@@ -87,12 +88,11 @@ public class QuartzTool implements Tool {
 
     @Override
     public void start() throws Exception {
-        System.out.println("Starting Quartz");
         scheduler.start();
     }
 
     @Override
     public void stop() throws Exception {
-        scheduler.shutdown();
+        scheduler.shutdown(true);
     }
 }

@@ -13,12 +13,10 @@ public interface Scenario {
 
     void run() throws Exception;
 
-    static Scenario loadScenario(String name, DataStore dataStore, String[] args) {
-        if (isNullOrEmpty(name)) throw new IllegalArgumentException("Scenario name must not be null or empty");
+    static Scenario loadScenario(String tool, String scenarioName, DataStore dataStore, String[] args) {
+        if (isNullOrEmpty(scenarioName)) throw new IllegalArgumentException("Scenario name must not be null or empty");
         String packageName = substringBeforeLast(Scenario.class.getName(), ".");
-        String fullyQualifiedClassName = packageName + "." + name;
-        // FIX ME
-        fullyQualifiedClassName = "org.quartz.performance.scenario.Scenario01ProcessJobs";
+        String fullyQualifiedClassName = (packageName + "." + scenarioName).replace("org.", "org." + tool + ".");
         try {
             Class<?> clazz = Class.forName(fullyQualifiedClassName);
             Constructor<?> constructor = clazz.getDeclaredConstructor(DataStore.class, String[].class);

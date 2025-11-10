@@ -1,6 +1,7 @@
 package org.performance.tools;
 
 import org.performance.datastore.DataStore;
+import org.performance.scenario.Scenario;
 import org.performance.scenario.ScenarioMonitor;
 
 import java.time.Duration;
@@ -15,7 +16,7 @@ public interface Tool {
         return getName() + " (" + getVersion() + ")";
     }
 
-    void initialize(DataStore dataStore) throws Exception;
+    <T extends Scenario> void initialize(DataStore dataStore, T scenario) throws Exception;
 
     void start() throws Exception;
 

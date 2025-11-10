@@ -59,8 +59,12 @@ public abstract class AbstractScenario<T extends Tool> implements Scenario {
 
     private void startDataStoreAndInitializeTool() throws Exception {
         dataStore.start();
-        tool.initialize(dataStore);
+        initializeTool();
         LOGGER.info("Started {} with BackgroundJobServer paused", tool.getTitleAndVersion());
+    }
+
+    protected void initializeTool() throws Exception {
+        tool.initialize(dataStore, this);
     }
 
     private void createJobsAndUpdateStatistics() throws Exception {

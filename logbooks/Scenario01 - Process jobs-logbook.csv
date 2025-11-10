@@ -1,2 +1,11 @@
 Date & Time,Host name,Java version,JobRunr type,JobRunr version,StorageProvider,amount of created jobs,amount of succeeded jobs,creation duration,processing duration,job throughput (jobs / sec)
 2025-11-08T16:15:19.097965Z,Mac,25+36-3489,quartz,2.5.1-SNAPSHOT (branch unknown),postgres:18.0,20000,20000,PT1M12.984641S,PT47.659029S,425.53
+2025-11-10T20:00:11.935949Z,Mac,25+36-3489,quartz,2.5.1-SNAPSHOT (branch unknown),postgres:18.0,200,200,PT0.457738S,PT0.841348S,Infinity
+2025-11-10T20:01:18.196264Z,Mac,25+36-3489,quartz,2.5.1-SNAPSHOT (branch unknown),postgres:18.0,200,200,PT0.439886S,PT0.845665S,Infinity
+2025-11-10T20:04:06.323192Z,Mac,25+36-3489,quartz,2.5.1-SNAPSHOT (branch unknown),postgres:18.0,2000,2000,PT2.952157S,PT7.216789S,285.71
+2025-11-10T20:05:56.913798Z,Mac,25+36-3489,quartz,2.5.1-SNAPSHOT (branch unknown),postgres:18.0,2000,2000,PT3.292171S,PT7.124332S,285.71
+2025-11-10T20:07:45.059533Z,Mac,25+36-3489,quartz,2.5.1-SNAPSHOT (branch unknown),postgres:18.0,2000,2000,PT3.250766S,PT7.181742S,285.71
+2025-11-10T20:08:35.077820Z,Mac,25+36-3489,quartz,2.5.1-SNAPSHOT (branch unknown),postgres:18.0,2000,2000,PT3.083348S,PT7.021409S,285.71
+2025-11-10T20:20:42.305352Z,Mac,25+36-3489,quartz,2.5.1-SNAPSHOT (branch unknown),postgres:18.0,2000,2000,PT2.988525S,PT7.071819S,285.71
+2025-11-10T21:12:16.066241Z,Mac,25+36-3489,quartz,2.5.1-SNAPSHOT (branch unknown),postgres:18.0,2000,2000,PT3.052887S,PT7.184617S,285.71
+2025-11-10T21:20:04.249014Z,Mac,25+36-3489,JobRunr,1.0.0-SNAPSHOT (chore/gradle-upgrade),postgres:18.0,20000,20000,PT0.847265S,PT8.044936S,2500.00

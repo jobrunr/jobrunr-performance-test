@@ -11,12 +11,34 @@ import static org.jobrunr.utils.reflection.ReflectionUtils.classExists;
 
 public enum JobRunrDistribution {
 
-    JobRunrOSS("JobRunr", "OSS");
+    JobRunrOSS("JobRunr", "OSS"),
+    JobRunrPro("JobRunrPro", "PRO") {
+        @Override
+        public void saveLicense(StorageProvider storageProvider) {
+            String license = getVersion().endsWith("-SNAPSHOT")
+                    ? "eyJhbGciOiJFQyIsImNydiI6ICJQLTI1NiIsInR5cCI6ICJKV1QifQ.eyJzdWJzY3JpcHRpb25JZCI6IjMxOTI5ZDYzLWRhMDItNDYwMi04ZjliLWYyMzk1YTY3YzUwOSIsImNvbXBhbnkiOiJSb3NvY28gQlYiLCJ0cmlhbCI6ZmFsc2UsInZhbGlkVW50aWwiOiIyMDI1LTA2LTMwIn0.zMBypBCY9n3qX4d7KXyGsHGLmfeauGVmOq5sz7Lszeo0sKXsoTyu4djKCcnWIbO9BOpye65i4QUJRwjT73Yu3w=="
+                    : "eyJhbGciOiJFQyIsImNydiI6ICJQLTI1NiIsInR5cCI6ICJKV1QifQ.eyJzdWJzY3JpcHRpb25JZCI6IjFmNDM3NzczLWI3Y2YtNGIyZC04NjQxLWEyNGI0ZWQzN2U0OSIsImNvbXBhbnkiOiJKb2JSdW5yIFBybyBQZXJmb3JtYW5jZSBUZXN0IExpY2Vuc2UiLCJ0cmlhbCI6ZmFsc2UsInZhbGlkVW50aWwiOiIyMDI1LTA3LTAyIn0.eYnjjfEnm-R_GdQ4f7EJ4AmBRCoZldkJFGI2Pgiq4mn7B0MdRBt5BbSJHHBvdazLc0b7QYeeX8B_RkQLpmW-HA==";
+
+            // To be compatible with v6
+            try {
+                Method m = storageProvider.getClass().getMethod("saveLicense", String.class);
+                m.invoke(storageProvider, license);
+            } catch (ReflectiveOperationException e) {
+                // it will fail when starting if the license is not set
+            }
+        }
+    };
 
     public static final JobRunrDistribution current;
 
     static {
-        current = JobRunrOSS;
+        if (JobRunrOSS.isAvailable()) {
+            current = JobRunrOSS;
+        } else if (JobRunrPro.isAvailable()) {
+            current = JobRunrPro;
+        } else {
+            throw new IllegalStateException("JobRunr or JobRunr Pro not found on classpath");
+        }
     }
 
     private final String configurationClassName;

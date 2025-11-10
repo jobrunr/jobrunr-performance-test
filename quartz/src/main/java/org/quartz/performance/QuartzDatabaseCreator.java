@@ -14,12 +14,9 @@ public class QuartzDatabaseCreator {
         try (Connection conn = dataSource.getConnection()) {
             conn.setAutoCommit(false);
 
-            try (InputStream in = Thread.currentThread()
-                    .getContextClassLoader()
-                    .getResourceAsStream(quartzSqlFile)) {
+            try (InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(quartzSqlFile)) {
                 if (in == null) {
-                    throw new IllegalStateException("Cannot find " + quartzSqlFile +
-                            " on the classpath. Is quartz on the runtime classpath?");
+                    throw new IllegalStateException("Cannot find " + quartzSqlFile + " on the classpath. Is quartz on the runtime classpath?");
                 }
 
                 String sql = new String(in.readAllBytes(), StandardCharsets.UTF_8);
