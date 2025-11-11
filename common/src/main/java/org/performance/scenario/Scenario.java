@@ -16,7 +16,7 @@ public interface Scenario {
     static Scenario loadScenario(String tool, String scenarioName, DataStore dataStore, String[] args) {
         if (isNullOrEmpty(scenarioName)) throw new IllegalArgumentException("Scenario name must not be null or empty");
         String packageName = substringBeforeLast(Scenario.class.getName(), ".");
-        String fullyQualifiedClassName = (packageName + "." + scenarioName).replace("org.", "org." + tool + ".");
+        String fullyQualifiedClassName = (packageName + "." + scenarioName).replace("org.", "org." + tool.toLowerCase() + ".");
         try {
             Class<?> clazz = Class.forName(fullyQualifiedClassName);
             Constructor<?> constructor = clazz.getDeclaredConstructor(DataStore.class, String[].class);

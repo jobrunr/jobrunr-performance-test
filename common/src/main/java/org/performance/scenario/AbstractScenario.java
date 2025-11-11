@@ -49,12 +49,14 @@ public abstract class AbstractScenario<T extends Tool> implements Scenario {
 
     private void logTitle() {
         String scenario = camelCaseToHumanReadable(this);
-        String scenarioWithMarkup = "======    " + scenario + "    =======";
-        String distributionWithMarkup = "======    " + tool.getTitleAndVersion() + "    =======";
-        LOGGER.info("=".repeat(distributionWithMarkup.length()));
+        int toolOrTitleLength = Math.max(scenario.length(), tool.getTitleAndVersion().length());
+        String scenarioWithMarkup = "======    " + scenario + " ".repeat(toolOrTitleLength - scenario.length()) + "    ======";
+        String toolWithMarkup = "======    " + tool.getTitleAndVersion() + " ".repeat(toolOrTitleLength - tool.getTitleAndVersion().length()) + "    ======";
+        int titleLength = toolOrTitleLength + 20;
+        LOGGER.info("=".repeat(titleLength));
         LOGGER.info(scenarioWithMarkup);
-        LOGGER.info(distributionWithMarkup);
-        LOGGER.info("=".repeat(distributionWithMarkup.length()));
+        LOGGER.info(toolWithMarkup);
+        LOGGER.info("=".repeat(toolWithMarkup.length()));
     }
 
     private void startDataStoreAndInitializeTool() throws Exception {

@@ -15,7 +15,7 @@
         <maven.compiler.source>25</maven.compiler.source>
         <maven.compiler.target>25</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jobrunr.version>1.0.0-SNAPSHOT</jobrunr.version>
+        <tool.version>1.0.0-SNAPSHOT</tool.version>
     </properties>
 
     <repositories>
@@ -24,7 +24,7 @@
             <url>https://repo.jobrunr.io/private-releases/</url>
         </repository>
     </repositories>
-    
+
     <dependencies>
         <dependency>
             <groupId>org.jobrunr.performance</groupId>
@@ -34,12 +34,12 @@
         <dependency>
             <groupId>org.jobrunr</groupId>
             <artifactId>jobrunr</artifactId>
-            <version>${jobrunr.version}</version>
+            <version>${tool.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jobrunr</groupId>
             <artifactId>jobrunr</artifactId>
-            <version>${jobrunr.version}</version>
+            <version>${tool.version}</version>
             <classifier>test-fixtures</classifier>
         </dependency>
 

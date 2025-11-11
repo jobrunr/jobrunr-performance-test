@@ -3304,3 +3304,635 @@ com.github.dockerjava.api.exception.InternalServerErrorException: Status 500: {"
 22:20:15.047 [org.performance.start.Main.main()] INFO  o.jobrunr.server.BackgroundJobServer - BackgroundJobServer (Mac - 94b6eb60-e2ca-40a0-9d64-ae285be81da8) BackgroundJobPerformers stopping (waiting at most PT10S for jobs to finish)
 22:20:15.050 [org.performance.start.Main.main()] INFO  o.jobrunr.server.BackgroundJobServer - BackgroundJobServer (Mac - 94b6eb60-e2ca-40a0-9d64-ae285be81da8) BackgroundJobServer and BackgroundJobPerformers stopped
 22:20:15.053 [org.performance.start.Main.main()] INFO  o.j.d.JobRunrDashboardWebServer - JobRunr dashboard stopped
+09:59:12.390 [org.performance.start.Main.main()] INFO  o.testcontainers.images.PullPolicy - Image pull policy will be performed by: DefaultPullPolicy()
+09:59:12.392 [org.performance.start.Main.main()] INFO  o.t.utility.ImageNameSubstitutor - Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+09:59:12.399 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ====================================================================
+09:59:12.399 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ======    Scenario01 - Process jobs    =======
+09:59:12.399 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ======    JobRunr (1.0.0-SNAPSHOT (chore/gradle-upgrade))    =======
+09:59:12.399 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ====================================================================
+09:59:12.400 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Testcontainers version: 2.0.1
+09:59:12.644 [org.performance.start.Main.main()] INFO  o.t.d.DockerClientProviderStrategy - Found Docker environment with Testcontainers Host with tc.host=tcp://127.0.0.1:49348
+09:59:12.644 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Docker host IP address is 127.0.0.1
+09:59:12.656 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Connected to docker: 
+  Server Version: 28.3.3 (via Testcontainers Desktop 1.15.1)
+  API Version: 1.51
+  Operating System: Docker Desktop
+  Total Memory: 7836 MB
+  Labels: 
+    com.docker.desktop.address=unix:///Users/rdehuyss/Library/Containers/com.docker.docker/Data/docker-cli.sock
+09:59:12.658 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Checking the system...
+09:59:12.659 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - ✔︎ Docker server version should be at least 1.6.0
+09:59:12.903 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Creating container for image: postgres:18.0
+09:59:13.044 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Creating container for image: testcontainers/ryuk:0.13.0
+09:59:13.109 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Container testcontainers/ryuk:0.13.0 is starting: ddd638bbe80b9c87a9c89f8874928813f8fb5123e7a2263e74a089b02575a382
+09:59:13.245 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Container testcontainers/ryuk:0.13.0 started in PT0.200578S
+09:59:13.289 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Container postgres:18.0 is starting: 6d91e2b9ffeb39315347f63b7fb43b671c31a1f42fc43f408669e52ad1cb8400
+09:59:14.041 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Container postgres:18.0 started in PT1.137846S
+09:59:14.042 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Container is started (JDBC URL: jdbc:postgresql://127.0.0.1:54320/test?loggerLevel=OFF)
+09:59:14.042 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore - =========================================================
+09:59:14.042 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -  java version: 25
+09:59:14.042 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -    connection: jdbc:postgresql://127.0.0.1:54320/test?loggerLevel=OFF
+09:59:14.042 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -          user: test
+09:59:14.042 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -      password: test
+09:59:14.042 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -  startup time: 1
+09:59:14.042 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore - =========================================================
+09:59:14.054 [org.performance.start.Main.main()] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+09:59:14.264 [org.performance.start.Main.main()] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@4647946e
+09:59:14.265 [org.performance.start.Main.main()] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+09:59:14.471 [org.performance.start.Main.main()] INFO  o.j.d.JobRunrDashboardWebServer - JobRunr Dashboard using PostgresStorageProvider started at http://localhost:8010/dashboard
+09:59:14.473 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - Started JobRunr (1.0.0-SNAPSHOT (chore/gradle-upgrade)) with BackgroundJobServer paused
+09:59:14.473 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - Creating jobs
+09:59:14.475 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - Created 0 jobs in PT0S. Estimated time to create 20000 jobs: 0 seconds
+09:59:14.918 [extShutdownHook] INFO  o.j.d.JobRunrDashboardWebServer - JobRunr dashboard stopped
+10:01:56.340 [org.performance.start.Main.main()] INFO  o.testcontainers.images.PullPolicy - Image pull policy will be performed by: DefaultPullPolicy()
+10:01:56.342 [org.performance.start.Main.main()] INFO  o.t.utility.ImageNameSubstitutor - Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+10:01:56.349 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ====================================================================
+10:01:56.349 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ======    Scenario01 - Process jobs    =======
+10:01:56.349 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ======    JobRunr (1.0.0-SNAPSHOT (chore/gradle-upgrade))    =======
+10:01:56.349 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ====================================================================
+10:01:56.349 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Testcontainers version: 2.0.1
+10:01:56.584 [org.performance.start.Main.main()] INFO  o.t.d.DockerClientProviderStrategy - Found Docker environment with Testcontainers Host with tc.host=tcp://127.0.0.1:49348
+10:01:56.584 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Docker host IP address is 127.0.0.1
+10:01:56.599 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Connected to docker: 
+  Server Version: 28.3.3 (via Testcontainers Desktop 1.15.1)
+  API Version: 1.51
+  Operating System: Docker Desktop
+  Total Memory: 7836 MB
+  Labels: 
+    com.docker.desktop.address=unix:///Users/rdehuyss/Library/Containers/com.docker.docker/Data/docker-cli.sock
+10:01:56.602 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Checking the system...
+10:01:56.602 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - ✔︎ Docker server version should be at least 1.6.0
+10:01:56.847 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Creating container for image: postgres:18.0
+10:01:56.936 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Creating container for image: testcontainers/ryuk:0.13.0
+10:01:57.002 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Container testcontainers/ryuk:0.13.0 is starting: c9dd6cb7fa953258b6f64e0ff991e39d542f1e579b034a58e6936018069e2e0c
+10:03:37.677 [org.performance.start.Main.main()] INFO  o.testcontainers.images.PullPolicy - Image pull policy will be performed by: DefaultPullPolicy()
+10:03:37.679 [org.performance.start.Main.main()] INFO  o.t.utility.ImageNameSubstitutor - Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+10:03:37.684 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ====================================================================
+10:03:37.685 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ======    Scenario01 - Process jobs    =======
+10:03:37.685 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ======    JobRunr (1.0.0-SNAPSHOT (chore/gradle-upgrade))    =======
+10:03:37.685 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ====================================================================
+10:03:37.685 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Testcontainers version: 2.0.1
+10:03:37.921 [org.performance.start.Main.main()] INFO  o.t.d.DockerClientProviderStrategy - Found Docker environment with Testcontainers Host with tc.host=tcp://127.0.0.1:49348
+10:03:37.921 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Docker host IP address is 127.0.0.1
+10:03:37.935 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Connected to docker: 
+  Server Version: 28.3.3 (via Testcontainers Desktop 1.15.1)
+  API Version: 1.51
+  Operating System: Docker Desktop
+  Total Memory: 7836 MB
+  Labels: 
+    com.docker.desktop.address=unix:///Users/rdehuyss/Library/Containers/com.docker.docker/Data/docker-cli.sock
+10:03:37.938 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Checking the system...
+10:03:37.938 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - ✔︎ Docker server version should be at least 1.6.0
+10:03:38.174 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Creating container for image: postgres:18.0
+10:03:38.273 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Creating container for image: testcontainers/ryuk:0.13.0
+10:03:38.335 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Container testcontainers/ryuk:0.13.0 is starting: ff1a0db91bf8dbf4244253300aa6991ce2a301a7d1c01afdfe8ad0b40a8fd52e
+10:03:38.481 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Container testcontainers/ryuk:0.13.0 started in PT0.207428S
+10:03:38.516 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Container postgres:18.0 is starting: 3a2247dfa1e9ed09848412fb1a309895b63ca6262a72508688e125e2e697b159
+10:03:39.237 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Container postgres:18.0 started in PT1.062465S
+10:03:39.238 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Container is started (JDBC URL: jdbc:postgresql://127.0.0.1:54320/test?loggerLevel=OFF)
+10:03:39.239 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore - =========================================================
+10:03:39.239 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -  java version: 25
+10:03:39.239 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -    connection: jdbc:postgresql://127.0.0.1:54320/test?loggerLevel=OFF
+10:03:39.240 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -          user: test
+10:03:39.240 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -      password: test
+10:03:39.240 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -  startup time: 1
+10:03:39.240 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore - =========================================================
+10:03:39.251 [org.performance.start.Main.main()] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+10:03:39.425 [org.performance.start.Main.main()] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@7b24a65c
+10:03:39.426 [org.performance.start.Main.main()] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+10:03:39.581 [org.performance.start.Main.main()] INFO  o.j.d.JobRunrDashboardWebServer - JobRunr Dashboard using PostgresStorageProvider started at http://localhost:8010/dashboard
+10:03:39.583 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - Started JobRunr (1.0.0-SNAPSHOT (chore/gradle-upgrade)) with BackgroundJobServer paused
+10:03:39.583 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - Creating jobs
+10:03:39.585 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - Created 0 jobs in PT0S. Estimated time to create 500000 jobs: 0 seconds
+10:03:40.332 [extShutdownHook] INFO  o.j.d.JobRunrDashboardWebServer - JobRunr dashboard stopped
+10:04:50.065 [org.performance.start.Main.main()] INFO  o.testcontainers.images.PullPolicy - Image pull policy will be performed by: DefaultPullPolicy()
+10:04:50.066 [org.performance.start.Main.main()] INFO  o.t.utility.ImageNameSubstitutor - Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+10:04:50.071 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ====================================================================
+10:04:50.072 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ======    Scenario01 - Process jobs    =======
+10:04:50.072 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ======    JobRunr (1.0.0-SNAPSHOT (chore/gradle-upgrade))    =======
+10:04:50.072 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ====================================================================
+10:04:50.072 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Testcontainers version: 2.0.1
+10:04:50.309 [org.performance.start.Main.main()] INFO  o.t.d.DockerClientProviderStrategy - Found Docker environment with Testcontainers Host with tc.host=tcp://127.0.0.1:49348
+10:04:50.310 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Docker host IP address is 127.0.0.1
+10:04:50.320 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Connected to docker: 
+  Server Version: 28.3.3 (via Testcontainers Desktop 1.15.1)
+  API Version: 1.51
+  Operating System: Docker Desktop
+  Total Memory: 7836 MB
+  Labels: 
+    com.docker.desktop.address=unix:///Users/rdehuyss/Library/Containers/com.docker.docker/Data/docker-cli.sock
+10:04:50.323 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Checking the system...
+10:04:50.323 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - ✔︎ Docker server version should be at least 1.6.0
+10:04:50.547 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Creating container for image: postgres:18.0
+10:04:50.632 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Creating container for image: testcontainers/ryuk:0.13.0
+10:04:50.696 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Container testcontainers/ryuk:0.13.0 is starting: 17cc3d3d3c9599ce35efeb9faf95863b0a62bebe9eb84b1d65ef4975265fb94a
+10:04:50.830 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Container testcontainers/ryuk:0.13.0 started in PT0.197362S
+10:04:50.865 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Container postgres:18.0 is starting: 0ff042fe13ba16f153c229d0463cf6d6b45cd0bbacbdb5684eb836c861b1bb76
+10:04:51.590 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Container postgres:18.0 started in PT1.042763S
+10:04:51.590 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Container is started (JDBC URL: jdbc:postgresql://127.0.0.1:54320/test?loggerLevel=OFF)
+10:04:51.590 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore - =========================================================
+10:04:51.591 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -  java version: 25
+10:04:51.591 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -    connection: jdbc:postgresql://127.0.0.1:54320/test?loggerLevel=OFF
+10:04:51.591 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -          user: test
+10:04:51.591 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -      password: test
+10:04:51.591 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -  startup time: 1
+10:04:51.591 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore - =========================================================
+10:04:51.595 [org.performance.start.Main.main()] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+10:04:51.754 [org.performance.start.Main.main()] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@3e6e7264
+10:04:51.755 [org.performance.start.Main.main()] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+10:04:51.906 [org.performance.start.Main.main()] INFO  o.j.d.JobRunrDashboardWebServer - JobRunr Dashboard using PostgresStorageProvider started at http://localhost:8010/dashboard
+10:04:51.907 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - Started JobRunr (1.0.0-SNAPSHOT (chore/gradle-upgrade)) with BackgroundJobServer paused
+10:04:51.907 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - Creating jobs
+10:04:51.909 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - Created 0 jobs in PT0S. Estimated time to create 500000 jobs: 0 seconds
+10:04:52.067 [extShutdownHook] INFO  o.j.d.JobRunrDashboardWebServer - JobRunr dashboard stopped
+10:13:18.644 [org.performance.start.Main.main()] INFO  o.testcontainers.images.PullPolicy - Image pull policy will be performed by: DefaultPullPolicy()
+10:13:18.645 [org.performance.start.Main.main()] INFO  o.t.utility.ImageNameSubstitutor - Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+10:13:18.651 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ====================================================================
+10:13:18.651 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ======    Scenario01 - Process jobs    =======
+10:13:18.651 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ======    JobRunr (1.0.0-SNAPSHOT (chore/gradle-upgrade))    =======
+10:13:18.651 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ====================================================================
+10:13:18.652 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Testcontainers version: 2.0.1
+10:13:18.895 [org.performance.start.Main.main()] INFO  o.t.d.DockerClientProviderStrategy - Found Docker environment with Testcontainers Host with tc.host=tcp://127.0.0.1:49348
+10:13:18.896 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Docker host IP address is 127.0.0.1
+10:13:18.908 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Connected to docker: 
+  Server Version: 28.3.3 (via Testcontainers Desktop 1.15.1)
+  API Version: 1.51
+  Operating System: Docker Desktop
+  Total Memory: 7836 MB
+  Labels: 
+    com.docker.desktop.address=unix:///Users/rdehuyss/Library/Containers/com.docker.docker/Data/docker-cli.sock
+10:13:18.911 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Checking the system...
+10:13:18.911 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - ✔︎ Docker server version should be at least 1.6.0
+10:13:19.142 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Creating container for image: postgres:18.0
+10:13:19.235 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Creating container for image: testcontainers/ryuk:0.13.0
+10:13:19.292 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Container testcontainers/ryuk:0.13.0 is starting: 8c627bb737a025d1da45ba6c66d033aae00f2d547cbab47d7be2695c0a2b6068
+10:13:19.424 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Container testcontainers/ryuk:0.13.0 started in PT0.189204S
+10:13:19.461 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Container postgres:18.0 is starting: b3d55d6cbe34230338de621c339e22aea69e0258cbaebc3e6d47f17d1c62c4c8
+10:13:20.193 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Container postgres:18.0 started in PT1.05052S
+10:13:20.193 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Container is started (JDBC URL: jdbc:postgresql://127.0.0.1:54320/test?loggerLevel=OFF)
+10:13:20.193 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore - =========================================================
+10:13:20.194 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -  java version: 25
+10:13:20.194 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -    connection: jdbc:postgresql://127.0.0.1:54320/test?loggerLevel=OFF
+10:13:20.194 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -          user: test
+10:13:20.194 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -      password: test
+10:13:20.194 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -  startup time: 1
+10:13:20.194 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore - =========================================================
+10:13:20.198 [org.performance.start.Main.main()] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+10:13:20.368 [org.performance.start.Main.main()] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@73436453
+10:13:20.369 [org.performance.start.Main.main()] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+10:13:20.524 [org.performance.start.Main.main()] INFO  o.j.d.JobRunrDashboardWebServer - JobRunr Dashboard using PostgresStorageProvider started at http://localhost:8010/dashboard
+10:13:20.525 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - Started JobRunr (1.0.0-SNAPSHOT (chore/gradle-upgrade)) with BackgroundJobServer paused
+10:13:20.525 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - Creating jobs
+10:13:20.527 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - Created 0 jobs in PT0S. Estimated time to create 500000 jobs: 0 seconds
+10:13:21.113 [extShutdownHook] INFO  o.j.d.JobRunrDashboardWebServer - JobRunr dashboard stopped
+10:15:25.727 [org.performance.start.Main.main()] INFO  o.testcontainers.images.PullPolicy - Image pull policy will be performed by: DefaultPullPolicy()
+10:15:25.729 [org.performance.start.Main.main()] INFO  o.t.utility.ImageNameSubstitutor - Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+10:15:25.736 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ===================================================================
+10:15:25.736 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ======    Scenario01 - Process jobs                          =======
+10:15:25.736 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ======    JobRunr (1.0.0-SNAPSHOT (chore/gradle-upgrade))    =======
+10:15:25.736 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ====================================================================
+10:15:25.737 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Testcontainers version: 2.0.1
+10:15:25.973 [org.performance.start.Main.main()] INFO  o.t.d.DockerClientProviderStrategy - Found Docker environment with Testcontainers Host with tc.host=tcp://127.0.0.1:49348
+10:15:25.974 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Docker host IP address is 127.0.0.1
+10:15:25.988 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Connected to docker: 
+  Server Version: 28.3.3 (via Testcontainers Desktop 1.15.1)
+  API Version: 1.51
+  Operating System: Docker Desktop
+  Total Memory: 7836 MB
+  Labels: 
+    com.docker.desktop.address=unix:///Users/rdehuyss/Library/Containers/com.docker.docker/Data/docker-cli.sock
+10:15:25.991 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Checking the system...
+10:15:25.991 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - ✔︎ Docker server version should be at least 1.6.0
+10:15:26.233 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Creating container for image: postgres:18.0
+10:15:26.333 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Creating container for image: testcontainers/ryuk:0.13.0
+10:15:26.394 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Container testcontainers/ryuk:0.13.0 is starting: 4893ecf4bc0eac2d1f731c32e1faf3ac862e92e9b876e180bd02f4c86b5251c7
+10:16:30.390 [org.performance.start.Main.main()] INFO  o.testcontainers.images.PullPolicy - Image pull policy will be performed by: DefaultPullPolicy()
+10:16:30.392 [org.performance.start.Main.main()] INFO  o.t.utility.ImageNameSubstitutor - Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+10:16:30.398 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ===================================================================
+10:16:30.398 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ======    Scenario01 - Process jobs                          ======
+10:16:30.398 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ======    JobRunr (1.0.0-SNAPSHOT (chore/gradle-upgrade))    ======
+10:16:30.398 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ===================================================================
+10:16:30.399 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Testcontainers version: 2.0.1
+10:16:30.655 [org.performance.start.Main.main()] INFO  o.t.d.DockerClientProviderStrategy - Found Docker environment with Testcontainers Host with tc.host=tcp://127.0.0.1:49348
+10:16:30.655 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Docker host IP address is 127.0.0.1
+10:16:30.669 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Connected to docker: 
+  Server Version: 28.3.3 (via Testcontainers Desktop 1.15.1)
+  API Version: 1.51
+  Operating System: Docker Desktop
+  Total Memory: 7836 MB
+  Labels: 
+    com.docker.desktop.address=unix:///Users/rdehuyss/Library/Containers/com.docker.docker/Data/docker-cli.sock
+10:16:30.677 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Checking the system...
+10:16:30.677 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - ✔︎ Docker server version should be at least 1.6.0
+10:16:30.914 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Creating container for image: postgres:18.0
+10:16:30.999 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Creating container for image: testcontainers/ryuk:0.13.0
+10:16:31.056 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Container testcontainers/ryuk:0.13.0 is starting: 26b9dacf834acf360534edaf7a493c8e80893d312648a99808fa9554981fcde3
+10:16:31.212 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Container testcontainers/ryuk:0.13.0 started in PT0.212546S
+10:16:31.259 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Container postgres:18.0 is starting: 823c36e8296f3a8304968e0edc18280a416bae02fca3a21637bd4bb5b4be725c
+10:16:31.988 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Container postgres:18.0 started in PT1.074069S
+10:16:31.988 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Container is started (JDBC URL: jdbc:postgresql://127.0.0.1:54320/test?loggerLevel=OFF)
+10:16:31.988 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore - =========================================================
+10:16:31.988 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -  java version: 25
+10:16:31.989 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -    connection: jdbc:postgresql://127.0.0.1:54320/test?loggerLevel=OFF
+10:16:31.989 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -          user: test
+10:16:31.989 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -      password: test
+10:16:31.989 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -  startup time: 1
+10:16:31.989 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore - =========================================================
+10:16:32.000 [org.performance.start.Main.main()] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+10:16:32.187 [org.performance.start.Main.main()] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@544c8017
+10:16:32.188 [org.performance.start.Main.main()] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+10:16:32.347 [org.performance.start.Main.main()] INFO  o.j.d.JobRunrDashboardWebServer - JobRunr Dashboard using PostgresStorageProvider started at http://localhost:8010/dashboard
+10:16:32.348 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - Started JobRunr (1.0.0-SNAPSHOT (chore/gradle-upgrade)) with BackgroundJobServer paused
+10:16:32.348 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - Creating jobs
+10:16:32.350 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - Created 0 jobs in PT0S. Estimated time to create 20000 jobs: 0 seconds
+10:16:33.255 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - Successfully created 20000 jobs in PT0.907129S. Updating database statistics
+10:16:33.263 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore - VACUUMED POSTGRES TABLES
+10:16:33.263 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - Successfully updated database statistics
+10:16:33.265 [org.performance.start.Main.main()] INFO  o.j.s.t.VirtualThreadJobRunrExecutor - ThreadManager of type 'VirtualThreadPerTask' started
+10:16:33.277 [backgroundjob-zookeeper-pool-3-thread-1] INFO  o.jobrunr.server.BackgroundJobServer - JobRunr BackgroundJobServer (Mac - 63be0c28-90ab-4bb5-b737-e3f9fee840af) using PostgresStorageProvider and 256 BackgroundJobPerformers started successfully
+10:16:33.281 [backgroundjob-zookeeper-pool-3-thread-1] INFO  org.jobrunr.server.ServerZooKeeper - Server 63be0c28-90ab-4bb5-b737-e3f9fee840af is master (this BackgroundJobServer)
+10:16:33.288 [pool-4-thread-1] INFO  o.j.s.t.s.MigrateFromV5toV6Task - Start migration of scheduled jobs from v5 to v6
+10:16:33.290 [pool-4-thread-1] INFO  o.j.s.t.s.MigrateFromV5toV6Task - Found 0 scheduled jobs to migrate.
+10:16:33.290 [pool-4-thread-1] INFO  o.j.s.t.s.MigrateFromV5toV6Task - Finished migration of scheduled jobs from v5 to v6
+10:16:33.329 [extShutdownHook] INFO  o.jobrunr.server.BackgroundJobServer - BackgroundJobServer (Mac - 63be0c28-90ab-4bb5-b737-e3f9fee840af) stopping (may take about PT10S)
+10:16:33.329 [extShutdownHook] INFO  o.jobrunr.server.BackgroundJobServer - BackgroundJobServer (Mac - 63be0c28-90ab-4bb5-b737-e3f9fee840af) BackgroundJobPerformers stopping (waiting at most PT10S for jobs to finish)
+10:16:33.331 [extShutdownHook] INFO  o.jobrunr.server.BackgroundJobServer - BackgroundJobServer (Mac - 63be0c28-90ab-4bb5-b737-e3f9fee840af) BackgroundJobServer and BackgroundJobPerformers stopped
+10:16:33.333 [extShutdownHook] INFO  o.j.d.JobRunrDashboardWebServer - JobRunr dashboard stopped
+12:34:53.837 [org.performance.start.Main.main()] INFO  o.testcontainers.images.PullPolicy - Image pull policy will be performed by: DefaultPullPolicy()
+12:34:53.839 [org.performance.start.Main.main()] INFO  o.t.utility.ImageNameSubstitutor - Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+12:36:59.337 [org.performance.start.Main.main()] INFO  o.testcontainers.images.PullPolicy - Image pull policy will be performed by: DefaultPullPolicy()
+12:36:59.339 [org.performance.start.Main.main()] INFO  o.t.utility.ImageNameSubstitutor - Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+12:37:30.095 [org.performance.start.Main.main()] INFO  o.testcontainers.images.PullPolicy - Image pull policy will be performed by: DefaultPullPolicy()
+12:37:30.096 [org.performance.start.Main.main()] INFO  o.t.utility.ImageNameSubstitutor - Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+12:38:00.979 [org.performance.start.Main.main()] INFO  o.testcontainers.images.PullPolicy - Image pull policy will be performed by: DefaultPullPolicy()
+12:38:00.980 [org.performance.start.Main.main()] INFO  o.t.utility.ImageNameSubstitutor - Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+12:39:03.239 [org.performance.start.Main.main()] INFO  o.testcontainers.images.PullPolicy - Image pull policy will be performed by: DefaultPullPolicy()
+12:39:03.242 [org.performance.start.Main.main()] INFO  o.t.utility.ImageNameSubstitutor - Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+12:39:03.247 [org.performance.start.Main.main()] INFO  o.q.p.scenario.Scenario01ProcessJobs - ============================================================
+12:39:03.247 [org.performance.start.Main.main()] INFO  o.q.p.scenario.Scenario01ProcessJobs - ======    Scenario01 - Process jobs                   ======
+12:39:03.247 [org.performance.start.Main.main()] INFO  o.q.p.scenario.Scenario01ProcessJobs - ======    quartz (2.5.1-SNAPSHOT (branch unknown))    ======
+12:39:03.247 [org.performance.start.Main.main()] INFO  o.q.p.scenario.Scenario01ProcessJobs - ============================================================
+12:39:03.248 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Testcontainers version: 2.0.1
+12:39:03.484 [org.performance.start.Main.main()] INFO  o.t.d.DockerClientProviderStrategy - Found Docker environment with Testcontainers Host with tc.host=tcp://127.0.0.1:49348
+12:39:03.485 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Docker host IP address is 127.0.0.1
+12:39:03.499 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Connected to docker: 
+  Server Version: 28.3.3 (via Testcontainers Desktop 1.15.1)
+  API Version: 1.51
+  Operating System: Docker Desktop
+  Total Memory: 7836 MB
+  Labels: 
+    com.docker.desktop.address=unix:///Users/rdehuyss/Library/Containers/com.docker.docker/Data/docker-cli.sock
+12:39:03.501 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Checking the system...
+12:39:03.501 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - ✔︎ Docker server version should be at least 1.6.0
+12:39:03.742 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Creating container for image: postgres:18.0
+12:39:04.062 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Creating container for image: testcontainers/ryuk:0.13.0
+12:39:04.136 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Container testcontainers/ryuk:0.13.0 is starting: a77604229248b92ab389890fceeefe60a8eef1b86db977bc0a7d52e9853338cf
+12:39:04.272 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Container testcontainers/ryuk:0.13.0 started in PT0.20972S
+12:39:04.316 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Container postgres:18.0 is starting: 501be48a2af491089050b3fed8e093f288dec8cf64d84e4391ae017e4dede1a7
+12:39:04.990 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Container postgres:18.0 started in PT1.248525S
+12:39:04.991 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Container is started (JDBC URL: jdbc:postgresql://127.0.0.1:54320/test?loggerLevel=OFF)
+12:39:04.991 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore - =========================================================
+12:39:04.991 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -  java version: 25
+12:39:04.992 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -    connection: jdbc:postgresql://127.0.0.1:54320/test?loggerLevel=OFF
+12:39:04.992 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -          user: test
+12:39:04.992 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -      password: test
+12:39:04.992 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -  startup time: 1
+12:39:04.992 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore - =========================================================
+12:39:05.007 [org.performance.start.Main.main()] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+12:39:05.174 [org.performance.start.Main.main()] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@53a2d8a2
+12:39:05.175 [org.performance.start.Main.main()] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+12:39:05.220 [org.performance.start.Main.main()] INFO  org.quartz.impl.StdSchedulerFactory - Using ConnectionProvider class 'org.quartz.utils.HikariCpPoolingConnectionProvider' for data source 'myDS'
+12:39:05.222 [org.performance.start.Main.main()] INFO  org.quartz.impl.StdSchedulerFactory - Using default implementation for ThreadExecutor
+12:39:05.235 [org.performance.start.Main.main()] INFO  o.quartz.core.SchedulerSignalerImpl - Initialized Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
+12:39:05.235 [org.performance.start.Main.main()] INFO  org.quartz.core.QuartzScheduler - Quartz Scheduler v2.5.1-SNAPSHOT created.
+12:39:05.235 [org.performance.start.Main.main()] INFO  o.q.impl.jdbcjobstore.JobStoreTX - Using db table-based data access locking (synchronization).
+12:39:05.236 [org.performance.start.Main.main()] INFO  o.q.impl.jdbcjobstore.JobStoreTX - JobStoreTX initialized.
+12:39:05.236 [org.performance.start.Main.main()] INFO  org.quartz.core.QuartzScheduler - Scheduler meta-data: Quartz Scheduler (v2.5.1-SNAPSHOT) 'BulkScheduler' with instanceId 'Mac1762861145230'
+  Scheduler class: 'org.quartz.core.QuartzScheduler' - running locally.
+  NOT STARTED.
+  Currently in standby mode.
+  Number of jobs executed: 0
+  Using thread pool 'org.quartz.simpl.SimpleThreadPool' - with 50 threads.
+  Using job-store 'org.quartz.impl.jdbcjobstore.JobStoreTX' - which supports persistence. and is clustered.
+
+12:39:05.236 [org.performance.start.Main.main()] INFO  org.quartz.impl.StdSchedulerFactory - Quartz scheduler 'BulkScheduler' initialized from an externally provided properties instance.
+12:39:05.236 [org.performance.start.Main.main()] INFO  org.quartz.impl.StdSchedulerFactory - Quartz scheduler version: 2.5.1-SNAPSHOT
+12:39:05.237 [org.performance.start.Main.main()] INFO  o.q.p.scenario.Scenario01ProcessJobs - Started quartz (2.5.1-SNAPSHOT (branch unknown)) with BackgroundJobServer paused
+12:39:05.237 [org.performance.start.Main.main()] INFO  o.q.p.scenario.Scenario01ProcessJobs - Creating jobs
+12:39:05.237 [org.performance.start.Main.main()] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-2 - Starting...
+12:39:05.246 [org.performance.start.Main.main()] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-2 - Added connection org.postgresql.jdbc.PgConnection@15443b61
+12:39:05.246 [org.performance.start.Main.main()] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-2 - Start completed.
+12:39:05.261 [org.performance.start.Main.main()] INFO  o.q.p.scenario.Scenario01ProcessJobs - Created 0 jobs in PT0S. Estimated time to create 500000 jobs: 0 seconds
+12:39:29.447 [org.performance.start.Main.main()] INFO  o.testcontainers.images.PullPolicy - Image pull policy will be performed by: DefaultPullPolicy()
+12:39:29.449 [org.performance.start.Main.main()] INFO  o.t.utility.ImageNameSubstitutor - Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+12:39:29.455 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ===================================================================
+12:39:29.455 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ======    Scenario01 - Process jobs                          ======
+12:39:29.455 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ======    JobRunr (1.0.0-SNAPSHOT (chore/gradle-upgrade))    ======
+12:39:29.455 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ===================================================================
+12:39:29.456 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Testcontainers version: 2.0.1
+12:39:29.681 [org.performance.start.Main.main()] INFO  o.t.d.DockerClientProviderStrategy - Found Docker environment with Testcontainers Host with tc.host=tcp://127.0.0.1:49348
+12:39:29.682 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Docker host IP address is 127.0.0.1
+12:39:29.693 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Connected to docker: 
+  Server Version: 28.3.3 (via Testcontainers Desktop 1.15.1)
+  API Version: 1.51
+  Operating System: Docker Desktop
+  Total Memory: 7836 MB
+  Labels: 
+    com.docker.desktop.address=unix:///Users/rdehuyss/Library/Containers/com.docker.docker/Data/docker-cli.sock
+12:39:29.696 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Checking the system...
+12:39:29.696 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - ✔︎ Docker server version should be at least 1.6.0
+12:39:29.917 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Creating container for image: postgres:18.0
+12:39:30.009 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Creating container for image: testcontainers/ryuk:0.13.0
+12:39:30.071 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Container testcontainers/ryuk:0.13.0 is starting: d7934f8debe22aeee96f97e359acd72729b8bde26b602f954234b80050e27b0c
+12:39:30.212 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Container testcontainers/ryuk:0.13.0 started in PT0.202409S
+12:39:30.245 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Container postgres:18.0 is starting: b4df295b7f5fbdcefaff604f77eb1b07a54a60b20e84f91e1f3a6174af20db3e
+12:39:30.918 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Container postgres:18.0 started in PT1.000958S
+12:39:30.919 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Container is started (JDBC URL: jdbc:postgresql://127.0.0.1:54320/test?loggerLevel=OFF)
+12:39:30.920 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore - =========================================================
+12:39:30.920 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -  java version: 25
+12:39:30.920 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -    connection: jdbc:postgresql://127.0.0.1:54320/test?loggerLevel=OFF
+12:39:30.920 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -          user: test
+12:39:30.921 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -      password: test
+12:39:30.921 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -  startup time: 1
+12:39:30.921 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore - =========================================================
+12:39:30.932 [org.performance.start.Main.main()] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+12:39:31.105 [org.performance.start.Main.main()] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@3ad7645c
+12:39:31.105 [org.performance.start.Main.main()] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+12:40:20.330 [org.performance.start.Main.main()] INFO  o.testcontainers.images.PullPolicy - Image pull policy will be performed by: DefaultPullPolicy()
+12:40:20.332 [org.performance.start.Main.main()] INFO  o.t.utility.ImageNameSubstitutor - Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+12:40:20.338 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ===================================================================
+12:40:20.338 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ======    Scenario01 - Process jobs                          ======
+12:40:20.338 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ======    JobRunr (1.0.0-SNAPSHOT (chore/gradle-upgrade))    ======
+12:40:20.338 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ===================================================================
+12:40:20.339 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Testcontainers version: 2.0.1
+12:40:20.565 [org.performance.start.Main.main()] INFO  o.t.d.DockerClientProviderStrategy - Found Docker environment with Testcontainers Host with tc.host=tcp://127.0.0.1:49348
+12:40:20.565 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Docker host IP address is 127.0.0.1
+12:40:20.579 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Connected to docker: 
+  Server Version: 28.3.3 (via Testcontainers Desktop 1.15.1)
+  API Version: 1.51
+  Operating System: Docker Desktop
+  Total Memory: 7836 MB
+  Labels: 
+    com.docker.desktop.address=unix:///Users/rdehuyss/Library/Containers/com.docker.docker/Data/docker-cli.sock
+12:40:20.581 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Checking the system...
+12:40:20.581 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - ✔︎ Docker server version should be at least 1.6.0
+12:40:20.831 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Creating container for image: postgres:18.0
+12:40:20.956 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Creating container for image: testcontainers/ryuk:0.13.0
+12:40:21.034 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Container testcontainers/ryuk:0.13.0 is starting: 19869c46a0d874decb44221e0fffe2278280594afcaf545db0fa9056e3771c7b
+12:40:21.174 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Container testcontainers/ryuk:0.13.0 started in PT0.217584S
+12:40:21.212 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Container postgres:18.0 is starting: 4dacf564a8a674db6d99f01c869edcc16530ad1d50c5cc5f20dbc910206ad286
+12:40:21.872 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Container postgres:18.0 started in PT1.040822S
+12:40:21.873 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Container is started (JDBC URL: jdbc:postgresql://127.0.0.1:54320/test?loggerLevel=OFF)
+12:40:21.874 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore - =========================================================
+12:40:21.874 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -  java version: 25
+12:40:21.875 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -    connection: jdbc:postgresql://127.0.0.1:54320/test?loggerLevel=OFF
+12:40:21.875 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -          user: test
+12:40:21.875 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -      password: test
+12:40:21.876 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -  startup time: 1
+12:40:21.876 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore - =========================================================
+12:40:21.889 [org.performance.start.Main.main()] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+12:40:22.060 [org.performance.start.Main.main()] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@3ad7645c
+12:40:22.060 [org.performance.start.Main.main()] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+12:40:22.193 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - Started JobRunr (1.0.0-SNAPSHOT (chore/gradle-upgrade)) with BackgroundJobServer paused
+12:40:22.193 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - Creating jobs
+12:40:22.195 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - Created 0 jobs in PT0S. Estimated time to create 500000 jobs: 0 seconds
+12:40:36.844 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - Successfully created 500000 jobs in PT14.650709S. Updating database statistics
+12:40:36.855 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore - VACUUMED POSTGRES TABLES
+12:40:36.855 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - Successfully updated database statistics
+12:40:36.857 [org.performance.start.Main.main()] INFO  o.j.s.t.VirtualThreadJobRunrExecutor - ThreadManager of type 'VirtualThreadPerTask' started
+12:40:36.869 [backgroundjob-zookeeper-pool-2-thread-1] INFO  o.jobrunr.server.BackgroundJobServer - JobRunr BackgroundJobServer (Mac - d45d0a39-827e-4309-bba6-12c13c91c010) using PostgresStorageProvider and 256 BackgroundJobPerformers started successfully
+12:40:36.874 [backgroundjob-zookeeper-pool-2-thread-1] INFO  org.jobrunr.server.ServerZooKeeper - Server d45d0a39-827e-4309-bba6-12c13c91c010 is master (this BackgroundJobServer)
+12:40:36.879 [pool-3-thread-1] INFO  o.j.s.t.s.MigrateFromV5toV6Task - Start migration of scheduled jobs from v5 to v6
+12:40:36.881 [pool-3-thread-1] INFO  o.j.s.t.s.MigrateFromV5toV6Task - Found 0 scheduled jobs to migrate.
+12:40:36.881 [pool-3-thread-1] INFO  o.j.s.t.s.MigrateFromV5toV6Task - Finished migration of scheduled jobs from v5 to v6
+12:40:37.879 [backgroundjob-zookeeper-pool-2-thread-3] DEBUG o.j.s.t.z.ProcessRecurringJobsTask - Found 0 jobs to schedule from 0 recurring jobs
+12:40:37.881 [backgroundjob-zookeeper-pool-2-thread-3] DEBUG o.j.s.t.z.ProcessScheduledJobsTask - Found 0 scheduled jobs to enqueue.
+12:40:37.954 [backgroundjob-worker] INFO  o.p.jobs.PerformanceTestJob - 0ms / PT0S - processed 2 jobs / 3 index | Infinity jobs/sec (overall) | 1.7 jobs/sec (last 10 sec)
+12:40:38.009 [backgroundjob-worker] INFO  o.p.jobs.PerformanceTestJob - 56ms / PT0.056S - processed 372 jobs / 380 index | 6642.86 jobs/sec (overall) | 38.4 jobs/sec (last 10 sec)
+12:40:38.095 [ForkJoinPool.commonPool-worker-13] WARN  o.j.storage.AbstractStorageProvider - Error notifying JobStorageChangeListeners
+java.util.concurrent.CompletionException: java.lang.NullPointerException: Cannot invoke "org.jobrunr.storage.JobStats.getSucceeded()" because "this.jobsStats" is null
+	at java.base/java.util.concurrent.CompletableFuture.wrapInCompletionException(CompletableFuture.java:323)
+	at java.base/java.util.concurrent.CompletableFuture.encodeThrowable(CompletableFuture.java:359)
+	at java.base/java.util.concurrent.CompletableFuture.completeThrowable(CompletableFuture.java:364)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1828)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.exec(CompletableFuture.java:1817)
+Caused by: java.lang.NullPointerException: Cannot invoke "org.jobrunr.storage.JobStats.getSucceeded()" because "this.jobsStats" is null
+	at org.jobrunr.performance.scenario.monitor.JobRunrScenarioMonitor.onChange(JobRunrScenarioMonitor.java:22)
+	at org.jobrunr.storage.AbstractStorageProvider.lambda$notifyJobStatsOnChangeListeners$0(AbstractStorageProvider.java:111)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1604)
+	at org.jobrunr.storage.AbstractStorageProvider.lambda$notifyJobStatsOnChangeListeners$1(AbstractStorageProvider.java:111)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1825)
+12:40:39.012 [backgroundjob-worker] INFO  o.p.jobs.PerformanceTestJob - 1060ms / PT1.06S - processed 6466 jobs / 6466 index | 6100.00 jobs/sec (overall) | 647.3 jobs/sec (last 10 sec)
+12:40:39.013 [ForkJoinPool.commonPool-worker-10] WARN  o.j.storage.AbstractStorageProvider - Error notifying JobStorageChangeListeners
+java.util.concurrent.CompletionException: java.lang.NullPointerException: Cannot invoke "org.jobrunr.storage.JobStats.getSucceeded()" because "this.jobsStats" is null
+	at java.base/java.util.concurrent.CompletableFuture.wrapInCompletionException(CompletableFuture.java:323)
+	at java.base/java.util.concurrent.CompletableFuture.encodeThrowable(CompletableFuture.java:359)
+	at java.base/java.util.concurrent.CompletableFuture.completeThrowable(CompletableFuture.java:364)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1828)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.exec(CompletableFuture.java:1817)
+Caused by: java.lang.NullPointerException: Cannot invoke "org.jobrunr.storage.JobStats.getSucceeded()" because "this.jobsStats" is null
+	at org.jobrunr.performance.scenario.monitor.JobRunrScenarioMonitor.onChange(JobRunrScenarioMonitor.java:22)
+	at org.jobrunr.storage.AbstractStorageProvider.lambda$notifyJobStatsOnChangeListeners$0(AbstractStorageProvider.java:111)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1604)
+	at org.jobrunr.storage.AbstractStorageProvider.lambda$notifyJobStatsOnChangeListeners$1(AbstractStorageProvider.java:111)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1825)
+12:40:40.013 [ForkJoinPool.commonPool-worker-15] WARN  o.j.storage.AbstractStorageProvider - Error notifying JobStorageChangeListeners
+java.util.concurrent.CompletionException: java.lang.NullPointerException: Cannot invoke "org.jobrunr.storage.JobStats.getSucceeded()" because "this.jobsStats" is null
+	at java.base/java.util.concurrent.CompletableFuture.wrapInCompletionException(CompletableFuture.java:323)
+	at java.base/java.util.concurrent.CompletableFuture.encodeThrowable(CompletableFuture.java:359)
+	at java.base/java.util.concurrent.CompletableFuture.completeThrowable(CompletableFuture.java:364)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1828)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.exec(CompletableFuture.java:1817)
+Caused by: java.lang.NullPointerException: Cannot invoke "org.jobrunr.storage.JobStats.getSucceeded()" because "this.jobsStats" is null
+	at org.jobrunr.performance.scenario.monitor.JobRunrScenarioMonitor.onChange(JobRunrScenarioMonitor.java:22)
+	at org.jobrunr.storage.AbstractStorageProvider.lambda$notifyJobStatsOnChangeListeners$0(AbstractStorageProvider.java:111)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1604)
+	at org.jobrunr.storage.AbstractStorageProvider.lambda$notifyJobStatsOnChangeListeners$1(AbstractStorageProvider.java:111)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1825)
+12:40:40.016 [backgroundjob-worker] INFO  o.p.jobs.PerformanceTestJob - 2065ms / PT2.065S - processed 14704 jobs / 14704 index | 7120.58 jobs/sec (overall) | 1470.6 jobs/sec (last 10 sec)
+12:40:40.101 [extShutdownHook] INFO  o.jobrunr.server.BackgroundJobServer - BackgroundJobServer (Mac - d45d0a39-827e-4309-bba6-12c13c91c010) stopping (may take about PT10S)
+12:40:40.101 [extShutdownHook] INFO  o.jobrunr.server.BackgroundJobServer - BackgroundJobServer (Mac - d45d0a39-827e-4309-bba6-12c13c91c010) BackgroundJobPerformers stopping (waiting at most PT10S for jobs to finish)
+12:40:40.108 [extShutdownHook] INFO  o.jobrunr.server.BackgroundJobServer - BackgroundJobServer (Mac - d45d0a39-827e-4309-bba6-12c13c91c010) BackgroundJobServer and BackgroundJobPerformers stopped
+12:42:21.293 [org.performance.start.Main.main()] INFO  o.testcontainers.images.PullPolicy - Image pull policy will be performed by: DefaultPullPolicy()
+12:42:21.295 [org.performance.start.Main.main()] INFO  o.t.utility.ImageNameSubstitutor - Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+12:42:21.301 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ===================================================================
+12:42:21.301 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ======    Scenario01 - Process jobs                          ======
+12:42:21.301 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ======    JobRunr (1.0.0-SNAPSHOT (chore/gradle-upgrade))    ======
+12:42:21.301 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ===================================================================
+12:42:21.302 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Testcontainers version: 2.0.1
+12:42:21.542 [org.performance.start.Main.main()] INFO  o.t.d.DockerClientProviderStrategy - Found Docker environment with Testcontainers Host with tc.host=tcp://127.0.0.1:49348
+12:42:21.542 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Docker host IP address is 127.0.0.1
+12:42:21.556 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Connected to docker: 
+  Server Version: 28.3.3 (via Testcontainers Desktop 1.15.1)
+  API Version: 1.51
+  Operating System: Docker Desktop
+  Total Memory: 7836 MB
+  Labels: 
+    com.docker.desktop.address=unix:///Users/rdehuyss/Library/Containers/com.docker.docker/Data/docker-cli.sock
+12:42:21.558 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Checking the system...
+12:42:21.558 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - ✔︎ Docker server version should be at least 1.6.0
+12:42:21.801 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Creating container for image: postgres:18.0
+12:42:21.929 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Creating container for image: testcontainers/ryuk:0.13.0
+12:42:21.997 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Container testcontainers/ryuk:0.13.0 is starting: d3472fffff65ed644b4accd5cc50df3b8970897a0d6b3a65fcd9279a91d025d2
+12:42:22.125 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Container testcontainers/ryuk:0.13.0 started in PT0.195397S
+12:42:22.157 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Container postgres:18.0 is starting: f183b321c879720bab86ac16da48bd87136261a4b688708f3267dd0fb71fedeb
+12:42:22.823 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Container postgres:18.0 started in PT1.021497S
+12:42:22.824 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Container is started (JDBC URL: jdbc:postgresql://127.0.0.1:54320/test?loggerLevel=OFF)
+12:42:22.825 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore - =========================================================
+12:42:22.826 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -  java version: 25
+12:42:22.826 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -    connection: jdbc:postgresql://127.0.0.1:54320/test?loggerLevel=OFF
+12:42:22.826 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -          user: test
+12:42:22.826 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -      password: test
+12:42:22.827 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -  startup time: 1
+12:42:22.827 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore - =========================================================
+12:42:22.848 [org.performance.start.Main.main()] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+12:42:23.020 [org.performance.start.Main.main()] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@14a2c2c
+12:42:23.021 [org.performance.start.Main.main()] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+12:42:23.164 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - Started JobRunr (1.0.0-SNAPSHOT (chore/gradle-upgrade)) with BackgroundJobServer paused
+12:42:23.164 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - Creating jobs
+12:42:23.166 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - Created 0 jobs in PT0S. Estimated time to create 500000 jobs: 0 seconds
+12:42:50.245 [org.performance.start.Main.main()] INFO  o.testcontainers.images.PullPolicy - Image pull policy will be performed by: DefaultPullPolicy()
+12:42:50.247 [org.performance.start.Main.main()] INFO  o.t.utility.ImageNameSubstitutor - Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+12:42:50.253 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ===================================================================
+12:42:50.253 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ======    Scenario01 - Process jobs                          ======
+12:42:50.253 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ======    JobRunr (1.0.0-SNAPSHOT (chore/gradle-upgrade))    ======
+12:42:50.254 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ===================================================================
+12:42:50.254 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Testcontainers version: 2.0.1
+12:42:50.513 [org.performance.start.Main.main()] INFO  o.t.d.DockerClientProviderStrategy - Found Docker environment with Testcontainers Host with tc.host=tcp://127.0.0.1:49348
+12:42:50.514 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Docker host IP address is 127.0.0.1
+12:42:50.529 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Connected to docker: 
+  Server Version: 28.3.3 (via Testcontainers Desktop 1.15.1)
+  API Version: 1.51
+  Operating System: Docker Desktop
+  Total Memory: 7836 MB
+  Labels: 
+    com.docker.desktop.address=unix:///Users/rdehuyss/Library/Containers/com.docker.docker/Data/docker-cli.sock
+12:42:50.531 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Checking the system...
+12:42:50.531 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - ✔︎ Docker server version should be at least 1.6.0
+12:42:50.767 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Creating container for image: postgres:18.0
+12:42:50.851 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Creating container for image: testcontainers/ryuk:0.13.0
+12:42:50.910 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Container testcontainers/ryuk:0.13.0 is starting: f3c7bff32323e35bea2098b1aea0460e215a7ff7493111fea9a5b254c0c034f3
+12:42:51.055 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Container testcontainers/ryuk:0.13.0 started in PT0.204256S
+12:42:51.094 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Container postgres:18.0 is starting: 0ca7582c0525ebecabbbc83bbf29da29debb5f152307fceb90f78b2c2f2834aa
+12:42:51.783 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Container postgres:18.0 started in PT1.016417S
+12:42:51.785 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Container is started (JDBC URL: jdbc:postgresql://127.0.0.1:54320/test?loggerLevel=OFF)
+12:42:51.785 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore - =========================================================
+12:42:51.785 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -  java version: 25
+12:42:51.785 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -    connection: jdbc:postgresql://127.0.0.1:54320/test?loggerLevel=OFF
+12:42:51.785 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -          user: test
+12:42:51.786 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -      password: test
+12:42:51.786 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -  startup time: 1
+12:42:51.786 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore - =========================================================
+12:42:51.794 [org.performance.start.Main.main()] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+12:42:51.967 [org.performance.start.Main.main()] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@2fd50a7c
+12:42:51.968 [org.performance.start.Main.main()] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+12:42:52.114 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - Started JobRunr (1.0.0-SNAPSHOT (chore/gradle-upgrade)) with BackgroundJobServer paused
+12:42:52.114 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - Creating jobs
+12:42:52.116 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - Created 0 jobs in PT0S. Estimated time to create 10000 jobs: 0 seconds
+12:42:52.581 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - Successfully created 10000 jobs in PT0.467461S. Updating database statistics
+12:42:52.588 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore - VACUUMED POSTGRES TABLES
+12:42:52.589 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - Successfully updated database statistics
+12:42:52.591 [org.performance.start.Main.main()] INFO  o.j.s.t.VirtualThreadJobRunrExecutor - ThreadManager of type 'VirtualThreadPerTask' started
+12:42:52.601 [backgroundjob-zookeeper-pool-2-thread-1] INFO  o.jobrunr.server.BackgroundJobServer - JobRunr BackgroundJobServer (Mac - ef398a44-5374-451c-a7c4-9199ec383aa9) using PostgresStorageProvider and 256 BackgroundJobPerformers started successfully
+12:42:52.606 [backgroundjob-zookeeper-pool-2-thread-1] INFO  org.jobrunr.server.ServerZooKeeper - Server ef398a44-5374-451c-a7c4-9199ec383aa9 is master (this BackgroundJobServer)
+12:42:52.612 [pool-3-thread-1] INFO  o.j.s.t.s.MigrateFromV5toV6Task - Start migration of scheduled jobs from v5 to v6
+12:42:52.613 [pool-3-thread-1] INFO  o.j.s.t.s.MigrateFromV5toV6Task - Found 0 scheduled jobs to migrate.
+12:42:52.613 [pool-3-thread-1] INFO  o.j.s.t.s.MigrateFromV5toV6Task - Finished migration of scheduled jobs from v5 to v6
+12:42:53.611 [backgroundjob-zookeeper-pool-2-thread-3] DEBUG o.j.s.t.z.ProcessRecurringJobsTask - Found 0 jobs to schedule from 0 recurring jobs
+12:42:53.616 [backgroundjob-zookeeper-pool-2-thread-3] DEBUG o.j.s.t.z.ProcessScheduledJobsTask - Found 0 scheduled jobs to enqueue.
+12:42:53.710 [backgroundjob-worker] INFO  o.p.jobs.PerformanceTestJob - 0ms / PT0S - processed 1 jobs / 12 index | Infinity jobs/sec (overall) | 1.6 jobs/sec (last 10 sec)
+12:42:53.753 [ForkJoinPool.commonPool-worker-15] WARN  o.j.storage.AbstractStorageProvider - Error notifying JobStorageChangeListeners
+java.util.concurrent.CompletionException: java.lang.NullPointerException: Cannot invoke "org.jobrunr.storage.JobStats.getSucceeded()" because "this.jobsStats" is null
+	at java.base/java.util.concurrent.CompletableFuture.wrapInCompletionException(CompletableFuture.java:323)
+	at java.base/java.util.concurrent.CompletableFuture.encodeThrowable(CompletableFuture.java:359)
+	at java.base/java.util.concurrent.CompletableFuture.completeThrowable(CompletableFuture.java:364)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1828)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.exec(CompletableFuture.java:1817)
+Caused by: java.lang.NullPointerException: Cannot invoke "org.jobrunr.storage.JobStats.getSucceeded()" because "this.jobsStats" is null
+	at org.jobrunr.performance.scenario.monitor.JobRunrScenarioMonitor.onChange(JobRunrScenarioMonitor.java:23)
+	at org.jobrunr.storage.AbstractStorageProvider.lambda$notifyJobStatsOnChangeListeners$0(AbstractStorageProvider.java:111)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1604)
+	at org.jobrunr.storage.AbstractStorageProvider.lambda$notifyJobStatsOnChangeListeners$1(AbstractStorageProvider.java:111)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1825)
+12:42:54.020 [backgroundjob-worker] INFO  o.p.jobs.PerformanceTestJob - 313ms / PT0.313S - processed 1604 jobs / 1605 index | 5124.60 jobs/sec (overall) | 160.9 jobs/sec (last 10 sec)
+12:42:54.733 [ForkJoinPool.commonPool-worker-6] WARN  o.j.storage.AbstractStorageProvider - Error notifying JobStorageChangeListeners
+java.util.concurrent.CompletionException: java.lang.NullPointerException: Cannot invoke "org.jobrunr.storage.JobStats.getSucceeded()" because "this.jobsStats" is null
+	at java.base/java.util.concurrent.CompletableFuture.wrapInCompletionException(CompletableFuture.java:323)
+	at java.base/java.util.concurrent.CompletableFuture.encodeThrowable(CompletableFuture.java:359)
+	at java.base/java.util.concurrent.CompletableFuture.completeThrowable(CompletableFuture.java:364)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1828)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.exec(CompletableFuture.java:1817)
+Caused by: java.lang.NullPointerException: Cannot invoke "org.jobrunr.storage.JobStats.getSucceeded()" because "this.jobsStats" is null
+	at org.jobrunr.performance.scenario.monitor.JobRunrScenarioMonitor.onChange(JobRunrScenarioMonitor.java:23)
+	at org.jobrunr.storage.AbstractStorageProvider.lambda$notifyJobStatsOnChangeListeners$0(AbstractStorageProvider.java:111)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1604)
+	at org.jobrunr.storage.AbstractStorageProvider.lambda$notifyJobStatsOnChangeListeners$1(AbstractStorageProvider.java:111)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1825)
+12:42:55.019 [backgroundjob-worker] INFO  o.p.jobs.PerformanceTestJob - 1312ms / PT1.312S - processed 9622 jobs / 9621 index | 7333.84 jobs/sec (overall) | 965.4 jobs/sec (last 10 sec)
+12:42:56.764 [extShutdownHook] INFO  o.jobrunr.server.BackgroundJobServer - BackgroundJobServer (Mac - ef398a44-5374-451c-a7c4-9199ec383aa9) stopping (may take about PT10S)
+12:42:56.764 [extShutdownHook] INFO  o.jobrunr.server.BackgroundJobServer - BackgroundJobServer (Mac - ef398a44-5374-451c-a7c4-9199ec383aa9) BackgroundJobPerformers stopping (waiting at most PT10S for jobs to finish)
+12:42:56.770 [extShutdownHook] INFO  o.jobrunr.server.BackgroundJobServer - BackgroundJobServer (Mac - ef398a44-5374-451c-a7c4-9199ec383aa9) BackgroundJobServer and BackgroundJobPerformers stopped
+12:44:33.248 [org.performance.start.Main.main()] INFO  o.testcontainers.images.PullPolicy - Image pull policy will be performed by: DefaultPullPolicy()
+12:44:33.250 [org.performance.start.Main.main()] INFO  o.t.utility.ImageNameSubstitutor - Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+12:44:33.256 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ===================================================================
+12:44:33.256 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ======    Scenario01 - Process jobs                          ======
+12:44:33.256 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ======    JobRunr (1.0.0-SNAPSHOT (chore/gradle-upgrade))    ======
+12:44:33.256 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - ===================================================================
+12:44:33.257 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Testcontainers version: 2.0.1
+12:44:33.498 [org.performance.start.Main.main()] INFO  o.t.d.DockerClientProviderStrategy - Found Docker environment with Testcontainers Host with tc.host=tcp://127.0.0.1:49348
+12:44:33.498 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Docker host IP address is 127.0.0.1
+12:44:33.511 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Connected to docker: 
+  Server Version: 28.3.3 (via Testcontainers Desktop 1.15.1)
+  API Version: 1.51
+  Operating System: Docker Desktop
+  Total Memory: 7836 MB
+  Labels: 
+    com.docker.desktop.address=unix:///Users/rdehuyss/Library/Containers/com.docker.docker/Data/docker-cli.sock
+12:44:33.513 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - Checking the system...
+12:44:33.514 [org.performance.start.Main.main()] INFO  o.testcontainers.DockerClientFactory - ✔︎ Docker server version should be at least 1.6.0
+12:44:33.744 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Creating container for image: postgres:18.0
+12:44:33.833 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Creating container for image: testcontainers/ryuk:0.13.0
+12:44:33.901 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Container testcontainers/ryuk:0.13.0 is starting: 98d28e4ab20ae24fea0d9b30e9d848bd69c6e58156efa0683fbaffbf316f687b
+12:44:34.047 [org.performance.start.Main.main()] INFO  tc.testcontainers/ryuk:0.13.0 - Container testcontainers/ryuk:0.13.0 started in PT0.214064S
+12:44:34.079 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Container postgres:18.0 is starting: 17c7b1056c607ada0e17e8902320c8af22dbba37fd9bf847929bbd0cabfb9fe8
+12:44:34.739 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Container postgres:18.0 started in PT0.995356S
+12:44:34.740 [org.performance.start.Main.main()] INFO  tc.postgres:18.0 - Container is started (JDBC URL: jdbc:postgresql://127.0.0.1:54320/test?loggerLevel=OFF)
+12:44:34.741 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore - =========================================================
+12:44:34.742 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -  java version: 25
+12:44:34.742 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -    connection: jdbc:postgresql://127.0.0.1:54320/test?loggerLevel=OFF
+12:44:34.742 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -          user: test
+12:44:34.742 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -      password: test
+12:44:34.743 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore -  startup time: 1
+12:44:34.743 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore - =========================================================
+12:44:34.765 [org.performance.start.Main.main()] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+12:44:34.948 [org.performance.start.Main.main()] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@14d9f675
+12:44:34.949 [org.performance.start.Main.main()] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+12:44:35.110 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - Started JobRunr (1.0.0-SNAPSHOT (chore/gradle-upgrade)) with BackgroundJobServer paused
+12:44:35.111 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - Creating jobs
+12:44:35.113 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - Created 0 jobs in PT0S. Estimated time to create 10000 jobs: 0 seconds
+12:44:35.577 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - Successfully created 10000 jobs in PT0.465976S. Updating database statistics
+12:44:35.583 [org.performance.start.Main.main()] INFO  o.p.datastore.sql.PostgresDataStore - VACUUMED POSTGRES TABLES
+12:44:35.583 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - Successfully updated database statistics
+12:44:35.585 [org.performance.start.Main.main()] INFO  o.j.s.t.VirtualThreadJobRunrExecutor - ThreadManager of type 'VirtualThreadPerTask' started
+12:44:35.594 [backgroundjob-zookeeper-pool-2-thread-1] INFO  o.jobrunr.server.BackgroundJobServer - JobRunr BackgroundJobServer (Mac - 398aa1c7-fe2e-4867-8fc4-ce1d4b79070a) using PostgresStorageProvider and 256 BackgroundJobPerformers started successfully
+12:44:35.598 [backgroundjob-zookeeper-pool-2-thread-1] INFO  org.jobrunr.server.ServerZooKeeper - Server 398aa1c7-fe2e-4867-8fc4-ce1d4b79070a is master (this BackgroundJobServer)
+12:44:35.604 [pool-3-thread-1] INFO  o.j.s.t.s.MigrateFromV5toV6Task - Start migration of scheduled jobs from v5 to v6
+12:44:35.605 [pool-3-thread-1] INFO  o.j.s.t.s.MigrateFromV5toV6Task - Found 0 scheduled jobs to migrate.
+12:44:35.606 [pool-3-thread-1] INFO  o.j.s.t.s.MigrateFromV5toV6Task - Finished migration of scheduled jobs from v5 to v6
+12:44:36.609 [backgroundjob-zookeeper-pool-2-thread-3] DEBUG o.j.s.t.z.ProcessRecurringJobsTask - Found 0 jobs to schedule from 0 recurring jobs
+12:44:36.614 [backgroundjob-zookeeper-pool-2-thread-3] DEBUG o.j.s.t.z.ProcessScheduledJobsTask - Found 0 scheduled jobs to enqueue.
+12:44:36.710 [backgroundjob-worker] INFO  o.p.jobs.PerformanceTestJob - 0ms / PT0S - processed 1 jobs / 10 index | Infinity jobs/sec (overall) | 1.8 jobs/sec (last 10 sec)
+12:44:37.016 [backgroundjob-worker] INFO  o.p.jobs.PerformanceTestJob - 308ms / PT0.308S - processed 1894 jobs / 1893 index | 6149.35 jobs/sec (overall) | 190.4 jobs/sec (last 10 sec)
+12:44:38.009 [backgroundjob-worker] INFO  o.p.jobs.PerformanceTestJob - 1302ms / PT1.302S - processed 9757 jobs / 9756 index | 7493.86 jobs/sec (overall) | 976.7 jobs/sec (last 10 sec)
+12:44:41.625 [backgroundjob-zookeeper-pool-2-thread-3] DEBUG o.j.s.t.z.ProcessRecurringJobsTask - Found 0 jobs to schedule from 0 recurring jobs
+12:44:41.628 [backgroundjob-zookeeper-pool-2-thread-3] DEBUG o.j.s.t.z.ProcessScheduledJobsTask - Found 0 scheduled jobs to enqueue.
+12:44:43.615 [ForkJoinPool.commonPool-worker-3] WARN  o.j.p.s.m.JobRunrScenarioMonitor - All jobs were processed (10000 / 10000)
+12:44:43.616 [org.performance.start.Main.main()] INFO  o.j.p.scenario.Scenario01ProcessJobs - Processed 10000 jobs in PT8.03273S
+12:44:43.630 [org.performance.start.Main.main()] INFO  o.jobrunr.server.BackgroundJobServer - BackgroundJobServer (Mac - 398aa1c7-fe2e-4867-8fc4-ce1d4b79070a) stopping (may take about PT10S)
+12:44:43.630 [org.performance.start.Main.main()] INFO  o.jobrunr.server.BackgroundJobServer - BackgroundJobServer (Mac - 398aa1c7-fe2e-4867-8fc4-ce1d4b79070a) BackgroundJobPerformers stopping (waiting at most PT10S for jobs to finish)
+12:44:43.633 [org.performance.start.Main.main()] INFO  o.jobrunr.server.BackgroundJobServer - BackgroundJobServer (Mac - 398aa1c7-fe2e-4867-8fc4-ce1d4b79070a) BackgroundJobServer and BackgroundJobPerformers stopped
+12:45:04.718 [org.performance.start.Main.main()] INFO  o.testcontainers.images.PullPolicy - Image pull policy will be performed by: DefaultPullPolicy()
+12:45:04.721 [org.performance.start.Main.main()] INFO  o.t.utility.ImageNameSubstitutor - Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+12:48:24.226 [org.performance.start.Main.main()] INFO  org.performance.start.Main - Running Scenario01ProcessJobs for JobRunrPro JobRunrPro (version: 1.0.0-SNAPSHOT) with datastore PostgresDataStore
+12:48:24.244 [org.performance.start.Main.main()] INFO  o.testcontainers.images.PullPolicy - Image pull policy will be performed by: DefaultPullPolicy()
+12:48:24.245 [org.performance.start.Main.main()] INFO  o.t.utility.ImageNameSubstitutor - Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')

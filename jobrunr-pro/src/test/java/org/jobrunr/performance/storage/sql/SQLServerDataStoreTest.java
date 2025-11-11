@@ -3,7 +3,7 @@ package org.jobrunr.performance.storage.sql;
 import org.jobrunr.jobs.Job;
 import org.jobrunr.jobs.mappers.JobMapper;
 import org.jobrunr.jobs.states.StateName;
-import org.jobrunr.performance.scenario.monitor.QueryAnalysisMonitor;
+import org.jobrunrpro.performance.scenario.monitor.QueryAnalysisMonitor;
 import org.jobrunr.server.BackgroundJobServer;
 import org.jobrunr.storage.JobSearchRequest;
 import org.jobrunr.storage.StorageProvider;

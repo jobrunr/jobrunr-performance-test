@@ -15,7 +15,7 @@
         <maven.compiler.source>25</maven.compiler.source>
         <maven.compiler.target>25</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jobrunr.version>1.0.0-SNAPSHOT</jobrunr.version>
+        <tool.version>1.0.0-SNAPSHOT</tool.version>
     </properties>
 
     <repositories>
@@ -34,15 +34,13 @@
         <dependency>
             <groupId>org.jobrunr</groupId>
             <artifactId>jobrunr-pro</artifactId>
-            <version>${jobrunr.version}</version>
-            <scope>provided</scope> <!-- will be provided by profile -->
+            <version>${tool.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jobrunr</groupId>
             <artifactId>jobrunr-pro</artifactId>
-            <version>${jobrunr.version}</version>
+            <version>${tool.version}</version>
             <classifier>test-fixtures</classifier>
-            <scope>provided</scope> <!-- will be provided by profile -->
         </dependency>
 
         <dependency>

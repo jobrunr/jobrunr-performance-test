@@ -5,6 +5,7 @@ import org.jobrunr.server.BackgroundJobServer;
 import org.jobrunr.storage.ThreadSafeStorageProvider;
 import org.jobrunr.storage.navigation.DynamicAmountRequest;
 import org.jobrunr.stubs.Mocks;
+import org.jobrunrpro.performance.scenario.monitor.QueryAnalysisMonitor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.performance.datastore.sql.MySQLDataStore;
