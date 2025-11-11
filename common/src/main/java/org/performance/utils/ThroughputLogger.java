@@ -20,6 +20,12 @@ public class ThroughputLogger {
 
     public void logThroughputAndEstimatedTimeLeft(long currentJob) {
         long currentTime = System.currentTimeMillis();
+
+        if (currentJob == 0) {
+            lastLogTime.set(currentTime);
+            return;
+        }
+
         if ((currentTime - lastLogTime.get()) >= 60_000) {
             long totalElapsedSeconds = (currentTime - startTime) / 1000;
             double jobsPerSecond = totalElapsedSeconds > 0 ? (double) currentJob / totalElapsedSeconds : 0;
