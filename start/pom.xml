@@ -17,20 +17,43 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <profiles>
+        <profile>
+            <id>JobRunr</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.jobrunr.performance</groupId>
+                    <artifactId>jobrunr</artifactId>
+                    <version>${project.parent.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>JobRunrPro</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.jobrunr.performance</groupId>
+                    <artifactId>jobrunr-pro</artifactId>
+                    <version>${project.parent.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>Quartz</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.jobrunr.performance</groupId>
+                    <artifactId>quartz</artifactId>
+                    <version>${project.parent.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+
     <dependencies>
         <dependency>
             <groupId>org.jobrunr.performance</groupId>
             <artifactId>common</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jobrunr.performance</groupId>
-            <artifactId>jobrunr</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jobrunr.performance</groupId>
-            <artifactId>quartz</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
@@ -39,7 +62,7 @@
             <version>4.7.7</version>
         </dependency>
     </dependencies>
-    
+
     <build>
         <plugins>
             <plugin>

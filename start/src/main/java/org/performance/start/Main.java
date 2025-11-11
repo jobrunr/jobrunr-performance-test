@@ -78,7 +78,7 @@ public class Main {
             String pomPath = projectRoot.resolve("pom.xml").toString();
 
             String execArgs = String.format("tool=%s datastore=%s scenario=%s system-exit=true %s", tool, dataStoreType.name(), scenarioName,
-                    Stream.of(args).filter(x -> !Set.of(ARG_JVM_PER_DATASTORE, ARG_DATASTORE, ARG_SCENARIO).contains(substringBefore(x, "="))).collect(joining(" ")));
+                    Stream.of(args).filter(x -> !Set.of(ARG_TOOL, ARG_JVM_PER_DATASTORE, ARG_DATASTORE, ARG_SCENARIO).contains(substringBefore(x, "="))).collect(joining(" ")));
 
             String mavenCmd = createMavenCmd(pomPath, version, execArgs);
             ProcessBuilder pb = new ProcessBuilder("bash", "-c", mavenCmd);
@@ -91,7 +91,7 @@ public class Main {
     }
 
     private static String createMavenCmd(String pomPath, String version, String execArgs) {
-        return String.format("mvn -f \"%s\" compile exec:java@performance-test -Djobrunr.version=%s -Dexec.args=\"%s\"",
+        return String.format("mvn -f \"%s\" compile exec:java@performance-test -Dtool.version=%s -Dexec.args=\"%s\"",
                 pomPath, version, execArgs);
     }
 }

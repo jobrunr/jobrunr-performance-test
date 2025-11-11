@@ -52,25 +52,16 @@ fi
 
 # ========== config ==========
 
-TOOLS=("JobRunrOSS" "JobRunrPro" "Quartz")
+TOOLS=("JobRunr" "JobRunrPro" "Quartz")
 DATABASES=("DB2" "MariaDB" "MySQL" "Oracle" "Postgres" "SQLServer" "MongoDB")
 DEFAULT_AMOUNT=500000
 
 default_tool_version() {
   # Only used for completion suggestion, not enforced.
   case "$1" in
-    JobRunrOSS) echo "1.0.0-SNAPSHOT" ;;
+    JobRunr) echo "1.0.0-SNAPSHOT" ;;
     JobRunrPro) echo "1.0.0-SNAPSHOT" ;;
     Quartz)     echo "2.5.1-SNAPSHOT" ;;
-    *)          echo "" ;;
-  esac
-}
-
-tool_profile() {
-  case "$1" in
-    JobRunrOSS) echo "OSS" ;;
-    JobRunrPro) echo "PRO" ;;
-    Quartz)     echo "QUARTZ" ;;
     *)          echo "" ;;
   esac
 }
@@ -218,7 +209,7 @@ _run_scenario_exec() {
   fi
   echo
 
-  local mvn_cmd=(mvn -f "$ROOT_DIR/start/pom.xml" compile exec:java@performance-test)
+  local mvn_cmd=(mvn -f "$ROOT_DIR/start/pom.xml" -P $tool compile exec:java@performance-test)
 
   # Only add version flag if explicitly provided
   if [[ -n "$tool_version" ]]; then
