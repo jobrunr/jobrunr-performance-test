@@ -1,4 +1,8 @@
+<<<<<<<< HEAD:common/src/main/java/org/performance/datastore/sql/DB2DataStore.java
 package org.performance.datastore.sql;
+========
+package org.jobrunr.performance.storage.sql;
+>>>>>>>> main:common/src/main/java/org/performance/datastore/sql/sql/DB2DataStore.java
 
 import org.testcontainers.db2.Db2Container;
 

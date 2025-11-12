@@ -5,6 +5,11 @@ import org.performance.scenario.Scenario;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jobrunr.performance.scenario.Scenario;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class StringUtils {
 
     public static String camelCaseToHumanReadable(Scenario scenario) {
