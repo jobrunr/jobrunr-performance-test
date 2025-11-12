@@ -1,8 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/common/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/common/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jobrunr-pro/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jobrunr-pro/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jobrunr/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jobrunr/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/quartz/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/quartz/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/kotlin" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/start/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/start/src/main/resources" charset="UTF-8" />
   </component>
 </project>

@@ -1,0 +1,34 @@
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n%ex{5}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>./performance-tests.log</file>
+        <append>true</append>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n%ex{5}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Change the level in the following line to have more debugging (DEBUG, TRACE) -->
+    <logger name="org.jobrunr" level="INFO"/>
+    <logger name="org.jobrunr.utils.multicast" level="WARN"/>
+    <logger name="org.jobrunr.storage.sql.common.DatabaseCreator" level="WARN"/>
+    <logger name="org.jobrunr.storage.nosql.common.NoSqlDatabaseCreator" level="WARN"/>
+    <logger name="org.jobrunr.server.BackgroundJobPerformer" level="WARN"/>
+    <logger name="org.jobrunr.server.queue" level="DEBUG"/>
+    <logger name="org.jobrunr.server.tasks.steward.OnboardNewWorkTask" level="ERROR"/>
+    <logger name="org.jobrunr.server.tasks.zookeeper.ProcessRecurringJobsTask" level="DEBUG"/>
+    <logger name="org.jobrunr.server.tasks.zookeeper.ProcessScheduledJobsTask" level="DEBUG"/>
+    <logger name="org.jobrunr.server.tasks.zookeeper.ProcessJobsAwaitingRateLimiterTask" level="TRACE"/>
+    <logger name="org.jobrunr.server.tasks.zookeeper.ProcessAwaitingJobsTask" level="TRACE"/>
+    <logger name="org.jobrunr.server.tasks.zookeeper.ratelimiters.ConcurrentJobRateLimiter" level="DEBUG"/>
+
+    <root level="info">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+    </root>
+</configuration>
