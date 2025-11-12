@@ -37,4 +37,4 @@ build/
 ### Mac OS ###
 .DS_Store
 
-**/**/performance-tests.log
+performance-tests.log
