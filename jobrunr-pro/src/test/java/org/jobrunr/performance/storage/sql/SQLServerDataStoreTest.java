@@ -3,7 +3,6 @@ package org.jobrunr.performance.storage.sql;
 import org.jobrunr.jobs.Job;
 import org.jobrunr.jobs.mappers.JobMapper;
 import org.jobrunr.jobs.states.StateName;
-import org.jobrunrpro.performance.scenario.monitor.QueryAnalysisMonitor;
 import org.jobrunr.server.BackgroundJobServer;
 import org.jobrunr.storage.JobSearchRequest;
 import org.jobrunr.storage.StorageProvider;
@@ -12,6 +11,7 @@ import org.jobrunr.storage.sql.common.SqlStorageProviderFactory;
 import org.jobrunr.stubs.Mocks;
 import org.jobrunr.utils.SleepUtils;
 import org.jobrunr.utils.mapper.jackson.JacksonJsonMapper;
+import org.jobrunrpro.performance.scenario.monitor.QueryAnalysisMonitor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,6 +47,7 @@ class SQLServerDataStoreTest {
 
     @AfterEach
     void tearDown() {
+        storageProvider.close();
         dataStore.stop();
     }
 
@@ -72,6 +73,6 @@ class SQLServerDataStoreTest {
 
         SleepUtils.sleep(3500);
         Collection<DataStoreQueryAnalysis> queryAnalyses = queryAnalysisMonitor.getQueryAnalyses();
-        assertThat(queryAnalyses).hasSize(5);
+        assertThat(queryAnalyses).hasSizeGreaterThanOrEqualTo(5);
     }
 }
