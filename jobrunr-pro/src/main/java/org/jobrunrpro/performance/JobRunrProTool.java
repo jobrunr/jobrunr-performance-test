@@ -6,6 +6,7 @@ import org.jobrunr.dashboard.JobRunrDashboardWebServerConfiguration;
 import org.jobrunr.jobs.mappers.JobMapper;
 import org.jobrunr.jobs.queues.Queues;
 import org.jobrunr.scheduling.JobScheduler;
+import org.jobrunr.server.BackgroundJobServer;
 import org.jobrunr.server.BackgroundJobServerConfiguration;
 import org.jobrunr.storage.JobRunrMetadata;
 import org.jobrunr.storage.StorageProvider;
@@ -55,6 +56,8 @@ public class JobRunrProTool implements Tool {
             throw new IllegalArgumentException("DataStore must be an instance of AbstractSqlDataStore or MongoDBDataStore");
         }
 
+        storageProvider.setJobMapper(new JobMapper(new JacksonJsonMapper()));
+        
         setupLicense();
 
         Queues queues = scenario.getQueues();
@@ -63,7 +66,6 @@ public class JobRunrProTool implements Tool {
 
         // save rate limiters
         JobRunrMetadata[] rateLimiterConfigurations = scenario.getRateLimiterConfigurationsAsMetadata();
-        storageProvider.setJobMapper(new JobMapper(new JacksonJsonMapper()));
         stream(rateLimiterConfigurations).forEach(storageProvider::saveMetadata);
 
         jobRunrPro = JobRunrPro.configure()
@@ -101,5 +103,9 @@ public class JobRunrProTool implements Tool {
 
     public StorageProvider getStorageProvider() {
         return storageProvider;
+    }
+
+    public BackgroundJobServer getBackgroundJobServer() {
+        return JobRunrPro.getBackgroundJobServer();
     }
 }

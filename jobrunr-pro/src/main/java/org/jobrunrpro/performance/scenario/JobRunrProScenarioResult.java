@@ -6,11 +6,11 @@ import org.performance.scenario.ScenarioResult;
 
 import java.util.List;
 
-public class JobRunrScenarioResult extends ScenarioResult {
+public class JobRunrProScenarioResult extends ScenarioResult {
 
     private List<MethodStatistics> methodStatistics;
 
-    public JobRunrScenarioResult(Scenario scenario) {
+    public JobRunrProScenarioResult(Scenario scenario) {
         super(scenario);
     }
 

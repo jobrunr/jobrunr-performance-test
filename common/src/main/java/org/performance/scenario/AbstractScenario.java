@@ -20,7 +20,7 @@ public abstract class AbstractScenario<T extends Tool> implements Scenario {
     protected final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     protected final T tool;
-    private final DataStore dataStore;
+    protected final DataStore dataStore;
     protected final String[] args;
     protected final ScenarioResult scenarioResult;
 
@@ -76,11 +76,11 @@ public abstract class AbstractScenario<T extends Tool> implements Scenario {
         Instant endTime = now();
         scenarioResult.setAmountOfJobsCreated(totalAmountOfJobsCreated, Duration.between(startTime, endTime));
         LOGGER.info("Successfully created {} jobs in {}. Updating database statistics", totalAmountOfJobsCreated, scenarioResult.getCreationDuration());
-        dataStore.updateStatistics();
-        LOGGER.info("Successfully updated database statistics");
+        //dataStore.updateStatistics(); // need to find a way to do this also for quartz. Skip for now
+        //LOGGER.info("Successfully updated database statistics");
     }
 
-    private void processJobs() throws Exception {
+    protected void processJobs() throws Exception {
         Instant startTime = startProcessingJobs();
         Instant endTime = waitForJobsToComplete();
         scenarioResult.setProcessingDuration(Duration.between(startTime, endTime));
@@ -110,7 +110,7 @@ public abstract class AbstractScenario<T extends Tool> implements Scenario {
     }
 
     private void exitJVMIfRequested() {
-        if (parseBoolean(getArg("system-exit", "false"))) {
+        if (parseBoolean(getArg("system_exit", "false"))) {
             System.exit(0);
         }
     }

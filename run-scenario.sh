@@ -72,11 +72,12 @@ database_to_datastore_class() {
   db="$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')"
   case "$db" in
     postgres)      echo "PostgresDataStore" ;;
-    mariadb|mysql) echo "MySqlDataStore" ;;
+    mariadb)       echo "MariaDBDataStore" ;;
+    mysql)         echo "MySQLDataStore" ;;
     mongodb)       echo "MongoDBDataStore" ;;
     oracle)        echo "OracleDataStore" ;;
-    sqlserver)     echo "SqlServerDataStore" ;;
-    db2)           echo "Db2DataStore" ;;
+    sqlserver)     echo "SQLServerDataStore" ;;
+    db2)           echo "DB2DataStore" ;;
     *)             echo "Unknown" ;;
   esac
 }
@@ -123,23 +124,25 @@ Databases:
   ${DATABASES[*]}
 
 Notes:
-  - toolVersion is OPTIONAL:
-      If omitted, no -Djobrunr.version / -Dquartz.version is passed.
+  - tool_version is OPTIONAL:
+      If omitted, no -tool.version is passed.
       Maven will use the version defined in pom.xml.
-  - Only JobRunrPro currently has multiple scenarios; these are autocompleted.
+  - JobRunrPro currently has multiple scenarios; these are autocompleted.
+  - Only JobRunrPro supports in-depth query analysis reports by setting log_data_store_timings=true.
+    If set, a detailed markdown report will be generated with all queries, their timings and the query plan taken by the database
 
 Examples:
   run-scenario JobRunrPro Scenario00CombinedScenario Postgres 500000
   run-scenario JobRunrPro Scenario01ProcessJobs MySQL 1000000
-  run-scenario JobRunrPro Scenario01ProcessJobs Postgres 500000 toolVersion=1.0.0-SNAPSHOT
+  run-scenario JobRunrPro Scenario01ProcessJobs Postgres 500000 tool_version=1.0.0-SNAPSHOT log_data_store_timings=true
   run-scenario JobRunrOSS Scenario01ProcessJobs Postgres 200000
-  run-scenario Quartz Scenario01ProcessJobs Oracle 100000 toolVersion=2.5.1
+  run-scenario Quartz Scenario01ProcessJobs Oracle 100000 tool_version=2.5.1
 
 Install using:
   - 'source ./run-scenario.sh':
       run-scenario <TAB>                 → tools
       run-scenario JobRunrPro <TAB>      → scenarios
-      run-scenario ... <TAB>             → databases, amounts, toolVersion=
+      run-scenario ... <TAB>             → databases, amounts, tool_version=
 
 EOF
 }
@@ -169,13 +172,13 @@ _run_scenario_exec() {
     exit 1
   fi
 
-  # Extract optional toolVersion=... from extra_args
+  # Extract optional tool_version=... from extra_args
   local tool_version=""
   local -a passthrough=()
   if ((${#extra_args[@]} > 0)); then
     for kv in "${extra_args[@]}"; do
-      if [[ "$kv" == toolVersion=* ]]; then
-        tool_version="${kv#toolVersion=}"
+      if [[ "$kv" == tool_version=* ]]; then
+        tool_version="${kv#tool_version=}"
       else
         passthrough+=("$kv")
       fi
@@ -203,9 +206,9 @@ _run_scenario_exec() {
   [[ -n "$database" ]] && echo "  Database   : $database ($datastore_class)"
   echo "  Amount     : $amount"
   if [[ -n "$tool_version" ]]; then
-    echo "  ToolVersion: $tool_version (explicit)"
+    echo "  version: $tool_version (explicit)"
   else
-    echo "  ToolVersion: (using pom.xml default)"
+    echo "  version: (using pom.xml default)"
   fi
   echo
 
@@ -213,7 +216,7 @@ _run_scenario_exec() {
 
   # Only add version flag if explicitly provided
   if [[ -n "$tool_version" ]]; then
-    mvn_cmd+=("-tool.version=$tool_version")
+    mvn_cmd+=("-Dtool.version=$tool_version")
   fi
 
   mvn_cmd+=("-Dexec.args=$exec_args")
@@ -260,14 +263,14 @@ _run_scenario_complete() {
       COMPREPLY=( $(compgen -W "10000 50000 100000 500000 1000000" -- "$cur") )
       ;;
     *)
-      # complete toolVersion=...
-      if [[ "$cur" == toolVersion=* ]]; then
+      # complete tool_version=...
+      if [[ "$cur" == tool_version=* ]]; then
         local def
         def="$(default_tool_version "$tool")"
         if [[ -n "$def" ]]; then
-          COMPREPLY=( "toolVersion=$def" )
+          COMPREPLY=( "tool_version=$def" )
         else
-          COMPREPLY=( "toolVersion=" )
+          COMPREPLY=( "tool_version=" )
         fi
       fi
       ;;

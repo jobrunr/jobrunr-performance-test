@@ -1,7 +1,8 @@
 package org.jobrunrpro.performance.utils;
 
-import org.jobrunrpro.performance.scenario.JobRunrScenarioResult;
 import org.jobrunr.server.BackgroundJobServer;
+import org.jobrunrpro.performance.scenario.JobRunrProScenarioResult;
+import org.jobrunrpro.performance.scenario.monitor.QueryAnalysisMonitor.JobRunrProDataStoreQuery;
 import org.performance.datastore.AnalysingDataStore;
 import org.performance.datastore.AnalysingDataStore.IndexDetails;
 import org.performance.datastore.AnalysingDataStore.IndexUsage;
@@ -28,7 +29,7 @@ public class MarkdownReporter {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(MarkdownReporter.class);
 
-    public static void render(BackgroundJobServer backgroundJobServer, AnalysingDataStore dataStore, JobRunrScenarioResult scenarioResult) {
+    public static void render(BackgroundJobServer backgroundJobServer, AnalysingDataStore dataStore, JobRunrProScenarioResult scenarioResult) {
         StringBuilder markdown = new StringBuilder();
         markdown.append("# JobRunr Scenario ").append(camelCaseToHumanReadable(scenarioResult.getScenario())).append(System.lineSeparator());
         markdown.append(System.lineSeparator());
@@ -83,15 +84,15 @@ public class MarkdownReporter {
                     markdown.append("##### Query ").append(i + 1).append(System.lineSeparator());
                     markdown.append(" -  Query identifier: `").append(qa.getQuery().getQueryIdentifier()).append("`").append(System.lineSeparator());
                     markdown.append(" - Query with values: `").append(qa.getQuery().getQueryWithValues()).append("`").append(System.lineSeparator());
-//                    qa.getQuery().getQueryTimings().forEach((key, timing) -> {
-//                        markdown.append("   - ").append(key).append(" query part timings: ")
-//                                .append("invocations: ").append(timing.getCount())
-//                                .append(" / total duration: ").append(Duration.ofNanos(timing.getSum()))
-//                                .append(" / avg duration: ").append(Duration.ofNanos((long) timing.getAverage()))
-//                                .append(" / min duration: ").append(Duration.ofNanos(timing.getMin()))
-//                                .append(" / max duration: ").append(Duration.ofNanos(timing.getMax()))
-//                                .append(System.lineSeparator());
-//                    });
+                    ((JobRunrProDataStoreQuery) qa.getQuery()).getQueryTimings().forEach((key, timing) -> {
+                        markdown.append("   - ").append(key).append(" query part timings: ")
+                                .append("invocations: ").append(timing.getCount())
+                                .append(" / total duration: ").append(Duration.ofNanos(timing.getSum()))
+                                .append(" / avg duration: ").append(Duration.ofNanos((long) timing.getAverage()))
+                                .append(" / min duration: ").append(Duration.ofNanos(timing.getMin()))
+                                .append(" / max duration: ").append(Duration.ofNanos(timing.getMax()))
+                                .append(System.lineSeparator());
+                    });
                     for (QueryAnalysisAtPercentage queryAnalysisAtPercentage : qa.getAnalysisAtPercentage()) {
                         markdown.append("<details>").append(System.lineSeparator());
                         markdown.append("<summary>").append("> At percentage: ").append(queryAnalysisAtPercentage.getPercentage()).append(" (").append(queryAnalysisAtPercentage.getInvocationCount()).append(" invocations) (click to expand)").append("</summary>").append(System.lineSeparator());

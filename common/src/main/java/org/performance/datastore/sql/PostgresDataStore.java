@@ -24,7 +24,7 @@ public class PostgresDataStore extends AbstractSqlDataStore<PostgreSQLContainer>
     public void updateStatistics() {
         try (Connection connection = getDataSource().getConnection(); Statement statement = connection.createStatement()) {
             statement.execute("CREATE EXTENSION pg_stat_statements;");
-            //statement.executeUpdate("VACUUM (VERBOSE, ANALYZE) jobrunr_jobs;");
+            statement.executeUpdate("VACUUM (VERBOSE, ANALYZE) jobrunr_jobs;");
             LOGGER.info("VACUUMED POSTGRES TABLES");
         } catch (java.sql.SQLException e) {
             throw new RuntimeException(e);

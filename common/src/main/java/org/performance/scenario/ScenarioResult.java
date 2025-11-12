@@ -6,6 +6,8 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
 
+import static java.util.Collections.emptySet;
+
 public class ScenarioResult {
 
     private final Scenario scenario;
@@ -18,6 +20,7 @@ public class ScenarioResult {
     public ScenarioResult(Scenario scenario) {
         this.scenario = scenario;
         this.timestamp = Instant.now();
+        this.queryAnalyses = emptySet();
     }
 
     public Instant getTimestamp() {

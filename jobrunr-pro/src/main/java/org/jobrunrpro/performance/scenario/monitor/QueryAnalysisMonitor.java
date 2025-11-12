@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.LongSummaryStatistics;
 import java.util.Map;
 
 import static org.jobrunr.storage.ThreadSafeStorageProvider.Query;
@@ -25,7 +26,7 @@ public class QueryAnalysisMonitor implements JobStatsChangeListener {
     private final Instant startTime;
     private final Duration maxScenarioDuration;
     private final List<Double> explainAnalysePercentages;
-    private final Map<String, Map<Query, DataStoreQueryAnalysis>> storageProviderQueryAnalyses;
+    private final Map<String, Map<Query, DataStoreQueryAnalysis>> dataStoreQueryAnalyses;
     private Double currentPercentage;
 
     public QueryAnalysisMonitor(AnalysingDataStore analysingDataStore, Instant startTime, Duration maxScenarioDuration, Double... explainAnalysePercentages) {
@@ -37,7 +38,7 @@ public class QueryAnalysisMonitor implements JobStatsChangeListener {
         this.startTime = startTime;
         this.maxScenarioDuration = maxScenarioDuration;
         this.explainAnalysePercentages = new ArrayList<>(explainAnalysePercentages);
-        this.storageProviderQueryAnalyses = new HashMap<>();
+        this.dataStoreQueryAnalyses = new HashMap<>();
         this.currentPercentage = this.explainAnalysePercentages.remove(0);
     }
 
@@ -46,7 +47,7 @@ public class QueryAnalysisMonitor implements JobStatsChangeListener {
     }
 
     public Collection<DataStoreQueryAnalysis> getQueryAnalyses() {
-        return storageProviderQueryAnalyses.values().stream()
+        return dataStoreQueryAnalyses.values().stream()
                 .flatMap(m -> m.values().stream())
                 .toList();
     }
@@ -75,20 +76,20 @@ public class QueryAnalysisMonitor implements JobStatsChangeListener {
 
     private void getSummaryStatisticsForQuery(String storageProviderMethodNameAndArgs, long invocationCount, Query query) {
         try {
-            JobRunrDataStoreQuery jobRunrDataStoreQuery = new JobRunrDataStoreQuery(query);
-            Map<Query, DataStoreQueryAnalysis> queryAnalyses = storageProviderQueryAnalyses.computeIfAbsent(storageProviderMethodNameAndArgs, k -> new HashMap<>());
-            DataStoreQueryAnalysis storageProviderQueryAnalysis = queryAnalyses.computeIfAbsent(query, k -> new DataStoreQueryAnalysis(storageProviderMethodNameAndArgs, jobRunrDataStoreQuery));
-            storageProviderQueryAnalysis.addAnalysisAtPercentage(currentPercentage, invocationCount, analysingDataStore.explainQuery(jobRunrDataStoreQuery));
+            JobRunrProDataStoreQuery dataStoreQuery = new JobRunrProDataStoreQuery(query);
+            Map<Query, DataStoreQueryAnalysis> queryAnalyses = dataStoreQueryAnalyses.computeIfAbsent(storageProviderMethodNameAndArgs, k -> new HashMap<>());
+            DataStoreQueryAnalysis dataStoreQueryAnalysis = queryAnalyses.computeIfAbsent(query, k -> new DataStoreQueryAnalysis(storageProviderMethodNameAndArgs, dataStoreQuery));
+            dataStoreQueryAnalysis.addAnalysisAtPercentage(currentPercentage, invocationCount, analysingDataStore.explainQuery(dataStoreQuery));
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 
-    private static class JobRunrDataStoreQuery implements DataStoreQuery {
+    public static class JobRunrProDataStoreQuery implements DataStoreQuery {
 
         private final Query query;
 
-        public JobRunrDataStoreQuery(Query query) {
+        public JobRunrProDataStoreQuery(Query query) {
             this.query = query;
         }
 
@@ -100,6 +101,10 @@ public class QueryAnalysisMonitor implements JobStatsChangeListener {
         @Override
         public String getQueryWithValues() {
             return query.getQueryWithValues();
+        }
+
+        public HashMap<String, LongSummaryStatistics> getQueryTimings() {
+            return query.getQueryTimings();
         }
     }
 }
