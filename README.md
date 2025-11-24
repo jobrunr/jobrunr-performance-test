@@ -1,26 +1,34 @@
-## TODO:
+## JobRunr Pro Performance Test
 
-- run Pro tests on hetzner
-- review Postgres Pro query plan v7.4 vs v6.3.10 on Hetzner
-
-## Project for testing JobRunr Performance
+### Description
+This project contains performance tests for JobRunr, JobRunr Pro and other tools using various databases.
 
 ### Prerequisites
-
-- Java 17
+- Java 25
 - Docker
 
 ### How to run
+There are various scenarios which can be tested. For JobRunr OSS and other tools, there is a basic scenario to test how fast jobs are being processed.
 
-- run one of the scripts inside the run folder
+#### 1. Install the script to have autocomplete for the run-scenario command
+```console
+source ./run-scenario.sh
+```
 
-This test was made as simple as possible and does not contain any other framework. This is so the test can be done in isolation.
+#### 2. Run the scenario
+```console
+run-scenario JobRunr Scenario01ProcessJobs Postgres
+```
 
-### Results / Questions
+Please note that for JobRunrPro, you will need to set the JOBRUNRPRO_LICENSE environment variable.
+```console
+export JOBRUNRPRO_LICENSE=<license key>
+```
 
-- Why is there a difference between JobRunr and JobRunr Pro?
-- What can be improved?
 
-#### TODO
+## Test Results
+Our test results can be found in the folder logbooks, grouped by scenario.
 
-- Testing should also be done against other databases (MongoDB / Redis / ...)
+On a dedicated Hetzner [EX44 Server](https://www.hetzner.com/dedicated-rootserver/ex44/), we achieved the following results:
+
+- 

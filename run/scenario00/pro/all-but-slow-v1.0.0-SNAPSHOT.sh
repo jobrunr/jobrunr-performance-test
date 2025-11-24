@@ -1,6 +1,0 @@
-#!/bin/bash
-
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT_DIR="$(dirname "$(dirname "$(dirname "$SCRIPT_DIR")")")"
-
-time mvn -f "$ROOT_DIR/pom.xml" compile exec:java@performance-test -P PRO -Dexec.args="jvm-per-datastore=true datastore=allButSlow scenario=Scenario00CombinedScenario amount=500_000 dashboard_port=8010 log_storage_provider_timings=true max_duration=PT15M"

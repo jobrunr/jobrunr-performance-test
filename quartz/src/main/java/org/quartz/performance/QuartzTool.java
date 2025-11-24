@@ -14,7 +14,7 @@ import org.performance.tools.Tool;
 import org.performance.utils.JarUtils;
 import org.quartz.Scheduler;
 import org.quartz.impl.StdSchedulerFactory;
-import org.quartz.performance.scenario.QuartzScenarioMonitor;
+import org.quartz.performance.scenario.monitor.QuartzScenarioMonitor;
 
 import java.time.Duration;
 import java.util.Properties;

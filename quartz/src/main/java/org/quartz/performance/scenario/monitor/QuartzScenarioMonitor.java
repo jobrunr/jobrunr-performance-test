@@ -1,4 +1,4 @@
-package org.quartz.performance.scenario;
+package org.quartz.performance.scenario.monitor;
 
 import org.performance.scenario.ScenarioMonitor;
 import org.quartz.JobExecutionContext;
