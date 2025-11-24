@@ -28,7 +28,7 @@ public class LogBookReporter {
         boolean addHeader = !Files.exists(logBookPath);
         try (CsvWriter csv = CsvWriter.builder().build(logBookPath, StandardOpenOption.CREATE, StandardOpenOption.APPEND)) {
             if (addHeader)
-                csv.writeRecord("Date & Time", "Host name", "Java version", "Tool", "Tool version", "StorageProvider", "amount of created jobs", "amount of succeeded jobs", "creation duration", "processing duration", "job throughput (jobs / sec)");
+                csv.writeRecord("Date & Time", "Host name", "Java version", "Tool", "Tool version", "DataStore", "amount of created jobs", "amount of succeeded jobs", "creation duration", "processing duration", "job throughput (jobs / sec)");
             String[] defaultParams = new String[]{scenarioResult.getTimestamp().toString(), InetAddress.getLocalHost().getHostName(), getJavaVersion(), tool.getName(), tool.getVersion(), dataStore.getNameAndVersion(), String.valueOf(scenarioResult.getCreatedJobs()), String.valueOf(scenarioResult.getSucceededJobs()), scenarioResult.getCreationDuration().toString(), scenarioResult.getProcessingDuration().toString(), String.format(Locale.US, "%.2f", (double) scenarioResult.getSucceededJobs() / (scenarioResult.getProcessingDuration().toSeconds()))};
             String[] allParams = concat(defaultParams, extraParams);
             csv.writeRecord(allParams);
