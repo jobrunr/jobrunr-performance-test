@@ -61,7 +61,7 @@ default_tool_version() {
   case "$1" in
     JobRunr) echo "1.0.0-SNAPSHOT" ;;
     JobRunrPro) echo "1.0.0-SNAPSHOT" ;;
-    Quartz)     echo "2.5.1-SNAPSHOT" ;;
+    Quartz)     echo "2.5.2" ;;
     *)          echo "" ;;
   esac
 }

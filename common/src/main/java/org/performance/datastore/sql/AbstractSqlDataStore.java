@@ -32,8 +32,8 @@ public abstract class AbstractSqlDataStore<T extends JdbcDatabaseContainer<T>> e
 
     private final String driverClassName;
 
+    private final LongSummaryStatistics connectionStatistics = new LongSummaryStatistics();
     private HikariDataSource dataSource;
-    private LongSummaryStatistics connectionStatistics = new LongSummaryStatistics();
 
     public AbstractSqlDataStore(T sqlContainer) {
         this(sqlContainer, sqlContainer.getDriverClassName());
@@ -64,27 +64,24 @@ public abstract class AbstractSqlDataStore<T extends JdbcDatabaseContainer<T>> e
 
     private void logSqlContainerDetails(JdbcDatabaseContainer<?> sqlContainer, Duration duration) {
         LOGGER.info("=========================================================");
-        LOGGER.info(" java version: " + System.getProperty("java.version"));
-        LOGGER.info("   connection: " + sqlContainer.getJdbcUrl());
-        LOGGER.info("         user: " + sqlContainer.getUsername());
-        LOGGER.info("     password: " + sqlContainer.getPassword());
-        LOGGER.info(" startup time: " + duration.getSeconds());
+        LOGGER.info(" java version: {}", System.getProperty("java.version"));
+        LOGGER.info("   connection: {}", sqlContainer.getJdbcUrl());
+        LOGGER.info("         user: {}", sqlContainer.getUsername());
+        LOGGER.info("     password: {}", sqlContainer.getPassword());
+        LOGGER.info(" startup time s: {}", duration.getSeconds());
         LOGGER.info("=========================================================");
     }
 
     @Override
     public String getDataStoreSettings() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("- connection pool size: ").append(dataSource.getMinimumIdle()).append(" min idle / ").append(dataSource.getMaximumPoolSize()).append(" max").append(System.lineSeparator());
-        sb.append("   ").append(" connection timings (for analysis): ")
-                .append("invocations: ").append(connectionStatistics.getCount())
-                .append(" / total duration: ").append(Duration.ofNanos(connectionStatistics.getSum()))
-                .append(" / avg duration: ").append(Duration.ofNanos((long) connectionStatistics.getAverage()))
-                .append(" / min duration: ").append(Duration.ofNanos(connectionStatistics.getMin()))
-                .append(" / max duration: ").append(Duration.ofNanos(connectionStatistics.getMax()))
-                .append(System.lineSeparator());
-        return sb.toString();
-
+        return "- connection pool size: " + dataSource.getMinimumIdle() + " min idle / " + dataSource.getMaximumPoolSize() + " max" + System.lineSeparator() +
+                "    connection timings (for analysis): " +
+                "invocations: " + connectionStatistics.getCount() +
+                " / total duration: " + Duration.ofNanos(connectionStatistics.getSum()) +
+                " / avg duration: " + Duration.ofNanos((long) connectionStatistics.getAverage()) +
+                " / min duration: " + Duration.ofNanos(connectionStatistics.getMin()) +
+                " / max duration: " + Duration.ofNanos(connectionStatistics.getMax()) +
+                System.lineSeparator();
     }
 
     protected HikariDataSource toHikariDataSource(JdbcDatabaseContainer<?> container, String driverClassName) {
@@ -131,7 +128,7 @@ public abstract class AbstractSqlDataStore<T extends JdbcDatabaseContainer<T>> e
 
     public String explainAnalyseQuery(String analyzeQueryWithValues) {
         long startTime = System.nanoTime();
-        try (Connection connection = dataSource.getConnection();) {
+        try (Connection connection = dataSource.getConnection()) {
             long endTime = System.nanoTime();
             connectionStatistics.accept(endTime - startTime);
             return explainAnalyseQuery(connection, analyzeQueryWithValues);
@@ -151,6 +148,7 @@ public abstract class AbstractSqlDataStore<T extends JdbcDatabaseContainer<T>> e
         }
     }
 
+    @Override
     public List<IndexDetails> getIndexDetails() {
         try (Connection connection = getDataSource().getConnection()) {
             DatabaseMetaData metaData = connection.getMetaData();

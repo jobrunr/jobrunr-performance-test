@@ -36,11 +36,11 @@ public class JobRunrTool implements Tool {
     }
 
     @Override
-    public void initialize(DataStore dataStore, Scenario scenario) throws Exception {
+    public void initialize(DataStore dataStore, Scenario scenario) {
         this.initialize(dataStore, (AbstractJobRunrScenario) scenario);
     }
 
-    private void initialize(DataStore dataStore, AbstractJobRunrScenario scenario) throws Exception {
+    private void initialize(DataStore dataStore, AbstractJobRunrScenario scenario) {
         if (dataStore instanceof AbstractSqlDataStore<?>) {
             storageProvider = SqlStorageProviderFactory.using(((AbstractSqlDataStore<?>) dataStore).getDataSource());
         } else if (dataStore instanceof MongoDBDataStore) {
@@ -60,19 +60,19 @@ public class JobRunrTool implements Tool {
     }
 
     @Override
-    public void start() throws Exception {
+    public void start() {
         JobRunr.getBackgroundJobServer().start();
     }
 
     @Override
-    public ScenarioMonitor createScenarioMonitor(long createdJobs, Duration maxScenarioDuration) throws Exception {
+    public ScenarioMonitor createScenarioMonitor(long createdJobs, Duration maxScenarioDuration) {
         JobRunrScenarioMonitor scenarioMonitor = new JobRunrScenarioMonitor(createdJobs, maxScenarioDuration);
         storageProvider.addJobStorageOnChangeListener(scenarioMonitor);
         return scenarioMonitor;
     }
 
     @Override
-    public void stop() throws Exception {
+    public void stop() {
         JobRunr.destroy();
     }
 

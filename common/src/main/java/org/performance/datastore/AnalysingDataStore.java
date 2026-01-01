@@ -26,7 +26,7 @@ public interface AnalysingDataStore {
         Collection<DataStoreQueryAnalysis> queryAnalyses = scenarioResult.getQueryAnalyses();
         for (DataStoreQueryAnalysis queryAnalysis : queryAnalyses) {
             for (QueryAnalysisAtPercentage analysisAtPercentage : queryAnalysis.getAnalysisAtPercentage()) {
-                if (isQueryUsingIndex(analysisAtPercentage.getAnalysis(), indexName)) {
+                if (isQueryUsingIndex(analysisAtPercentage.analysis(), indexName)) {
                     indexUsage.add(new IndexUsage(indexName, queryAnalysis.getStorageProviderMethodName(), queryAnalysis.getQuery().getQueryIdentifier()));
                     break;
                 }

@@ -35,11 +35,14 @@ public class PerformanceTestJob {
             int totalJobs = jobsCountMap.values().stream().mapToInt(AtomicInteger::get).sum();
             double jobsPerSecond = (double) totalJobs / MAX_SECONDS;
 
-            LOGGER.info(elapsedTime + "ms / " + Duration.ofMillis(elapsedTime) +
-                    " - processed " + executedJobsCounter + " jobs / " + index +
-                    " index | " + String.format("%.2f", executedJobsCounter * 1000.0 / elapsedTime) +
-                    " jobs/sec (overall) | " + jobsPerSecond + " jobs/sec (last " +
-                    MAX_SECONDS + " sec)");
+            LOGGER.info("{}ms / {} - processed {} jobs / {} index | {} jobs/sec (overall) | {} jobs/sec (last " + MAX_SECONDS + " sec)",
+                    elapsedTime,
+                    Duration.ofMillis(elapsedTime),
+                    executedJobsCounter,
+                    index,
+                    String.format("%.2f", executedJobsCounter * 1000.0 / elapsedTime),
+                    jobsPerSecond
+            );
         }
     }
 

@@ -39,7 +39,7 @@ public class QueryAnalysisMonitor implements JobStatsChangeListener {
         this.maxScenarioDuration = maxScenarioDuration;
         this.explainAnalysePercentages = new ArrayList<>(explainAnalysePercentages);
         this.dataStoreQueryAnalyses = new HashMap<>();
-        this.currentPercentage = this.explainAnalysePercentages.remove(0);
+        this.currentPercentage = this.explainAnalysePercentages.removeFirst();
     }
 
     public List<MethodStatistics> getMethodStatistics() {
@@ -63,7 +63,7 @@ public class QueryAnalysisMonitor implements JobStatsChangeListener {
             if (explainAnalysePercentages.isEmpty()) {
                 currentPercentage = null;
             } else {
-                currentPercentage = explainAnalysePercentages.remove(0);
+                currentPercentage = explainAnalysePercentages.removeFirst();
             }
         }
     }

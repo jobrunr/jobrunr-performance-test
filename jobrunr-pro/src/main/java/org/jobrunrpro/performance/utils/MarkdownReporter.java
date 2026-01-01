@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
-import static org.jobrunrpro.performance.utils.ReportingUtils.findLogbooksFolder;
+import static org.performance.utils.ReportingUtils.findLogbooksFolder;
 import static org.performance.utils.StringUtils.camelCaseToHumanReadable;
 
 public class MarkdownReporter {
@@ -95,8 +95,8 @@ public class MarkdownReporter {
                     });
                     for (QueryAnalysisAtPercentage queryAnalysisAtPercentage : qa.getAnalysisAtPercentage()) {
                         markdown.append("<details>").append(System.lineSeparator());
-                        markdown.append("<summary>").append("> At percentage: ").append(queryAnalysisAtPercentage.getPercentage()).append(" (").append(queryAnalysisAtPercentage.getInvocationCount()).append(" invocations) (click to expand)").append("</summary>").append(System.lineSeparator());
-                        markdown.append(System.lineSeparator()).append("```").append(System.lineSeparator()).append(queryAnalysisAtPercentage.getAnalysis()).append(queryAnalysisAtPercentage.getAnalysis().endsWith(System.lineSeparator()) ? "" : System.lineSeparator()).append("```").append(System.lineSeparator());
+                        markdown.append("<summary>").append("> At percentage: ").append(queryAnalysisAtPercentage.percentage()).append(" (").append(queryAnalysisAtPercentage.invocationCount()).append(" invocations) (click to expand)").append("</summary>").append(System.lineSeparator());
+                        markdown.append(System.lineSeparator()).append("```").append(System.lineSeparator()).append(queryAnalysisAtPercentage.analysis()).append(queryAnalysisAtPercentage.analysis().endsWith(System.lineSeparator()) ? "" : System.lineSeparator()).append("```").append(System.lineSeparator());
                         markdown.append("</details>").append(System.lineSeparator());
                     }
                     markdown.append(System.lineSeparator());

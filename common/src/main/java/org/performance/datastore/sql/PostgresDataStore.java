@@ -14,7 +14,7 @@ import java.util.List;
 public class PostgresDataStore extends AbstractSqlDataStore<PostgreSQLContainer> {
 
     public PostgresDataStore() {
-        super(new PostgreSQLContainer("postgres:18.0")
+        super(new PostgreSQLContainer("postgres:18.1")
                 .withCreateContainerCmdModifier(cmd ->
                         cmd.withHostConfig(cmd.getHostConfig().withPortBindings(new PortBinding(Ports.Binding.bindPort(54320), new ExposedPort(5432)))
                         )).withCommand("postgres", "-c", "max_wal_size=2GB", "-c", "random_page_cost=1.1"));

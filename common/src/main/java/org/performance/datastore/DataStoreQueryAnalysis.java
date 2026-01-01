@@ -55,27 +55,6 @@ public class DataStoreQueryAnalysis {
                 '}';
     }
 
-    public static class QueryAnalysisAtPercentage {
-        private final double percentage;
-        private final long invocationCount;
-        private final String analysis;
-
-        public QueryAnalysisAtPercentage(double percentage, long invocationCount, String analysis) {
-            this.percentage = percentage;
-            this.invocationCount = invocationCount;
-            this.analysis = analysis;
-        }
-
-        public double getPercentage() {
-            return percentage;
-        }
-
-        public long getInvocationCount() {
-            return invocationCount;
-        }
-
-        public String getAnalysis() {
-            return analysis;
-        }
+    public record QueryAnalysisAtPercentage(double percentage, long invocationCount, String analysis) {
     }
 }
