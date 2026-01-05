@@ -17,8 +17,11 @@ public interface RateLimiterConfiguration {
 
     static JobRunrMetadata toMetadata(Object object) {
         try {
-            Class<?> interfaceClass = object.getClass().getInterfaces()[0];
-            return (JobRunrMetadata) ReflectionUtils.getMethod(interfaceClass, "toMetadata").invoke(object);
+            if (object.getClass().getInterfaces().length > 0) {
+                Class<?> interfaceClass = object.getClass().getInterfaces()[0];
+                return (JobRunrMetadata) ReflectionUtils.getMethod(interfaceClass, "toMetadata").invoke(object);
+            }
+            return (JobRunrMetadata) ReflectionUtils.getMethod(object.getClass(), "toMetadata").invoke(object);
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
