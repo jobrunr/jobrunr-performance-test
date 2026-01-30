@@ -76,7 +76,7 @@ public class Main {
         try {
             // Assume the project root is the current working directory.
             Path projectRoot = Paths.get(System.getProperty("user.dir"));
-            String pomPath = projectRoot.resolve("pom.xml").toString();
+            String pomPath = projectRoot.resolve("start/pom.xml").toString();
 
             String execArgs = String.format("tool=%s datastore=%s scenario=%s system-exit=true %s", tool, dataStoreType.name(), scenarioName,
                     Stream.of(args).filter(x -> !Set.of(ARG_TOOL, ARG_JVM_PER_DATASTORE, ARG_DATASTORE, ARG_SCENARIO).contains(substringBefore(x, "="))).collect(joining(" ")));

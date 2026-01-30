@@ -22,6 +22,8 @@ import org.performance.scenario.Scenario;
 import org.performance.scenario.ScenarioMonitor;
 import org.performance.tools.Tool;
 import org.performance.utils.JarUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 
@@ -29,6 +31,8 @@ import static java.util.Arrays.stream;
 import static org.performance.utils.StringUtils.isNullOrEmpty;
 
 public class JobRunrProTool implements Tool {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(JobRunrProTool.class);
 
     private StorageProvider storageProvider;
     private JobRunrConfiguration.JobRunrConfigurationResult jobRunrPro;
@@ -86,6 +90,7 @@ public class JobRunrProTool implements Tool {
     }
 
     private void setupLicense() {
+        LOGGER.info("Setting up JobRunr Pro license for JobRunr Pro {} from environment variable", JarUtils.getVersion(storageProvider));
         storageProvider.saveLicense(jobRunrProLicenseFromEnv);
     }
 
