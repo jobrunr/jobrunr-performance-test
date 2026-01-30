@@ -27,6 +27,7 @@ public class Main {
     public static String ARG_SCENARIO = "scenario";
 
     public static void main(String[] args) throws Exception {
+        System.out.println();
         boolean newJVMPerDataStore = parseBoolean(getArg(args, ARG_JVM_PER_DATASTORE, "false"));
         String tool = getArg(args, ARG_TOOL);
         String version = ofNullable(System.getProperty("tool.version")).orElse("1.0.0-SNAPSHOT");
@@ -81,6 +82,7 @@ public class Main {
                     Stream.of(args).filter(x -> !Set.of(ARG_TOOL, ARG_JVM_PER_DATASTORE, ARG_DATASTORE, ARG_SCENARIO).contains(substringBefore(x, "="))).collect(joining(" ")));
 
             String mavenCmd = createMavenCmd(pomPath, version, execArgs);
+            log.info("Executing Maven command: {}", mavenCmd);
             ProcessBuilder pb = new ProcessBuilder("bash", "-c", mavenCmd);
             pb.inheritIO();
             Process process = pb.start();
