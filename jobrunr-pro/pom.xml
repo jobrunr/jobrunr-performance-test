@@ -14,16 +14,9 @@
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <tool.version>1.0.0-SNAPSHOT</tool.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
-    <repositories>
-        <repository>
-            <id>JobRunrPro</id>
-            <url>https://repo.jobrunr.io/private-releases/</url>
-        </repository>
-    </repositories>
 
     <dependencies>
         <dependency>

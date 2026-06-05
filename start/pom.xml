@@ -20,31 +20,55 @@
     <profiles>
         <profile>
             <id>JobRunr</id>
+            <properties>
+                <tool.version>1.0.0-SNAPSHOT</tool.version>
+            </properties>
             <dependencies>
                 <dependency>
                     <groupId>org.jobrunr.performance</groupId>
                     <artifactId>jobrunr</artifactId>
                     <version>${project.parent.version}</version>
                 </dependency>
+                <dependency>
+                    <groupId>org.jobrunr</groupId>
+                    <artifactId>jobrunr</artifactId>
+                    <version>${tool.version}</version>
+                </dependency>
             </dependencies>
         </profile>
         <profile>
             <id>JobRunrPro</id>
+            <properties>
+                <tool.version>1.0.0-SNAPSHOT</tool.version>
+            </properties>
             <dependencies>
                 <dependency>
                     <groupId>org.jobrunr.performance</groupId>
                     <artifactId>jobrunr-pro</artifactId>
                     <version>${project.parent.version}</version>
                 </dependency>
+                <dependency>
+                    <groupId>org.jobrunr</groupId>
+                    <artifactId>jobrunr-pro</artifactId>
+                    <version>${tool.version}</version>
+                </dependency>
             </dependencies>
         </profile>
         <profile>
             <id>Quartz</id>
+            <properties>
+                <tool.version>2.5.2</tool.version>
+            </properties>
             <dependencies>
                 <dependency>
                     <groupId>org.jobrunr.performance</groupId>
                     <artifactId>quartz</artifactId>
                     <version>${project.parent.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.quartz-scheduler</groupId>
+                    <artifactId>quartz</artifactId>
+                    <version>${tool.version}</version>
                 </dependency>
             </dependencies>
         </profile>

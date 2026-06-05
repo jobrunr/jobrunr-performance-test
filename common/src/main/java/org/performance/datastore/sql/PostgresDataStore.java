@@ -17,7 +17,11 @@ public class PostgresDataStore extends AbstractSqlDataStore<PostgreSQLContainer>
         super(new PostgreSQLContainer("postgres:18.1")
                 .withCreateContainerCmdModifier(cmd ->
                         cmd.withHostConfig(cmd.getHostConfig().withPortBindings(new PortBinding(Ports.Binding.bindPort(54320), new ExposedPort(5432)))
-                        )).withCommand("postgres", "-c", "max_wal_size=2GB", "-c", "random_page_cost=1.1"));
+                        )).withCommand("postgres", 
+                            "-c", "max_wal_size=2GB", 
+                            "-c", "random_page_cost=1.1", 
+                            "-c", "shared_preload_libraries=pg_stat_statements",
+                            "-c", "pg_stat_statements.track=all"));
     }
 
     @Override

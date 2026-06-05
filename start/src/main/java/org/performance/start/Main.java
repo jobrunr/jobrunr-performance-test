@@ -93,7 +93,7 @@ public class Main {
     }
 
     private static String createMavenCmd(String pomPath, String version, String execArgs) {
-        return String.format("mvn -f \"%s\" compile exec:java@performance-test -Dtool.version=%s -Dexec.args=\"%s\"",
-                pomPath, version, execArgs);
+        return String.format("mvn -f \"%s\" -Dtool.version=%s clean compile exec:java@performance-test -Dexec.args=\"%s\"",
+               pomPath, version, execArgs);
     }
 }

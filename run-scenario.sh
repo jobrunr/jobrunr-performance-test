@@ -53,7 +53,7 @@ fi
 # ========== config ==========
 
 TOOLS=("JobRunr" "JobRunrPro" "Quartz")
-DATABASES=("DB2" "MariaDB" "MySQL" "Oracle" "Postgres" "SQLServer" "MongoDB")
+DATABASES=("allButSlow" "DB2" "MariaDB" "MySQL" "Oracle" "Postgres" "SQLServer" "MongoDB")
 DEFAULT_AMOUNT=500000
 
 default_tool_version() {
@@ -71,6 +71,7 @@ database_to_datastore_class() {
   local db
   db="$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')"
   case "$db" in
+    allbutslow)    echo "allButSlow" ;;
     postgres)      echo "PostgresDataStore" ;;
     mariadb)       echo "MariaDBDataStore" ;;
     mysql)         echo "MySQLDataStore" ;;
@@ -225,7 +226,25 @@ _run_scenario_exec() {
   printf '%q ' "${mvn_cmd[@]}"
   printf '\n\n'
 
-  mvn clean install -DskipTests
+  
+  local tool_module=""
+  case "$tool" in
+    JobRunrPro)        tool_module="jobrunr-pro" ;;
+    JobRunrOSS|JobRunr) tool_module="jobrunr" ;;
+    Quartz)            tool_module="quartz" ;;
+    *)                 tool_module="" ;;
+  esac
+
+
+  local -a install_cmd=(mvn -f "$ROOT_DIR/pom.xml" -P "$tool" clean install -DskipTests)
+  if [[ -n "$tool_module" ]]; then
+    install_cmd+=(-pl "$tool_module,start" -am)
+  fi
+  if [[ -n "$tool_version" ]]; then
+    install_cmd+=("-Dtool.version=$tool_version")
+  fi
+  "${install_cmd[@]}"
+
   time "${mvn_cmd[@]}"
 }
 

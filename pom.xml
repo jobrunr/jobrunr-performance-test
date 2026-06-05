@@ -24,4 +24,11 @@
     </properties>
 
 
+    <repositories>
+        <repository>
+            <id>JobRunrPro</id>
+            <url>https://repo.jobrunr.io/private-releases/</url>
+        </repository>
+    </repositories>
+
 </project>
