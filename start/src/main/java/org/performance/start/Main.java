@@ -7,6 +7,8 @@ import org.performance.scenario.Scenario;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ibm.db2.cmx.runtime.internal.trace.Log;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Set;
@@ -27,7 +29,6 @@ public class Main {
     public static String ARG_SCENARIO = "scenario";
 
     public static void main(String[] args) throws Exception {
-        System.out.println();
         boolean newJVMPerDataStore = parseBoolean(getArg(args, ARG_JVM_PER_DATASTORE, "false"));
         String tool = getArg(args, ARG_TOOL);
         String version = ofNullable(System.getProperty("tool.version")).orElse("1.0.0-SNAPSHOT");
@@ -47,6 +48,8 @@ public class Main {
         } else if ("allButSlow".equals(datastore)) {
             for (DataStoreType dataStoreType : DataStoreType.allButSlow()) {
                 runScenario(newJVMPerDataStore, tool, version, dataStoreType, scenario, args);
+                log.info("Sleeping for 10 seconds before starting the next scenario to allow resources to be released...");
+                Thread.sleep(10_000L);
             }
         } else {
             runScenario(newJVMPerDataStore, tool, version, DataStoreType.valueOf(datastore), scenario, args);
@@ -58,11 +61,6 @@ public class Main {
             runScenarioInNewJVM(tool, version, dataStoreType, scenarioName, args);
         } else {
             runScenarioInCurrentJVM(tool, dataStoreType, scenarioName, args);
-            try {
-                Thread.currentThread().join();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
         }
     }
 
@@ -81,7 +79,7 @@ public class Main {
             String execArgs = String.format("tool=%s datastore=%s scenario=%s system-exit=true %s", tool, dataStoreType.name(), scenarioName,
                     Stream.of(args).filter(x -> !Set.of(ARG_TOOL, ARG_JVM_PER_DATASTORE, ARG_DATASTORE, ARG_SCENARIO).contains(substringBefore(x, "="))).collect(joining(" ")));
 
-            String mavenCmd = createMavenCmd(pomPath, version, execArgs);
+            String mavenCmd = createMavenCmd(pomPath, tool, version, execArgs);
             log.info("Executing Maven command: {}", mavenCmd);
             ProcessBuilder pb = new ProcessBuilder("bash", "-c", mavenCmd);
             pb.inheritIO();
@@ -92,8 +90,8 @@ public class Main {
         }
     }
 
-    private static String createMavenCmd(String pomPath, String version, String execArgs) {
-        return String.format("mvn -f \"%s\" -Dtool.version=%s clean compile exec:java@performance-test -Dexec.args=\"%s\"",
-               pomPath, version, execArgs);
+    private static String createMavenCmd(String pomPath, String tool, String version, String execArgs) {
+        return String.format("mvn -f \"%s\" -P %s -Dtool.version=%s clean compile exec:java@performance-test -Dexec.args=\"%s\"",
+               pomPath, tool, version, execArgs);
     }
 }
