@@ -14,12 +14,12 @@ This project contains performance tests for JobRunr, JobRunr Pro and other tools
 There are various scenarios which can be tested. For JobRunr OSS and other tools, there is a basic scenario to test how fast jobs are being processed.
 
 #### 1. Install the script to have autocomplete for the run-scenario command
-```console
+```sh
 source ./run-scenario.sh
 ```
 
 #### 2. Run the scenario
-```console
+```sh
 run-scenario JobRunr Scenario01ProcessJobs Postgres
 ```
 
