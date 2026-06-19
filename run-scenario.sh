@@ -128,6 +128,8 @@ Notes:
   - tool_version is OPTIONAL:
       If omitted, no -tool.version is passed.
       Maven will use the version defined in pom.xml.
+  - enable_profiling is OPTIONAL:
+    If enable_profiling=true, then async profiler used to profile the run.
   - JobRunrPro currently has multiple scenarios; these are autocompleted.
   - Only JobRunrPro supports in-depth query analysis reports by setting log_data_store_timings=true.
     If set, a detailed markdown report will be generated with all queries, their timings and the query plan taken by the database
@@ -138,6 +140,7 @@ Examples:
   run-scenario JobRunrPro Scenario01ProcessJobs Postgres 500000 tool_version=1.0.0-SNAPSHOT log_data_store_timings=true
   run-scenario JobRunrOSS Scenario01ProcessJobs Postgres 200000
   run-scenario Quartz Scenario01ProcessJobs Oracle 100000 tool_version=2.5.1
+  run-scenario Quartz Scenario01ProcessJobs Oracle 100000 enable_profiling=true
 
 Install using:
   - 'source ./run-scenario.sh':
@@ -173,13 +176,16 @@ _run_scenario_exec() {
     exit 1
   fi
 
-  # Extract optional tool_version=... from extra_args
+  # Extract optional tool_version=...,enable_profiling=...  from extra_args
   local tool_version=""
+  local enable_profiling=""
   local -a passthrough=()
   if ((${#extra_args[@]} > 0)); then
     for kv in "${extra_args[@]}"; do
       if [[ "$kv" == tool_version=* ]]; then
         tool_version="${kv#tool_version=}"
+      elif [[ "$kv" == enable_profiling=* ]]; then
+        enable_profiling="${kv#enable_profiling=}"
       else
         passthrough+=("$kv")
       fi
@@ -211,6 +217,9 @@ _run_scenario_exec() {
   else
     echo "  version: (using pom.xml default)"
   fi
+  if [[ -n "$enable_profiling" ]]; then
+    echo "  profiling: $enable_profiling"
+  fi
   echo
 
   local mvn_cmd=(mvn -f "$ROOT_DIR/start/pom.xml" -P $tool compile exec:java@performance-test)
@@ -218,6 +227,11 @@ _run_scenario_exec() {
   # Only add version flag if explicitly provided
   if [[ -n "$tool_version" ]]; then
     mvn_cmd+=("-Dtool.version=$tool_version")
+  fi
+
+  # Only add version flag if explicitly provided
+  if [[ -n "$enable_profiling" ]]; then
+    mvn_cmd+=("-Denable.profiling=$enable_profiling")
   fi
 
   mvn_cmd+=("-Dexec.args=$exec_args")

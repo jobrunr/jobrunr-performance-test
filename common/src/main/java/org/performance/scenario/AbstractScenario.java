@@ -20,6 +20,7 @@ public abstract class AbstractScenario<T extends Tool> implements Scenario {
     protected final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     protected final T tool;
+    protected final ScenarioProfiler scenarioProfiler;
     protected final DataStore dataStore;
     protected final String[] args;
     protected final ScenarioResult scenarioResult;
@@ -30,6 +31,7 @@ public abstract class AbstractScenario<T extends Tool> implements Scenario {
 
     protected AbstractScenario(T tool, Function<Scenario, ScenarioResult> scenarioResultCreator, DataStore dataStore, String[] args) {
         this.tool = tool;
+        this.scenarioProfiler = new ScenarioProfiler();
         this.scenarioResult = scenarioResultCreator.apply(this);
         this.dataStore = dataStore;
         this.args = args;
@@ -39,11 +41,13 @@ public abstract class AbstractScenario<T extends Tool> implements Scenario {
     protected abstract long loadJobs() throws Exception;
 
     public void run() throws Exception {
+        scenarioProfiler.start();
         startDataStoreAndInitializeTool();
         createJobsAndUpdateStatistics();
         processJobs();
         appendToLogbook();
         stopToolAndDataStore();
+        scenarioProfiler.stop();
         exitJVMIfRequested();
     }
 
