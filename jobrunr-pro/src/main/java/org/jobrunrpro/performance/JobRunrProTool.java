@@ -61,8 +61,8 @@ public class JobRunrProTool implements Tool {
     }
 
     private void initialize(DataStore dataStore, AbstractJobRunrProScenario scenario) {
-        if (dataStore instanceof AbstractSqlDataStore<?>) {
-            storageProvider = SqlStorageProviderFactory.using(((AbstractSqlDataStore<?>) dataStore).getDataSource());
+        if (dataStore instanceof AbstractSqlDataStore) {
+            storageProvider = SqlStorageProviderFactory.using(((AbstractSqlDataStore) dataStore).dataSource());
         } else if (dataStore instanceof MongoDBDataStore) {
             storageProvider = new MongoDBStorageProvider(((MongoDBDataStore) dataStore).mongoClient());
         } else {

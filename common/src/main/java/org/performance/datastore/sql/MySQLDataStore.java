@@ -12,7 +12,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.List;
 
-public class MySQLDataStore extends AbstractSqlDataStore<MySQLContainer> {
+public class MySQLDataStore extends AbstractSqlContainerDataStore<MySQLContainer> {
 
     public MySQLDataStore() {
         super(new MySQLContainer("mysql:8.0.44")
@@ -34,7 +34,7 @@ public class MySQLDataStore extends AbstractSqlDataStore<MySQLContainer> {
 
     @Override
     public void updateStatistics() {
-        try (Connection connection = getDataSource().getConnection(); Statement statement = connection.createStatement()) {
+        try (Connection connection = dataSource().getConnection(); Statement statement = connection.createStatement()) {
             statement.execute("OPTIMIZE TABLE jobrunr_jobs;");
             statement.execute("ANALYZE TABLE jobrunr_jobs;");
             LOGGER.info("OPTIMIZED AND ANALYZED MYSQL TABLES");
@@ -45,7 +45,7 @@ public class MySQLDataStore extends AbstractSqlDataStore<MySQLContainer> {
 
     @Override
     protected IndexDetails toIndexDetails(String tableName, String indexName, List<String> columnNames) {
-        try (Connection connection = DriverManager.getConnection(container.getJdbcUrl(), "root", container.getPassword()); Statement statement = connection.createStatement()) {
+        try (Connection connection = DriverManager.getConnection(dataSource().getJdbcUrl(), "root", dataSource().getPassword()); Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery(String.format("""
                         SELECT p.OBJECT_SCHEMA, p.OBJECT_NAME, p.INDEX_NAME, p.COUNT_READ
                         FROM performance_schema.table_io_waits_summary_by_index_usage p

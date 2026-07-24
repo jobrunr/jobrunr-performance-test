@@ -29,7 +29,7 @@ public class Scenario02ProcessJobsInDynamicQueues extends AbstractJobRunrProScen
     @Override
     public JobRunrDashboardWebServerConfiguration getDashboardWebServerConfiguration() {
         var dashboardConfiguration = super.getDashboardWebServerConfiguration();
-        if(dashboardConfiguration != null) {
+        if (dashboardConfiguration != null) {
             dashboardConfiguration.andDynamicQueueConfiguration("Tenants", "tenant: ");
         }
         return dashboardConfiguration;

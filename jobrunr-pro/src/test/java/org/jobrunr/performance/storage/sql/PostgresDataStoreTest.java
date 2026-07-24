@@ -40,7 +40,7 @@ class PostgresDataStoreTest {
     void setUp() {
         dataStore = new PostgresDataStore();
         dataStore.start();
-        storageProvider = new ThreadSafeStorageProvider(SqlStorageProviderFactory.using(dataStore.getDataSource()));
+        storageProvider = new ThreadSafeStorageProvider(SqlStorageProviderFactory.using(dataStore.dataSource()));
         storageProvider.setJobMapper(new JobMapper(new JacksonJsonMapper()));
         ThreadSafeStorageProvider.setMethodStatisticsConfiguration(DETAILED);
     }

@@ -40,7 +40,7 @@ class MariaDBDataStoreTest {
     void setUp() {
         dataStore = new MariaDBDataStore();
         dataStore.start();
-        storageProvider = new ThreadSafeStorageProvider(SqlStorageProviderFactory.using(dataStore.getDataSource()));
+        storageProvider = new ThreadSafeStorageProvider(SqlStorageProviderFactory.using(dataStore.dataSource()));
         storageProvider.setJobMapper(new JobMapper(new JacksonJsonMapper()));
         ThreadSafeStorageProvider.setMethodStatisticsConfiguration(DETAILED);
     }

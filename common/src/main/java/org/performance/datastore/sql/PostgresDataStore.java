@@ -6,27 +6,26 @@ import com.github.dockerjava.api.model.Ports;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.List;
 
-public class PostgresDataStore extends AbstractSqlDataStore<PostgreSQLContainer> {
+public class PostgresDataStore extends AbstractSqlContainerDataStore<PostgreSQLContainer> {
 
     public PostgresDataStore() {
         super(new PostgreSQLContainer("postgres:18.1")
                 .withCreateContainerCmdModifier(cmd ->
                         cmd.withHostConfig(cmd.getHostConfig().withPortBindings(new PortBinding(Ports.Binding.bindPort(54320), new ExposedPort(5432)))
-                        )).withCommand("postgres", 
-                            "-c", "max_wal_size=2GB", 
-                            "-c", "random_page_cost=1.1", 
-                            "-c", "shared_preload_libraries=pg_stat_statements",
-                            "-c", "pg_stat_statements.track=all"));
+                        )).withCommand("postgres",
+                        "-c", "max_wal_size=2GB",
+                        "-c", "random_page_cost=1.1",
+                        "-c", "shared_preload_libraries=pg_stat_statements",
+                        "-c", "pg_stat_statements.track=all"));
     }
 
     @Override
     public void updateStatistics() {
-        try (Connection connection = getDataSource().getConnection(); Statement statement = connection.createStatement()) {
+        try (Connection connection = dataSource().getConnection(); Statement statement = connection.createStatement()) {
             statement.execute("CREATE EXTENSION pg_stat_statements;");
             statement.executeUpdate("VACUUM (VERBOSE, ANALYZE) jobrunr_jobs;");
             LOGGER.info("VACUUMED POSTGRES TABLES");
@@ -37,7 +36,7 @@ public class PostgresDataStore extends AbstractSqlDataStore<PostgreSQLContainer>
 
     @Override
     protected IndexDetails toIndexDetails(String tableName, String indexName, List<String> columnNames) {
-        try (Connection connection = DriverManager.getConnection(container.getJdbcUrl(), container.getUsername(), container.getPassword()); Statement statement = connection.createStatement()) {
+        try (Connection connection = dataSource().getConnection(); Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery(String.format("""
                     SELECT
                          pt.tablename AS TableName ,t.indexname AS IndexName, to_char(pc.reltuples, '999,999,999,999') AS TotalRows, pg_size_pretty(pg_relation_size(quote_ident(pt.tablename)::text)) AS TableSize, pg_size_pretty(pg_relation_size(quote_ident(t.indexrelname)::text)) AS IndexSize, to_char(t.idx_scan, '999,999,999,999') AS TotalNumberOfScan, to_char(t.idx_tup_read, '999,999,999,999') AS TotalTupleRead, to_char(t.idx_tup_fetch, '999,999,999,999') AS TotalTupleFetched

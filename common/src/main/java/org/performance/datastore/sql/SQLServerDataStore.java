@@ -14,7 +14,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
 
-public class SQLServerDataStore extends AbstractSqlDataStore<MSSQLServerContainer> {
+public class SQLServerDataStore extends AbstractSqlContainerDataStore<MSSQLServerContainer> {
 
     public SQLServerDataStore() {
         super(new MSSQLServerContainer(DockerImageName
@@ -27,7 +27,7 @@ public class SQLServerDataStore extends AbstractSqlDataStore<MSSQLServerContaine
 
     @Override
     public void updateStatistics() {
-        try (Connection connection = getDataSource().getConnection(); Statement statement = connection.createStatement()) {
+        try (Connection connection = dataSource().getConnection(); Statement statement = connection.createStatement()) {
             statement.executeUpdate("UPDATE STATISTICS jobrunr_jobs;");
             LOGGER.info("UPDATED SQLSERVER STATISTICS");
         } catch (SQLException e) {
