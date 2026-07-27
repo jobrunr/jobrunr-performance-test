@@ -1,10 +1,6 @@
 package org.performance.datastore.sql;
 
-import com.github.dockerjava.api.model.ExposedPort;
-import com.github.dockerjava.api.model.PortBinding;
-import com.github.dockerjava.api.model.Ports;
 import com.zaxxer.hikari.HikariDataSource;
-import org.testcontainers.mariadb.MariaDBContainer;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -12,20 +8,12 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.List;
 
-public class MariaDBDataStore extends AbstractSqlContainerDataStore<MariaDBContainer> {
+public class MariaDBExternalDataStore extends AbstractSqlExternalDataStore {
 
-    public MariaDBDataStore() {
-        super(
-                new MariaDBContainer("mariadb:11.8")
-                        .withCreateContainerCmdModifier(cmd ->
-                                cmd.withHostConfig(cmd.getHostConfig().withPortBindings(
-                                                new PortBinding(Ports.Binding.bindPort(33060), new ExposedPort(3306))
-                                        )
-                                ))
-                        .withCommand("--innodb-buffer-pool-size=3G --innodb-log-file-size=717M --innodb-log-buffer-size=8M " +
-                                "--tmp-table-size=256M --sort-buffer-size=256K --read-rnd-buffer-size=512K " +
-                                "--max-connections=80 --thread-cache-size=80 --max-allowed-packet=128M " +
-                                "--query-cache-type=0 --query-cache-size=0 --performance-schema"));
+    private HikariDataSource dataSource;
+
+    public MariaDBExternalDataStore() {
+        super("org.mariadb.jdbc.Driver", "jdbc:mariadb://localhost:3306/test", "test", "test");
     }
 
     @Override
@@ -34,19 +22,8 @@ public class MariaDBDataStore extends AbstractSqlContainerDataStore<MariaDBConta
     }
 
     @Override
-    public void updateStatistics() {
-        try (Connection connection = dataSource().getConnection(); Statement statement = connection.createStatement()) {
-            statement.execute("OPTIMIZE TABLE jobrunr_jobs;");
-            statement.execute("ANALYZE TABLE jobrunr_jobs;");
-            LOGGER.info("OPTIMIZED AND ANALYZED MARIADB TABLES");
-        } catch (java.sql.SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
     public String explainQuery(String queryWithValues) {
-        return explainAnalyseQuery("ANALYZE FORMAT=JSON " + queryWithValues);
+        return explainAnalyseQuery("ANALYZE " + queryWithValues);
     }
 
     @Override
@@ -82,7 +59,42 @@ public class MariaDBDataStore extends AbstractSqlContainerDataStore<MariaDBConta
     }
 
     @Override
-    public boolean isQueryUsingIndex(String analysis, String indexName) {
-        return analysis.contains("\"key\": \"" + indexName + "\"");
+    protected String getExternalDockerCommand() {
+        return """
+                docker run \\
+                  --name mariadb-test \\
+                  --memory=4g \\
+                  --memory-swap=6g \\
+                  --cpus=4 \\
+                  --shm-size=128m \\
+                  -v /Volumes/T9/JobRunr/MariaDB:/var/lib/mysql \\
+                  -p 3306:3306 \\
+                  -e MARIADB_ROOT_PASSWORD=test \\
+                  -e MARIADB_DATABASE=test \\
+                  -e MARIADB_USER=test \\
+                  -e MARIADB_PASSWORD=test \\
+                  -d mariadb:lts \\
+                  --innodb-buffer-pool-size=1536M \\
+                  --innodb-log-file-size=2047M \\
+                  --innodb-log-buffer-size=32M \\
+                  --innodb-flush-log-at-trx-commit=1 \\
+                  --sync-binlog=1 \\
+                  --innodb-io-capacity=1000 \\
+                  --innodb-io-capacity-max=3000 \\
+                  --tmp-table-size=8M \\
+                  --max-heap-table-size=8M \\
+                  --sort-buffer-size=256K \\
+                  --read-buffer-size=128K \\
+                  --read-rnd-buffer-size=256K \\
+                  --join-buffer-size=256K \\
+                  --max-connections=50 \\
+                  --thread-cache-size=16 \\
+                  --table-open-cache=1000 \\
+                  --table-definition-cache=500 \\
+                  --max-allowed-packet=64M \\
+                  --binlog-expire-logs-seconds=18000 \\
+                  --performance-schema=ON \\
+                  --performance-schema-consumer-events-waits-history=OFF
+                """;
     }
 }

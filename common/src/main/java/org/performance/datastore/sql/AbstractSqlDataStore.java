@@ -2,78 +2,56 @@ package org.performance.datastore.sql;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.performance.datastore.AbstractDataStore;
 import org.performance.datastore.AnalysingDataStore;
 import org.performance.datastore.DataStore;
 import org.performance.datastore.DataStoreQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testcontainers.containers.JdbcDatabaseContainer;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.LongSummaryStatistics;
 import java.util.Map;
 
-import static java.time.Instant.now;
-
-public abstract class AbstractSqlDataStore<T extends JdbcDatabaseContainer<T>> extends AbstractDataStore<T> implements DataStore, AnalysingDataStore {
+public abstract class AbstractSqlDataStore implements DataStore, AnalysingDataStore {
 
     protected final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
-    private final String driverClassName;
-
     private final LongSummaryStatistics connectionStatistics = new LongSummaryStatistics();
-    private HikariDataSource dataSource;
-
-    public AbstractSqlDataStore(T sqlContainer) {
-        this(sqlContainer, sqlContainer.getDriverClassName());
-    }
-
-    public AbstractSqlDataStore(T sqlContainer, String driverClassName) {
-        super(sqlContainer);
-        this.driverClassName = driverClassName;
-    }
 
     @Override
     public void start() {
-        Instant startTime = Instant.now();
-        super.start();
-        logSqlContainerDetails(container, Duration.between(startTime, now()));
-        dataSource = toHikariDataSource(container, driverClassName);
+        logSqlDataStoreDetails(Duration.ZERO);
     }
 
-    @Override
-    public void stop() {
-        dataSource.close();
-        super.stop();
+    public abstract HikariDataSource dataSource();
+
+    protected void logSqlDataStoreDetails(Duration duration) {
+        logSqlDataStoreDetails(dataSource(), Duration.ZERO);
     }
 
-    public DataSource getDataSource() {
-        return dataSource;
-    }
-
-    private void logSqlContainerDetails(JdbcDatabaseContainer<?> sqlContainer, Duration duration) {
+    protected void logSqlDataStoreDetails(HikariDataSource dataSource, Duration duration) {
         LOGGER.info("=========================================================");
         LOGGER.info(" java version: {}", System.getProperty("java.version"));
-        LOGGER.info("   connection: {}", sqlContainer.getJdbcUrl());
-        LOGGER.info("         user: {}", sqlContainer.getUsername());
-        LOGGER.info("     password: {}", sqlContainer.getPassword());
-        LOGGER.info(" startup time s: {}", duration.getSeconds());
+        LOGGER.info("   connection: {}", dataSource.getJdbcUrl());
+        LOGGER.info("         user: {}", dataSource.getUsername());
+        LOGGER.info("     password: {}", dataSource.getPassword());
+        if (!duration.isZero()) {
+            LOGGER.info(" startup time s: {}", duration.getSeconds());
+        }
         LOGGER.info("=========================================================");
     }
 
     @Override
     public String getDataStoreSettings() {
+        HikariDataSource dataSource = dataSource();
         return "- connection pool size: " + dataSource.getMinimumIdle() + " min idle / " + dataSource.getMaximumPoolSize() + " max" + System.lineSeparator() +
                 "    connection timings (for analysis): " +
                 "invocations: " + connectionStatistics.getCount() +
@@ -84,19 +62,18 @@ public abstract class AbstractSqlDataStore<T extends JdbcDatabaseContainer<T>> e
                 System.lineSeparator();
     }
 
-    protected HikariDataSource toHikariDataSource(JdbcDatabaseContainer<?> container, String driverClassName) {
-        return toHikariDataSource(container.getJdbcUrl(), container.getUsername(), container.getPassword(), driverClassName);
-    }
-
-    protected HikariDataSource toHikariDataSource(String jdbcUrl, String userName, String password, String driverClassName) {
-        HikariConfig config = new HikariConfig();
-        config.setJdbcUrl(jdbcUrl);
-        config.setUsername(userName);
-        config.setPassword(password);
-        config.setDriverClassName(driverClassName);
-        config.setMinimumIdle(20);
-        config.setMaximumPoolSize(40);
-        return new HikariDataSource(config);
+    @Override
+    public String getNameAndVersion() {
+        try (Connection connection = dataSource().getConnection()) {
+            DatabaseMetaData databaseMetaData = connection.getMetaData();
+            String productName = databaseMetaData.getDatabaseProductName();
+            String productVersion = databaseMetaData.getDatabaseProductVersion();
+            String driverName = databaseMetaData.getDriverName();
+            String driverVersion = databaseMetaData.getDriverVersion();
+            return productName + ":" + productVersion + " connecting via (" + driverName + ":" + driverVersion + ")";
+        } catch (SQLException e) {
+            return "could not query database product name";
+        }
     }
 
     @Override
@@ -128,7 +105,7 @@ public abstract class AbstractSqlDataStore<T extends JdbcDatabaseContainer<T>> e
 
     public String explainAnalyseQuery(String analyzeQueryWithValues) {
         long startTime = System.nanoTime();
-        try (Connection connection = dataSource.getConnection()) {
+        try (Connection connection = dataSource().getConnection()) {
             long endTime = System.nanoTime();
             connectionStatistics.accept(endTime - startTime);
             return explainAnalyseQuery(connection, analyzeQueryWithValues);
@@ -150,7 +127,7 @@ public abstract class AbstractSqlDataStore<T extends JdbcDatabaseContainer<T>> e
 
     @Override
     public List<IndexDetails> getIndexDetails() {
-        try (Connection connection = getDataSource().getConnection()) {
+        try (Connection connection = dataSource().getConnection()) {
             DatabaseMetaData metaData = connection.getMetaData();
             List<IndexDetails> indexDetailsList = new ArrayList<>();
 
@@ -189,5 +166,16 @@ public abstract class AbstractSqlDataStore<T extends JdbcDatabaseContainer<T>> e
 
     protected IndexDetails toIndexDetails(String tableName, String indexName, List<String> columnNames) {
         return new IndexDetails(tableName, indexName, columnNames, "unknown");
+    }
+
+    protected HikariDataSource toHikariDataSource(String jdbcUrl, String userName, String password, String driverClassName) {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(jdbcUrl);
+        config.setUsername(userName);
+        config.setPassword(password);
+        config.setDriverClassName(driverClassName);
+        config.setMinimumIdle(20);
+        config.setMaximumPoolSize(40);
+        return new HikariDataSource(config);
     }
 }

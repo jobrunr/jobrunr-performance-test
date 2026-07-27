@@ -1,6 +1,7 @@
 package org.jobrunrpro.performance.scenario;
 
 import org.jobrunr.scheduling.BackgroundJob;
+import org.jobrunr.server.BackgroundJobServerConfiguration;
 import org.jobrunrpro.performance.scenario.jobs.BatchJob;
 import org.performance.datastore.DataStore;
 
@@ -21,6 +22,13 @@ public class Scenario04BatchJobs extends AbstractJobRunrProScenario {
     }
 
     @Override
+    public BackgroundJobServerConfiguration getBackgroundJobServerConfiguration() {
+        return super.getBackgroundJobServerConfiguration()
+                .andPollIntervalInSeconds(10)
+                .andWorkerCount(30);
+    }
+
+    @Override
     public long loadJobs() {
         int totalAmountOfJobs = parseInt(getArg("amount", "0").replace("_", ""));
         if (totalAmountOfJobs < 1) return 0;
@@ -32,7 +40,7 @@ public class Scenario04BatchJobs extends AbstractJobRunrProScenario {
             BackgroundJob.create(aBatchJob()
                     .withName(batchJobName)
                     .withLabels("my-batch-job-" + i)
-                    .<BatchJob>withDetails(x -> x.batchJob(jobsPerBatchJob, finalI)));
+                    .<BatchJob>withJobLambda(x -> x.batchJob(jobsPerBatchJob, finalI)));
         }
         LOGGER.info("   Created {} batch jobs which will in turn each create {} child jobs", batchJobs, jobsPerBatchJob);
         return totalAmountOfJobs;

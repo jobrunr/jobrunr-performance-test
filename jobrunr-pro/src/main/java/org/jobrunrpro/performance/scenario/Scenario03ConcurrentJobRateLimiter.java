@@ -49,7 +49,7 @@ public class Scenario03ConcurrentJobRateLimiter extends AbstractJobRunrProScenar
                     .map(j -> aJob()
                             .withName("Job " + j + " with concurrent rate limiter '" + rateLimiter + "'")
                             .withRateLimiter(rateLimiter)
-                            .<PerformanceTestJob>withDetails(x -> x.testJob(jobsPerRateLimiter, j))
+                            .<PerformanceTestJob>withJobLambda(x -> x.testJob(jobsPerRateLimiter, j))
                             .withLabels(rateLimiter));
             BackgroundJob.create(jobBuilderStream);
             LOGGER.info("   Created {} jobs in total | {} for {}", (i + 1) * jobsPerRateLimiter, jobsPerRateLimiter, rateLimiter);

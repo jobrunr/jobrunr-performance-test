@@ -36,7 +36,7 @@ class QueryAnalysisMonitorTest {
     @BeforeEach
     void setUp() {
         mySQLDataStore.start();
-        this.storageProvider = new ThreadSafeStorageProvider(SqlStorageProviderFactory.using(mySQLDataStore.getDataSource()));
+        this.storageProvider = new ThreadSafeStorageProvider(SqlStorageProviderFactory.using(mySQLDataStore.dataSource()));
         this.storageProvider.setJobMapper(new JobMapper(new JacksonJsonMapper()));
         ThreadSafeStorageProvider.setMethodStatisticsConfiguration(DETAILED);
         queryAnalysisMonitor = new QueryAnalysisMonitor(mySQLDataStore, Instant.now(), Duration.ofSeconds(10), 0.2);

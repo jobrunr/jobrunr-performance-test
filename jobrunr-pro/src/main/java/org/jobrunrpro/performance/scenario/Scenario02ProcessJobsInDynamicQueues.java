@@ -29,7 +29,7 @@ public class Scenario02ProcessJobsInDynamicQueues extends AbstractJobRunrProScen
     @Override
     public JobRunrDashboardWebServerConfiguration getDashboardWebServerConfiguration() {
         var dashboardConfiguration = super.getDashboardWebServerConfiguration();
-        if(dashboardConfiguration != null) {
+        if (dashboardConfiguration != null) {
             dashboardConfiguration.andDynamicQueueConfiguration("Tenants", "tenant: ");
         }
         return dashboardConfiguration;
@@ -48,7 +48,7 @@ public class Scenario02ProcessJobsInDynamicQueues extends AbstractJobRunrProScen
             Stream<JobBuilder> jobBuilderStream = IntStream.range(0, jobsPerDynamicQueue).boxed()
                     .map(j -> aJob()
                             .withName("Job " + j + " for " + label)
-                            .<PerformanceTestJob>withDetails(x -> x.testJob(jobsPerDynamicQueue, j))
+                            .<PerformanceTestJob>withJobLambda(x -> x.testJob(jobsPerDynamicQueue, j))
                             .withLabels(label));
             BackgroundJob.create(jobBuilderStream);
             LOGGER.info("   Created {} jobs in total | {} for {}", (i + 1) * jobsPerDynamicQueue, jobsPerDynamicQueue, dynamicQueue);

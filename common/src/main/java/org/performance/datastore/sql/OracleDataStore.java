@@ -15,7 +15,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.UUID;
 
-public class OracleDataStore extends AbstractSqlDataStore<OracleContainer> {
+public class OracleDataStore extends AbstractSqlContainerDataStore<OracleContainer> {
 
     public OracleDataStore() {
         super(new OracleContainer("gvenzl/oracle-free:latest-faststart")
@@ -38,7 +38,7 @@ public class OracleDataStore extends AbstractSqlDataStore<OracleContainer> {
 
     @Override
     public void updateStatistics() {
-        try (Connection connection = getDataSource().getConnection();
+        try (Connection connection = dataSource().getConnection();
              CallableStatement statement = connection.prepareCall("BEGIN dbms_stats.gather_schema_stats(ownname => 'TEST', cascade => TRUE); END;")) {
             statement.execute();
             LOGGER.info("UPDATED Oracle STATISTICS");

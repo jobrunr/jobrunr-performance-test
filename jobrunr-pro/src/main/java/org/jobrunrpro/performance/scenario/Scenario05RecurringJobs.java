@@ -27,7 +27,7 @@ public class Scenario05RecurringJobs extends AbstractJobRunrProScenario {
                         .withId(format("rj-%05d", i))
                         .withCronExpression("*/2 * * * *")
                         .withLabels("every 2 min")
-                        .withJobDetails(() -> performanceTestJob.testJob(totalAmountOfRecurringJobs, i))
+                        .withJobLambda(() -> performanceTestJob.testJob(totalAmountOfRecurringJobs, i))
                         .build())
                 .toList();
 
@@ -53,7 +53,7 @@ public class Scenario05RecurringJobs extends AbstractJobRunrProScenario {
                                 .withId(format("sec-%d-%03d", finalI * 15, j))
                                 .withCronExpression(format("%d * * * * *", finalI * 15))
                                 .withLabels(format("%d * * * * *", finalI * 15))
-                                .withJobDetails(() -> performanceTestJob.testJob(1000, index))
+                                .withJobLambda(() -> performanceTestJob.testJob(1000, index))
                                 .build();
                     })
                     .toList();
@@ -66,7 +66,7 @@ public class Scenario05RecurringJobs extends AbstractJobRunrProScenario {
                         .withId(format("every-15-sec-%03d", j))
                         .withCronExpression("*/15 * * * * *")
                         .withLabels("*/15 * * * * *")
-                        .withJobDetails(() -> performanceTestJob.testJob(1000, j))
+                        .withJobLambda(() -> performanceTestJob.testJob(1000, j))
                         .build())
                 .toList();
 
