@@ -53,7 +53,7 @@ fi
 # ========== config ==========
 
 TOOLS=("JobRunr" "JobRunrPro" "Quartz")
-DATABASES=("allButSlow" "DB2" "MariaDB" "MySQL" "Oracle" "Postgres" "SQLServer" "MongoDB")
+DATABASES=("allButSlow" "DB2" "MariaDB" "MariaDBExternal" "MySQL" "MySQLExternal" "Oracle" "Postgres" "SQLServer" "MongoDB")
 DEFAULT_AMOUNT=500000
 
 default_tool_version() {
@@ -71,15 +71,17 @@ database_to_datastore_class() {
   local db
   db="$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')"
   case "$db" in
-    allbutslow)    echo "allButSlow" ;;
-    postgres)      echo "PostgresDataStore" ;;
-    mariadb)       echo "MariaDBDataStore" ;;
-    mysql)         echo "MySQLDataStore" ;;
-    mongodb)       echo "MongoDBDataStore" ;;
-    oracle)        echo "OracleDataStore" ;;
-    sqlserver)     echo "SQLServerDataStore" ;;
-    db2)           echo "DB2DataStore" ;;
-    *)             echo "Unknown" ;;
+    allbutslow)      echo "allButSlow" ;;
+    postgres)        echo "PostgresDataStore" ;;
+    mariadb)         echo "MariaDBDataStore" ;;
+    mariadbexternal) echo "MariaDBExternalDataStore" ;;
+    mysql)           echo "MySQLDataStore" ;;
+    mysqlexternal)   echo "MySQLExternalDataStore" ;;
+    mongodb)         echo "MongoDBDataStore" ;;
+    oracle)          echo "OracleDataStore" ;;
+    sqlserver)       echo "SQLServerDataStore" ;;
+    db2)             echo "DB2DataStore" ;;
+    *)               echo "Unknown" ;;
   esac
 }
 

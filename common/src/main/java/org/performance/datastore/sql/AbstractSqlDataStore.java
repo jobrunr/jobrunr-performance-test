@@ -1,5 +1,6 @@
 package org.performance.datastore.sql;
 
+import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.performance.datastore.AnalysingDataStore;
 import org.performance.datastore.DataStore;
@@ -165,5 +166,16 @@ public abstract class AbstractSqlDataStore implements DataStore, AnalysingDataSt
 
     protected IndexDetails toIndexDetails(String tableName, String indexName, List<String> columnNames) {
         return new IndexDetails(tableName, indexName, columnNames, "unknown");
+    }
+
+    protected HikariDataSource toHikariDataSource(String jdbcUrl, String userName, String password, String driverClassName) {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(jdbcUrl);
+        config.setUsername(userName);
+        config.setPassword(password);
+        config.setDriverClassName(driverClassName);
+        config.setMinimumIdle(20);
+        config.setMaximumPoolSize(40);
+        return new HikariDataSource(config);
     }
 }

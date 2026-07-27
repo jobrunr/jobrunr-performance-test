@@ -19,7 +19,7 @@ public class BatchJob extends PerformanceTestJob {
         Stream<JobBuilder> jobBuilderStream = IntStream.range(0, totalAmountOfChildJobs)
                 .boxed().map(i -> aJob()
                         .withName("child job " + i + " for batch job " + batchJob)
-                        .<PerformanceTestJob>withDetails(x -> x.testJob(totalAmountOfChildJobs, i)));
+                        .<PerformanceTestJob>withJobLambda(x -> x.testJob(totalAmountOfChildJobs, i)));
         BackgroundJob.create(jobBuilderStream);
         LOGGER.info("Batch job {} finished", batchJob);
     }

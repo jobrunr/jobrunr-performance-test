@@ -26,8 +26,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 
 import static java.util.Arrays.stream;
+import static org.jobrunr.utils.resilience.RateLimiter.Builder.rateLimit;
 import static org.performance.utils.StringUtils.isNullOrEmpty;
 
 public class JobRunrProTool implements Tool {
@@ -62,7 +64,7 @@ public class JobRunrProTool implements Tool {
 
     private void initialize(DataStore dataStore, AbstractJobRunrProScenario scenario) {
         if (dataStore instanceof AbstractSqlDataStore) {
-            storageProvider = SqlStorageProviderFactory.using(((AbstractSqlDataStore) dataStore).dataSource());
+            storageProvider = SqlStorageProviderFactory.using(((AbstractSqlDataStore) dataStore).dataSource(), rateLimit().at1Request().per(5, ChronoUnit.SECONDS));
         } else if (dataStore instanceof MongoDBDataStore) {
             storageProvider = new MongoDBStorageProvider(((MongoDBDataStore) dataStore).mongoClient());
         } else {
@@ -82,7 +84,7 @@ public class JobRunrProTool implements Tool {
         stream(rateLimiterConfigurations).forEach(storageProvider::saveMetadata);
 
         jobRunrPro = JobRunrPro.configure()
-                .useQueues(Queues.DEFAULT_QUEUE, queues.getAllQueues().toArray(new String[0]))
+                .usePriorityQueues(Queues.DEFAULT_QUEUE, queues.getAllQueues().toArray(new String[0]))
                 .useStorageProvider(storageProvider)
                 .useBackgroundJobServer(backgroundJobServerConfiguration, false)
                 .useDashboardIf(dashboardWebServerConfiguration != null, dashboardWebServerConfiguration)

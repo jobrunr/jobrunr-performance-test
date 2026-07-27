@@ -99,7 +99,7 @@ public class Scenario00CombinedScenario extends AbstractJobRunrProScenario {
             Stream<JobBuilder> jobBuilderStream = IntStream.range(0, jobsPerDynamicQueue).boxed()
                     .map(j -> aJob()
                             .withName("Job " + j + " for " + label)
-                            .<PerformanceTestJob>withDetails(x -> x.testJob(jobsPerDynamicQueue, j))
+                            .<PerformanceTestJob>withJobLambda(x -> x.testJob(jobsPerDynamicQueue, j))
                             .withRateLimiter(finalI >= 10 && finalI < 20 ? getRateLimiterName(finalI - 10) : null)
                             .withLabels(label));
             BackgroundJob.create(jobBuilderStream);
@@ -116,7 +116,7 @@ public class Scenario00CombinedScenario extends AbstractJobRunrProScenario {
             BackgroundJob.create(aBatchJob()
                     .withName(batchJobName)
                     .withLabels("my-batch-job-" + i)
-                    .<BatchJob>withDetails(x -> x.batchJob(childJobsPerBatchJob, finalI)));
+                    .<BatchJob>withJobLambda(x -> x.batchJob(childJobsPerBatchJob, finalI)));
         }
         LOGGER.info("   Created {} batch jobs with each {} child jobs", amountOfBatchJobs, childJobsPerBatchJob);
         return amountOfBatchJobs + totalAmountOfChildJobs;
@@ -134,32 +134,32 @@ public class Scenario00CombinedScenario extends AbstractJobRunrProScenario {
             jobsToCreate.add(aJob()
                     .withId(jobId1)
                     .withName("Awaited Job " + i + " 1/4")
-                    .<PerformanceTestJob>withDetails(x -> x.testJob(totalAmountOfAwaitingJobs, finalI))
+                    .<PerformanceTestJob>withJobLambda(x -> x.testJob(totalAmountOfAwaitingJobs, finalI))
                     .withLabels("an awaited job"));
 
             jobsToCreate.add(aJob()
                     .withId(jobId2)
                     .runAfterSuccessOf(jobId1)
                     .withName("Awaited Job " + i + " 2/4 awaiting " + jobId1 + " (1/4)")
-                    .<PerformanceTestJob>withDetails(x -> x.testJob(totalAmountOfAwaitingJobs, finalI))
+                    .<PerformanceTestJob>withJobLambda(x -> x.testJob(totalAmountOfAwaitingJobs, finalI))
                     .withLabels("an awaited job"));
 
             jobsToCreate.add(aJob()
                     .runAfterSuccessOf(jobId2)
                     .withName("Awaited Job " + i + " 3/4 awaiting " + jobId2 + " (2/4)")
-                    .<PerformanceTestJob>withDetails(x -> x.testJob(totalAmountOfAwaitingJobs, finalI))
+                    .<PerformanceTestJob>withJobLambda(x -> x.testJob(totalAmountOfAwaitingJobs, finalI))
                     .withLabels("an awaited job"));
 
             jobsToCreate.add(aJob()
                     .runAfterSuccessOf(jobId2)
                     .withName("Awaited Job " + i + " 4/4 awaiting " + jobId2 + " (2/4)")
-                    .<PerformanceTestJob>withDetails(x -> x.testJob(totalAmountOfAwaitingJobs, finalI))
+                    .<PerformanceTestJob>withJobLambda(x -> x.testJob(totalAmountOfAwaitingJobs, finalI))
                     .withLabels("an awaited job"));
 
             jobsToCreate.add(aJob()
                     .runAfterFailureOf(jobId1)
                     .withName("Awaited Job " + i + " 4/4 awaiting " + jobId2 + " (2/4)")
-                    .<PerformanceTestJob>withDetails(x -> x.testJob(totalAmountOfAwaitingJobs, finalI))
+                    .<PerformanceTestJob>withJobLambda(x -> x.testJob(totalAmountOfAwaitingJobs, finalI))
                     .withLabels("an awaited job"));
 
             if (jobsToCreate.size() >= 1000) {
@@ -177,7 +177,7 @@ public class Scenario00CombinedScenario extends AbstractJobRunrProScenario {
                 .map(j -> aJob()
                         .scheduleAt(Instant.now().plus(30, SECONDS).plus(j, MILLIS))
                         .withName("Scheduled Job " + j)
-                        .<PerformanceTestJob>withDetails(x -> x.testJob(amountOfJobs, j))
+                        .<PerformanceTestJob>withJobLambda(x -> x.testJob(amountOfJobs, j))
                         .withLabels("my scheduled job"));
         BackgroundJob.create(jobBuilderStream);
         LOGGER.info("   Created {} scheduled jobs", amountOfJobs);
@@ -198,9 +198,9 @@ public class Scenario00CombinedScenario extends AbstractJobRunrProScenario {
                     .withCron(Cron.every15seconds())
                     .withLabels("recurring job every 15 seconds " + i)
                     .withDeleteOnSuccess(Duration.ofSeconds(15))
-                    .withQueue(HIGH_PRIO)
+                    .withPriorityQueue(HIGH_PRIO)
                     .withMaxConcurrentJobs(3)
-                    .<PerformanceTestJob>withDetails(x -> x.testJob(jobsEvery15Seconds, finalI)));
+                    .<PerformanceTestJob>withJobLambda(x -> x.testJob(jobsEvery15Seconds, finalI)));
         }
         for (int i = 0; i < jobsEvery30Seconds; i++) {
             int finalI = i;
@@ -209,9 +209,9 @@ public class Scenario00CombinedScenario extends AbstractJobRunrProScenario {
                     .withName("Recurring Job (*/30s)" + finalI)
                     .withCron(Cron.every30seconds())
                     .withDeleteOnSuccess(Duration.ofSeconds(25))
-                    .withQueue(HIGH_PRIO)
+                    .withPriorityQueue(HIGH_PRIO)
                     .withLabels("recurring job every 30 seconds " + i)
-                    .<PerformanceTestJob>withDetails(x -> x.testJob(jobsEvery30Seconds, finalI)));
+                    .<PerformanceTestJob>withJobLambda(x -> x.testJob(jobsEvery30Seconds, finalI)));
         }
         for (int i = 0; i < jobsEveryEveningAt8pm; i++) {
             int finalI = i;
@@ -220,7 +220,7 @@ public class Scenario00CombinedScenario extends AbstractJobRunrProScenario {
                     .withName("Recurring Job 8pm" + finalI)
                     .withCron(Cron.daily(20))
                     .withLabels("recurring job at 8pm " + i)
-                    .<PerformanceTestJob>withDetails(x -> x.testJob(jobsEveryEveningAt8pm, finalI)));
+                    .<PerformanceTestJob>withJobLambda(x -> x.testJob(jobsEveryEveningAt8pm, finalI)));
         }
         for (int i = 0; i < jobsEveryEveningWithDuration; i++) {
             int finalI = i;
@@ -229,7 +229,7 @@ public class Scenario00CombinedScenario extends AbstractJobRunrProScenario {
                     .withName("Recurring Job (1min dur)" + finalI)
                     .withInterval(Duration.ofHours(1))
                     .withLabels("recurring job using duration, " + i)
-                    .<PerformanceTestJob>withDetails(x -> x.testJob(jobsEveryEveningWithDuration, finalI)));
+                    .<PerformanceTestJob>withJobLambda(x -> x.testJob(jobsEveryEveningWithDuration, finalI)));
         }
         LOGGER.info("   Created {} recurring jobs", totalAmountOfRecurringJobs);
         return 0;

@@ -1,6 +1,5 @@
 package org.performance.datastore.sql;
 
-import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 
@@ -45,16 +44,5 @@ public class AbstractSqlContainerDataStore<T extends JdbcDatabaseContainer<T>> e
 
     protected HikariDataSource toHikariDataSource(JdbcDatabaseContainer<?> container, String driverClassName) {
         return toHikariDataSource(container.getJdbcUrl(), container.getUsername(), container.getPassword(), driverClassName);
-    }
-
-    protected HikariDataSource toHikariDataSource(String jdbcUrl, String userName, String password, String driverClassName) {
-        HikariConfig config = new HikariConfig();
-        config.setJdbcUrl(jdbcUrl);
-        config.setUsername(userName);
-        config.setPassword(password);
-        config.setDriverClassName(driverClassName);
-        config.setMinimumIdle(20);
-        config.setMaximumPoolSize(40);
-        return new HikariDataSource(config);
     }
 }
