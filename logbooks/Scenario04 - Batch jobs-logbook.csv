@@ -1,0 +1,14 @@
+Date & Time,Host name,Java version,Tool,Tool version,DataStore,amount of created jobs,amount of succeeded jobs,creation duration,processing duration,job throughput (jobs / sec)
+2026-02-20T10:10:35.181787417Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,1.0.0-SNAPSHOT (master@1ae80d7d0),postgres:18.1,500000,500008,PT0.082950647S,PT2M38.223298825S,3164.61
+2026-02-20T11:14:17.326103353Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,1.0.0-SNAPSHOT (master@1ae80d7d0),mysql:8.0.44,500000,500010,PT0.290148527S,PT17M3.12493093S,488.77
+2026-02-20T11:39:18.702358653Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,1.0.0-SNAPSHOT (master@1ae80d7d0),mariadb:11.8,500000,500010,PT0.116578442S,PT3M36.41129805S,2314.86
+2026-02-20T11:44:11.745011987Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,1.0.0-SNAPSHOT (master@1ae80d7d0),gvenzl/oracle-free:latest-faststart,500000,500010,PT0.136320674S,PT10M11.778180544S,818.35
+2026-02-20T12:02:23.781389242Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,1.0.0-SNAPSHOT (master@1ae80d7d0),mcr.microsoft.com/mssql/server:2022-latest,500000,500010,PT0.228600046S,PT9M47.407899809S,851.81
+2026-02-20T12:24:38.513326094Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/pause-batch-jobs@395de43ba),postgres:18.1,500000,500010,PT0.082349118S,PT2M48.150229573S,2976.25
+2026-02-20T12:29:02.953233130Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/pause-batch-jobs@395de43ba),mysql:8.0.44,500000,500010,PT0.274936331S,PT17M8.131674266S,486.39
+2026-02-20T12:57:47.219173523Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/pause-batch-jobs@395de43ba),mariadb:11.8,500000,500007,PT0.106454426S,PT3M18.159319431S,2525.29
+2026-02-20T13:23:52.158297142Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/pause-batch-jobs@395de43ba),gvenzl/oracle-free:latest-faststart,500000,500009,PT0.134173856S,PT10M8.083689013S,822.38
+2026-02-20T20:26:59.200634948Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/pause-batch-jobs@395de43ba),mcr.microsoft.com/mssql/server:2022-latest,500000,500009,PT0.26070603S,PT9M21.935814932S,891.28
+2026-02-23T09:04:34.464021624Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/pause-batch-jobs@395de43ba),postgres:18.1,500000,500008,PT0.080713433S,PT2M53.231744605S,2890.22
+2026-02-23T14:16:27.514177572Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,1.0.0-SNAPSHOT (feature/pause-batch-jobs@360afeec6),mongo:7.0.16,500000,500010,PT0.046792513S,PT2M2.739058985S,4098.44
+2026-02-23T14:19:49.350044538Z,Ubuntu-2204-jammy-amd64-base,21.0.4+7-LTS,JobRunr Pro,1.0.0-SNAPSHOT (master@1ae80d7d0),mongo:7.0.16,500000,500010,PT0.04759857S,PT2M3.138763891S,4065.12
