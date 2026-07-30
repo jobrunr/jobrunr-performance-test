@@ -9,6 +9,8 @@ import org.testcontainers.mariadb.MariaDBContainer;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
@@ -16,7 +18,7 @@ public class MariaDBDataStore extends AbstractSqlContainerDataStore<MariaDBConta
 
     public MariaDBDataStore() {
         super(
-                new MariaDBContainer("mariadb:11.8")
+                new MariaDBContainer("mariadb:12.3")
                         .withCreateContainerCmdModifier(cmd ->
                                 cmd.withHostConfig(cmd.getHostConfig().withPortBindings(
                                                 new PortBinding(Ports.Binding.bindPort(33060), new ExposedPort(3306))
@@ -46,12 +48,44 @@ public class MariaDBDataStore extends AbstractSqlContainerDataStore<MariaDBConta
 
     @Override
     public String explainQuery(String queryWithValues) {
-        return explainAnalyseQuery("ANALYZE FORMAT=JSON " + queryWithValues);
+        return explainAnalyseQuery("ANALYZE " + queryWithValues);
     }
 
     @Override
     public String explainExecute(String queryWithValues) {
         return "Not analyzing insert / update statements";
+    }
+
+    @Override
+    public String explainAnalyseQuery(Connection connection, String analyzeQueryWithValues) throws SQLException {
+        try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(analyzeQueryWithValues)) {
+
+            ResultSetMetaData metadata = resultSet.getMetaData();
+            int columnCount = metadata.getColumnCount();
+            StringBuilder output = new StringBuilder();
+
+            while (resultSet.next()) {
+                boolean firstColumn = true;
+
+                for (int column = 1; column <= columnCount; column++) {
+                    String columnName = metadata.getColumnLabel(column);
+                    if ("possible_keys".equalsIgnoreCase(columnName)) {
+                        continue;
+                    }
+
+                    if (!firstColumn) {
+                        output.append(" | ");
+                    }
+                    output.append(columnName)
+                            .append('=')
+                            .append(resultSet.getString(column));
+                    firstColumn = false;
+                }
+                output.append(System.lineSeparator());
+            }
+
+            return output.toString();
+        }
     }
 
     @Override

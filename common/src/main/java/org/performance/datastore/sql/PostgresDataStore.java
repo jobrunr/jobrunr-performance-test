@@ -13,7 +13,7 @@ import java.util.List;
 public class PostgresDataStore extends AbstractSqlContainerDataStore<PostgreSQLContainer> {
 
     public PostgresDataStore() {
-        super(new PostgreSQLContainer("postgres:18.1")
+        super(new PostgreSQLContainer("postgres:18.4")
                 .withCreateContainerCmdModifier(cmd ->
                         cmd.withHostConfig(cmd.getHostConfig().withPortBindings(new PortBinding(Ports.Binding.bindPort(54320), new ExposedPort(5432)))
                         )).withCommand("postgres",

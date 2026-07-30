@@ -1,5 +1,6 @@
 package org.jobrunrpro.performance.scenario;
 
+import org.jobrunr.configuration.JobRunrPro;
 import org.jobrunr.dashboard.JobRunrDashboardWebServerConfiguration;
 import org.jobrunr.jobs.queues.Queues;
 import org.jobrunr.server.BackgroundJobServerConfiguration;
@@ -42,6 +43,7 @@ public abstract class AbstractJobRunrProScenario extends AbstractScenario<JobRun
 
     @Override
     protected Instant startProcessingJobs() throws Exception {
+        tool.getStorageProvider().saveMetadata(new JobRunrMetadata("database_version", "cluster", JobRunrPro.VERSION));
         Instant startTime = super.startProcessingJobs();
         if (isDataStoreQueryTimeLoggingEnabled()) {
             ThreadSafeStorageProvider.setMethodStatisticsConfiguration(DETAILED);

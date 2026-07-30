@@ -25,7 +25,8 @@ public class Scenario04BatchJobs extends AbstractJobRunrProScenario {
     public BackgroundJobServerConfiguration getBackgroundJobServerConfiguration() {
         return super.getBackgroundJobServerConfiguration()
                 .andPollIntervalInSeconds(10)
-                .andWorkerCount(30);
+                //.andWorkerCount(30)
+                ;
     }
 
     @Override

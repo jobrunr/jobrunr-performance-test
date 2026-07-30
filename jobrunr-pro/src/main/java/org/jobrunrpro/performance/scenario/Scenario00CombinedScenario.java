@@ -64,7 +64,7 @@ public class Scenario00CombinedScenario extends AbstractJobRunrProScenario {
     public JobRunrMetadata[] getRateLimiterConfigurationsAsMetadata() {
         return IntStream.range(0, 10).boxed()
                 .map(Scenario00CombinedScenario::getRateLimiterName)
-                .map(name -> concurrentJobRateLimiter(name, 5))
+                .map(name -> concurrentJobRateLimiter(name, 25))
                 .toArray(JobRunrMetadata[]::new);
     }
 
@@ -81,17 +81,19 @@ public class Scenario00CombinedScenario extends AbstractJobRunrProScenario {
         createRecurringJobs();
 
         int amountOfJobsCreated = 0;
-        amountOfJobsCreated += createJobsInDynamicQueues((int) (totalAmountOfJobs * 0.5));
-        amountOfJobsCreated += createBatchJobs((int) (totalAmountOfJobs * 0.3));
+        amountOfJobsCreated += createBatchJobs((int) (totalAmountOfJobs * 0.1));
+        amountOfJobsCreated += createJobsInDynamicQueues((int) (totalAmountOfJobs * 0.3));
+        amountOfJobsCreated += createBatchJobs((int) (totalAmountOfJobs * 0.2));
         amountOfJobsCreated += createAwaitingJobs((int) (totalAmountOfJobs * 0.1));
         amountOfJobsCreated += createScheduledJobs((int) (totalAmountOfJobs * 0.1));
+        amountOfJobsCreated += createJobsInDynamicQueues((int) (totalAmountOfJobs * 0.2));
         return amountOfJobsCreated;
     }
 
     private int createJobsInDynamicQueues(int amountOfJobs) {
         int jobsPerDynamicQueue = amountOfJobs / amountOfDynamicQueues;
         for (int i = 0; i < amountOfDynamicQueues; i++) {
-            // here we create jobs. The jobs between Tenant-010 and Tenant-020 will have rate limiters allowing max 5 jobs at the same time
+            // here we create jobs. The jobs between Tenant-010 and Tenant-020 will have rate limiters allowing max 25 jobs at the same time
             String dynamicQueue = String.format("Tenant-%03d", i); // Zero-padded queue names
             String label = "tenant: " + dynamicQueue;
 
@@ -185,10 +187,11 @@ public class Scenario00CombinedScenario extends AbstractJobRunrProScenario {
     }
 
     private int createRecurringJobs() {
-        int jobsEvery15Seconds = totalAmountOfRecurringJobs / 4;
-        int jobsEvery30Seconds = totalAmountOfRecurringJobs / 4;
-        int jobsEveryEveningAt8pm = totalAmountOfRecurringJobs / 4;
-        int jobsEveryEveningWithDuration = totalAmountOfRecurringJobs / 4;
+        int jobsEvery15Seconds = (int) (totalAmountOfRecurringJobs * 0.1);
+        int jobsEvery30Seconds = (int) (totalAmountOfRecurringJobs * 0.1);
+        int jobsEvery2Minutes = (int) (totalAmountOfRecurringJobs * 0.2);
+        int jobsEveryEveningAt8pm = (int) (totalAmountOfRecurringJobs * 0.3);
+        int jobsEveryEveningWithDuration = (int) (totalAmountOfRecurringJobs * 0.3);
 
         for (int i = 0; i < jobsEvery15Seconds; i++) {
             int finalI = i;
@@ -212,6 +215,17 @@ public class Scenario00CombinedScenario extends AbstractJobRunrProScenario {
                     .withPriorityQueue(HIGH_PRIO)
                     .withLabels("recurring job every 30 seconds " + i)
                     .<PerformanceTestJob>withJobLambda(x -> x.testJob(jobsEvery30Seconds, finalI)));
+        }
+        for (int i = 0; i < jobsEvery2Minutes; i++) {
+            int finalI = i;
+            BackgroundJob.createRecurrently(aRecurringJob()
+                    .withId("rec-job-2m-" + finalI)
+                    .withName("Recurring Job (*/2m)" + finalI)
+                    .withCron("*/2 * * * *")
+                    .withDeleteOnSuccess(Duration.ofSeconds(300))
+                    .withPriorityQueue(HIGH_PRIO)
+                    .withLabels("recurring job every 2 minutes " + i)
+                    .<PerformanceTestJob>withJobLambda(x -> x.testJob(jobsEvery2Minutes, finalI)));
         }
         for (int i = 0; i < jobsEveryEveningAt8pm; i++) {
             int finalI = i;

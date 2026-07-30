@@ -18,7 +18,7 @@ public class SQLServerDataStore extends AbstractSqlContainerDataStore<MSSQLServe
 
     public SQLServerDataStore() {
         super(new MSSQLServerContainer(DockerImageName
-                .parse("mcr.microsoft.com/mssql/server:2022-latest"))
+                .parse("mcr.microsoft.com/mssql/server:2025-latest"))
                 .withCreateContainerCmdModifier(cmd ->
                         cmd.withHostConfig(cmd.getHostConfig().withPortBindings(new PortBinding(Ports.Binding.bindPort(14330), new ExposedPort(1433)))))
                 .waitingFor(Wait.forListeningPort())
@@ -46,14 +46,17 @@ public class SQLServerDataStore extends AbstractSqlContainerDataStore<MSSQLServe
     public String explainAnalyseQuery(Connection connection, String analyzeQueryWithValues) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             // Enable XML query plan mode; the query itself won't be executed
-            statement.execute("SET SHOWPLAN_XML ON");
-            ResultSet resultSet = statement.executeQuery(analyzeQueryWithValues);
-            StringBuilder sb = new StringBuilder();
-            while (resultSet.next()) {
-                sb.append(resultSet.getString(1)).append(System.lineSeparator());
+            statement.execute("SET SHOWPLAN_ALL ON");
+            try {
+                ResultSet resultSet = statement.executeQuery(analyzeQueryWithValues);
+                StringBuilder sb = new StringBuilder();
+                while (resultSet.next()) {
+                    sb.append(resultSet.getString(1)).append(System.lineSeparator());
+                }
+                return sb.toString();
+            } finally {
+                statement.execute("SET SHOWPLAN_ALL OFF");
             }
-            statement.execute("SET SHOWPLAN_XML OFF");
-            return sb.toString();
         }
     }
 

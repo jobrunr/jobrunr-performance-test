@@ -8,6 +8,7 @@ import org.jobrunr.jobs.queues.Queues;
 import org.jobrunr.scheduling.JobScheduler;
 import org.jobrunr.server.BackgroundJobServer;
 import org.jobrunr.server.BackgroundJobServerConfiguration;
+import org.jobrunr.storage.DatabaseOptions;
 import org.jobrunr.storage.JobRunrMetadata;
 import org.jobrunr.storage.StorageProvider;
 import org.jobrunr.storage.nosql.mongo.MongoDBStorageProvider;
@@ -64,7 +65,7 @@ public class JobRunrProTool implements Tool {
 
     private void initialize(DataStore dataStore, AbstractJobRunrProScenario scenario) {
         if (dataStore instanceof AbstractSqlDataStore) {
-            storageProvider = SqlStorageProviderFactory.using(((AbstractSqlDataStore) dataStore).dataSource(), rateLimit().at1Request().per(5, ChronoUnit.SECONDS));
+            storageProvider = SqlStorageProviderFactory.using(((AbstractSqlDataStore) dataStore).dataSource());
         } else if (dataStore instanceof MongoDBDataStore) {
             storageProvider = new MongoDBStorageProvider(((MongoDBDataStore) dataStore).mongoClient());
         } else {

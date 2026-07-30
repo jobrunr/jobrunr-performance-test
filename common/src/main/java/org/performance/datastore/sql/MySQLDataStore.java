@@ -15,7 +15,7 @@ import java.util.List;
 public class MySQLDataStore extends AbstractSqlContainerDataStore<MySQLContainer> {
 
     public MySQLDataStore() {
-        super(new MySQLContainer("mysql:8.0.44")
+        super(new MySQLContainer("mysql:8.4.10")
                 .withCreateContainerCmdModifier(cmd ->
                         cmd.withHostConfig(cmd.getHostConfig().withPortBindings(
                                         new PortBinding(Ports.Binding.bindPort(33060), new ExposedPort(3306))

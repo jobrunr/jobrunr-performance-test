@@ -12,6 +12,7 @@ public class JobRunrProScenarioMonitor extends ScenarioMonitor implements JobSta
 
     private JobStats jobStats;
     private int duplicateJobStatsCounter;
+    private long currentTimeMillis = -1;
 
     public JobRunrProScenarioMonitor(long totalAmountOfJobs, Duration maxDuration) {
         super(totalAmountOfJobs, maxDuration);
@@ -28,12 +29,14 @@ public class JobRunrProScenarioMonitor extends ScenarioMonitor implements JobSta
                 && Objects.equals(this.jobStats.getSucceeded(), jobStats.getSucceeded())
                 && Objects.equals(this.jobStats.getEnqueued(), jobStats.getEnqueued())) {
             // in case of failure
-            if (duplicateJobStatsCounter++ > 20 && duplicateJobStatsCounter < 25) {
+            LoggerFactory.getLogger(JobRunrProScenarioMonitor.class).info("Duplicate job stats received: {}", jobStats.getSucceeded());
+            if (duplicateJobStatsCounter++ > 20 && duplicateJobStatsCounter < 25 && System.currentTimeMillis() > (currentTimeMillis + 65_000)) {
                 LoggerFactory.getLogger(JobRunrProScenarioMonitor.class).warn("Duplicate job stats received too many times - shutting down");
                 countDownLatch.countDown();
             }
         } else {
             duplicateJobStatsCounter = 0;
+            this.currentTimeMillis = System.currentTimeMillis();
         }
         this.jobStats = jobStats;
     }

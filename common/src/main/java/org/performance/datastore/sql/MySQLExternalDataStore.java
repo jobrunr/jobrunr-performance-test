@@ -13,7 +13,7 @@ public class MySQLExternalDataStore extends AbstractSqlExternalDataStore {
     private HikariDataSource dataSource;
 
     public MySQLExternalDataStore() {
-        super("com.mysql.cj.jdbc.Driver", "jdbc:mysql://localhost:3306/test", "test", "test");
+        super("com.mysql.cj.jdbc.Driver", "jdbc:mysql://localhost:3306/test", "test", "0dHE2g8Jst2Q0ZIV");
     }
 
     @Override
@@ -59,10 +59,10 @@ public class MySQLExternalDataStore extends AbstractSqlExternalDataStore {
                     --shm-size=128m \\
                     -v /Volumes/T9/JobRunr/MySQL:/var/lib/mysql \\
                     -p 3306:3306 \\
-                    -e MYSQL_ROOT_PASSWORD=test \\
+                    -e MYSQL_ROOT_PASSWORD=0dHE2g8Jst2Q0ZIV \\
                     -e MYSQL_DATABASE=test \\
                     -e MYSQL_USER=test \\
-                    -e MYSQL_PASSWORD=test \\
+                    -e MYSQL_PASSWORD=0dHE2g8Jst2Q0ZIV \\
                     -d mysql:8.4 \\
                     --innodb-buffer-pool-size=1536M \\
                     --innodb-redo-log-capacity=2G \\
