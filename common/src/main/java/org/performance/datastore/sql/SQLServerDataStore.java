@@ -59,9 +59,4 @@ public class SQLServerDataStore extends AbstractSqlContainerDataStore<MSSQLServe
             }
         }
     }
-
-    @Override
-    public boolean isQueryUsingIndex(String analysis, String indexName) {
-        return analysis.contains("Index=\"[" + indexName + "]\" IndexKind");
-    }
 }

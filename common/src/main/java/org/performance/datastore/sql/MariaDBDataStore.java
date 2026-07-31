@@ -114,9 +114,4 @@ public class MariaDBDataStore extends AbstractSqlContainerDataStore<MariaDBConta
             throw new RuntimeException(e);
         }
     }
-
-    @Override
-    public boolean isQueryUsingIndex(String analysis, String indexName) {
-        return analysis.contains("\"key\": \"" + indexName + "\"");
-    }
 }
