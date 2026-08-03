@@ -7,8 +7,6 @@ import org.performance.scenario.Scenario;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ibm.db2.cmx.runtime.internal.trace.Log;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Set;
@@ -41,12 +39,9 @@ public class Main {
             throw new IllegalArgumentException("Missing required arguments: " + ARG_TOOL + ", " + ARG_DATASTORE + ", " + ARG_SCENARIO);
         }
 
-        if ("all".equals(datastore)) {
-            for (DataStoreType dataStoreType : DataStoreType.all()) {
-                runScenario(newJVMPerDataStore, tool, version, dataStoreType, scenario, args);
-            }
-        } else if ("allButSlow".equals(datastore)) {
-            for (DataStoreType dataStoreType : DataStoreType.allButSlow()) {
+
+        if ("all".equals(datastore) || "allButSlow".equals(datastore)) {
+            for (DataStoreType dataStoreType : "allButSlow".equals(datastore) ? DataStoreType.allButSlow() : DataStoreType.all()) {
                 runScenario(newJVMPerDataStore, tool, version, dataStoreType, scenario, args);
                 log.info("Sleeping for 10 seconds before starting the next scenario to allow resources to be released...");
                 Thread.sleep(10_000L);
@@ -57,6 +52,9 @@ public class Main {
     }
 
     public static void runScenario(boolean inNewJVM, String tool, String version, DataStoreType dataStoreType, String scenarioName, String[] args) throws Exception {
+        log.info("Waiting until all RAID arrays are clean...");
+        RaidHealth.waitUntilReady();
+        log.info("All RAID arrays are clean.");
         if (inNewJVM) {
             runScenarioInNewJVM(tool, version, dataStoreType, scenarioName, args);
         } else {
@@ -92,6 +90,6 @@ public class Main {
 
     private static String createMavenCmd(String pomPath, String tool, String version, String execArgs) {
         return String.format("mvn -f \"%s\" -P %s -Dtool.version=%s clean compile exec:java@performance-test -Dexec.args=\"%s\"",
-               pomPath, tool, version, execArgs);
+                pomPath, tool, version, execArgs);
     }
 }
