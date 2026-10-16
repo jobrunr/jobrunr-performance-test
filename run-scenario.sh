@@ -132,6 +132,8 @@ Notes:
       Maven will use the version defined in pom.xml.
   - enable_profiling is OPTIONAL:
     If enable_profiling=true, then async profiler used to profile the run.
+  - json_mapper is OPTIONAL (JobRunr / JobRunrPro only):
+    One of jackson (default), jackson3, gson or jsonb.
   - JobRunrPro currently has multiple scenarios; these are autocompleted.
   - Only JobRunrPro supports in-depth query analysis reports by setting log_data_store_timings=true.
     If set, a detailed markdown report will be generated with all queries, their timings and the query plan taken by the database

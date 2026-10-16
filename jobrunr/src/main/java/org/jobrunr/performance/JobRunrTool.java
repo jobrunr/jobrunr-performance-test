@@ -53,6 +53,7 @@ public class JobRunrTool implements Tool {
         JobRunrDashboardWebServerConfiguration dashboardWebServerConfiguration = scenario.getDashboardWebServerConfiguration();
 
         jobRunr = JobRunr.configure()
+                .useJsonMapper(scenario.getJsonMapper())
                 .useStorageProvider(storageProvider)
                 .useBackgroundJobServer(backgroundJobServerConfiguration, false)
                 .useDashboardIf(dashboardWebServerConfiguration != null, dashboardWebServerConfiguration)

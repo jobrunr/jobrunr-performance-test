@@ -13,7 +13,7 @@ import org.jobrunr.storage.JobRunrMetadata;
 import org.jobrunr.storage.StorageProvider;
 import org.jobrunr.storage.nosql.mongo.MongoDBStorageProvider;
 import org.jobrunr.storage.sql.common.SqlStorageProviderFactory;
-import org.jobrunr.utils.mapper.jackson.JacksonJsonMapper;
+import org.jobrunr.utils.mapper.JsonMapper;
 import org.jobrunrpro.performance.scenario.AbstractJobRunrProScenario;
 import org.jobrunrpro.performance.scenario.monitor.JobRunrProScenarioMonitor;
 import org.performance.datastore.DataStore;
@@ -72,7 +72,8 @@ public class JobRunrProTool implements Tool {
             throw new IllegalArgumentException("DataStore must be an instance of AbstractSqlDataStore or MongoDBDataStore");
         }
 
-        storageProvider.setJobMapper(new JobMapper(new JacksonJsonMapper()));
+        JsonMapper jsonMapper = scenario.getJsonMapper();
+        storageProvider.setJobMapper(new JobMapper(jsonMapper));
 
         setupLicense();
 
@@ -85,6 +86,7 @@ public class JobRunrProTool implements Tool {
         stream(rateLimiterConfigurations).forEach(storageProvider::saveMetadata);
 
         jobRunrPro = JobRunrPro.configure()
+                .useJsonMapper(jsonMapper)
                 .usePriorityQueues(Queues.DEFAULT_QUEUE, queues.getAllQueues().toArray(new String[0]))
                 .useStorageProvider(storageProvider)
                 .useBackgroundJobServer(backgroundJobServerConfiguration, false)

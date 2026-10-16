@@ -6,6 +6,11 @@ import org.jobrunr.jobs.queues.Queues;
 import org.jobrunr.server.BackgroundJobServerConfiguration;
 import org.jobrunr.storage.JobRunrMetadata;
 import org.jobrunr.storage.ThreadSafeStorageProvider;
+import org.jobrunr.utils.mapper.JsonMapper;
+import org.jobrunr.utils.mapper.gson.GsonJsonMapper;
+import org.jobrunr.utils.mapper.jackson.JacksonJsonMapper;
+import org.jobrunr.utils.mapper.jackson3.Jackson3JsonMapper;
+import org.jobrunr.utils.mapper.jsonb.JsonbJsonMapper;
 import org.jobrunrpro.performance.JobRunrProTool;
 import org.jobrunrpro.performance.scenario.monitor.QueryAnalysisMonitor;
 import org.jobrunrpro.performance.utils.MarkdownReporter;
@@ -39,6 +44,18 @@ public abstract class AbstractJobRunrProScenario extends AbstractScenario<JobRun
         int dashboardPort = parseInt(getArg("dashboard_port", "0"));
         if (dashboardPort == 0) return null;
         return JobRunrDashboardWebServerConfiguration.usingStandardDashboardConfiguration().andPort(dashboardPort);
+    }
+
+    public JsonMapper getJsonMapper() {
+        String jsonMapper = getArg("json_mapper", "jackson");
+        LOGGER.info("Using JsonMapper {}", jsonMapper);
+        return switch (jsonMapper.toLowerCase()) {
+            case "jackson" -> new JacksonJsonMapper();
+            case "jackson3" -> new Jackson3JsonMapper();
+            case "gson" -> new GsonJsonMapper();
+            case "jsonb" -> new JsonbJsonMapper();
+            default -> throw new IllegalArgumentException("Unknown json_mapper '" + jsonMapper + "'. Valid values: jackson, jackson3, gson, jsonb");
+        };
     }
 
     @Override
