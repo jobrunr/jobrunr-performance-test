@@ -2,7 +2,7 @@ package org.jobrunrpro.performance.scenario;
 
 import org.jobrunr.scheduling.BackgroundJob;
 import org.jobrunr.server.BackgroundJobServerConfiguration;
-import org.jobrunr.server.configuration.SmartQueueBackgroundJobServerWorkerPolicy;
+import org.jobrunr.server.configuration.PrefetchQueueBackgroundJobServerWorkerPolicy;
 import org.performance.datastore.DataStore;
 import org.performance.jobs.PerformanceTestJob;
 
@@ -23,7 +23,7 @@ public class Scenario01ProcessJobsSmartQueue extends AbstractJobRunrProScenario 
     @Override
     public BackgroundJobServerConfiguration getBackgroundJobServerConfiguration() {
         return super.getBackgroundJobServerConfiguration()
-                .andBackgroundJobServerWorkerPolicy(new SmartQueueBackgroundJobServerWorkerPolicy());
+                .andBackgroundJobServerWorkerPolicy(new PrefetchQueueBackgroundJobServerWorkerPolicy());
     }
 
     @Override

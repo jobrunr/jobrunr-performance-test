@@ -39,7 +39,7 @@ public class MarkdownReporter {
         markdown.append("- Version  : ").append(JarUtils.getToolVersion(backgroundJobServer)).append(System.lineSeparator());
         markdown.append("- DataStore : ").append(backgroundJobServer.getStorageProvider().getStorageProviderInfo().getName()).append(System.lineSeparator());
         markdown.append("- Total time : ").append(scenarioResult.getProcessingDuration()).append(System.lineSeparator());
-        markdown.append("- Jobs / sec : ").append(String.format("%.2f", (double) scenarioResult.getSucceededJobs() / scenarioResult.getProcessingDuration().toSeconds())).append(System.lineSeparator());
+        markdown.append("- Jobs / sec : ").append(String.format("%.2f", scenarioResult.getSucceededJobs() / (scenarioResult.getProcessingDuration().toMillis() / 1000.0))).append(System.lineSeparator());
         markdown.append("- Jobs processed : ").append(scenarioResult.getSucceededJobs()).append(" / ").append(scenarioResult.getCreatedJobs()).append(" (").append((scenarioResult.getSucceededJobs() * 100) / scenarioResult.getCreatedJobs()).append("%)").append(System.lineSeparator());
         markdown.append(dataStore.getDataStoreSettings());
         markdown.append(System.lineSeparator()).append(System.lineSeparator());

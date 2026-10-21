@@ -53,7 +53,7 @@ fi
 # ========== config ==========
 
 TOOLS=("JobRunr" "JobRunrPro" "Quartz")
-DATABASES=("allButSlow" "DB2" "MariaDB" "MariaDBExternal" "MySQL" "MySQLExternal" "Oracle" "Postgres" "SQLServer" "MongoDB")
+DATABASES=("allButSlow" "DB2" "MariaDB" "MariaDBExternal" "MySQL" "MySQLExternal" "Oracle" "Postgres" "PostgresExternal" "SQLServer" "MongoDB")
 DEFAULT_AMOUNT=500000
 
 default_tool_version() {
@@ -73,6 +73,7 @@ database_to_datastore_class() {
   case "$db" in
     allbutslow)      echo "allButSlow" ;;
     postgres)        echo "PostgresDataStore" ;;
+    postgresexternal) echo "PostgresExternalDataStore" ;;
     mariadb)         echo "MariaDBDataStore" ;;
     mariadbexternal) echo "MariaDBExternalDataStore" ;;
     mysql)           echo "MySQLDataStore" ;;

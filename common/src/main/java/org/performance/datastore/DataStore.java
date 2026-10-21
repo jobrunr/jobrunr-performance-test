@@ -8,6 +8,7 @@ import org.performance.datastore.sql.MySQLDataStore;
 import org.performance.datastore.sql.MySQLExternalDataStore;
 import org.performance.datastore.sql.OracleDataStore;
 import org.performance.datastore.sql.PostgresDataStore;
+import org.performance.datastore.sql.PostgresExternalDataStore;
 import org.performance.datastore.sql.SQLServerDataStore;
 
 import java.lang.reflect.Constructor;
@@ -41,6 +42,7 @@ public interface DataStore {
         MySQLExternalDataStore(MySQLExternalDataStore.class),
         OracleDataStore(OracleDataStore.class),
         PostgresDataStore(PostgresDataStore.class),
+        PostgresExternalDataStore(PostgresExternalDataStore.class),
         SQLServerDataStore(SQLServerDataStore.class);
 
         private final Class<? extends DataStore> clazz;

@@ -59,8 +59,16 @@ public abstract class AbstractJobRunrProScenario extends AbstractScenario<JobRun
     }
 
     @Override
+    protected void initializeTool() throws Exception {
+        super.initializeTool();
+        // marks the data as current so BackgroundJobServers skip the startup migrations; written once, workers find it
+        if (!isClusterWorker()) {
+            tool.getStorageProvider().saveMetadata(new JobRunrMetadata("database_version", "cluster", JobRunrPro.VERSION));
+        }
+    }
+
+    @Override
     protected Instant startProcessingJobs() throws Exception {
-        tool.getStorageProvider().saveMetadata(new JobRunrMetadata("database_version", "cluster", JobRunrPro.VERSION));
         Instant startTime = super.startProcessingJobs();
         if (isDataStoreQueryTimeLoggingEnabled()) {
             ThreadSafeStorageProvider.setMethodStatisticsConfiguration(DETAILED);
