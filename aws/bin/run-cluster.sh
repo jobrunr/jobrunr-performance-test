@@ -135,15 +135,24 @@ run_once() {
 
   local start_at=$(($(date +%s) + START_DELAY_SECONDS))
   log "Processing jobs on $NODE_COUNT node(s), starting in ${START_DELAY_SECONDS}s"
-  local node0_command worker_command=""
+  local node0_command
   node0_command=$(send_command "$(node_script "$run_id" node-0 "cluster_role=worker start_at=$start_at")" "$EXECUTION_TIMEOUT_SECONDS" "$NODE0_ID")
-  if [ "${#WORKER_IDS[@]}" -gt 0 ]; then
-    worker_command=$(send_command "$(node_script "$run_id" "worker-\$(hostname)" "cluster_role=worker start_at=$start_at")" "$EXECUTION_TIMEOUT_SECONDS" "${WORKER_IDS[@]}")
-  fi
+
+  # every node is a worker; label the output folders node-0, node-1, ... so they line up with the run's nodes
+  local -a worker_commands=()
+  local node_index=0
+  for id in ${WORKER_IDS[@]+"${WORKER_IDS[@]}"}; do
+    node_index=$((node_index + 1))
+    worker_commands+=("$(send_command "$(node_script "$run_id" "node-$node_index" "cluster_role=worker start_at=$start_at")" "$EXECUTION_TIMEOUT_SECONDS" "$id")")
+  done
 
   local failed=0
   wait_for_command "$node0_command" "$NODE0_ID" || failed=1
-  for id in ${WORKER_IDS[@]+"${WORKER_IDS[@]}"}; do wait_for_command "$worker_command" "$id" || failed=1; done
+  node_index=0
+  for id in ${WORKER_IDS[@]+"${WORKER_IDS[@]}"}; do
+    wait_for_command "${worker_commands[$node_index]}" "$id" || failed=1
+    node_index=$((node_index + 1))
+  done
 
   local local_dir="$ROOT_DIR/logbooks/aws/runs/$run_id"
   mkdir -p "$local_dir"
@@ -163,8 +172,8 @@ run_once() {
 
   local target
   target="$ROOT_DIR/logbooks/aws/$(basename "$csv")"
-  [ -f "$target" ] || echo "$(head -1 "$csv"),start spread (ms)" > "$target"
-  echo "$(tail -1 "$csv"),$spread" >> "$target"
+  [ -f "$target" ] || echo "$(head -1 "$csv" | tr -d '\r'),start spread (ms)" > "$target"
+  echo "$(tail -1 "$csv" | tr -d '\r'),$spread" >> "$target"
   log "Run $run_id done: $(tail -1 "$csv" | awk -F, '{print $11 " jobs/sec (" $8 " of " $7 " jobs succeeded)"}'), start spread ${spread}ms"
   return $failed
 }

@@ -8,9 +8,8 @@ measure how throughput scales in cluster mode.
 ## How a run works
 
 - **Database**, chosen with `db_type`:
-  - `ec2` (default): `postgres:18.6` in Docker with the same settings as the local Testcontainers setup. The data
-    directory is on local NVMe instance storage, so `db_instance_type` must have it (`m6id`, `i4i`, `c6id`, ...). Comparable
-    with the Hetzner numbers.
+  - `ec2` (default): `postgres:18.6` in Docker on the DB machine, tuned for this workload (see [Options](#options)).
+    The data directory is on local NVMe instance storage, so `db_instance_type` must have it (`m6id`, `i4i`, `c6id`, ...).
   - `aurora`: Aurora PostgreSQL, I/O-Optimized, one writer in the nodes' AZ. Closer to a typical AWS production setup.
     Uses the latest Aurora release of `aurora_postgres_version` (default 18; set 17 if 18 isn't offered yet).
 - **Reset** (from node 0): drops and recreates the `public` schema with `psql`, so every run starts empty.
@@ -69,10 +68,54 @@ Results:
   next to the usual columns
 - `logbooks/aws/runs/<run id>/`: logbook, `performance-tests.log` and stdout of every node (not committed)
 
-Useful variables of the cluster stack (see `aws/terraform/cluster/main.tf`): `node_count`, `node_instance_type`,
-`db_type`, `db_instance_type`, `aurora_instance_class`, `aurora_postgres_version`, `availability_zone`, `use_placement_group`, `postgres_extra_args` (e.g. `["shared_buffers=8GB"]`),
-`postgres_max_connections` and `ttl_hours`. The machines run in the default VPC; they only accept traffic from each
-other, which is why the database uses fixed credentials.
+The machines run in the default VPC; they only accept traffic from each other, which is why the database uses fixed
+credentials. See [Options](#options) for all cluster variables.
+
+## Options
+
+### `terraform -chdir=aws/terraform/cluster apply`
+
+Pass with `-var <name>=<value>` or `TF_VAR_<name>`; see `aws/terraform/cluster/main.tf` for the descriptions.
+
+| variable | default | |
+|---|---|---|
+| `node_count` | `1` | `1` = single-node baseline |
+| `node_instance_type` | `c7i.xlarge` | JobRunr's worker count scales with vCPUs |
+| `db_type` | `ec2` | `ec2` (Postgres on local NVMe) or `aurora` |
+| `db_instance_type` | `m6id.4xlarge` | `db_type=ec2` only; must have local NVMe (`m6id`, `c6id`, `i4i`, ...) |
+| `aurora_instance_class` | `db.r7g.4xlarge` | `db_type=aurora` only |
+| `aurora_postgres_version` | `18` | `db_type=aurora` only; the latest minor is used |
+| `availability_zone` | auto | defaults to the first AZ that offers both instance types |
+| `use_placement_group` | `false` | lower network latency; launches can fail for lack of capacity |
+| `ttl_hours` | `6` | machines terminate themselves after this |
+| `postgres_max_connections` | `500` | must fit `node_count * 40 + 10` |
+| `postgres_extra_args` | `[]` | `db_type=ec2` only: extra Postgres settings, appended after the built-in ones (e.g. `["shared_buffers=8GB"]`); changing them recreates the DB machine |
+
+The `db_type=ec2` Postgres tuning (sized for the write churn of these scenarios) lives in `local.postgres_settings` in
+`aws/terraform/cluster/main.tf`, together with the reasoning per value. `postgres_extra_args` is appended last, so the
+last value wins.
+
+### `aws/bin/build-and-push.sh`
+
+| env | default | |
+|---|---|---|
+| `TOOL_VERSION` | `1.0.0-SNAPSHOT` | JobRunr Pro version to build against |
+| `IMAGE_TAG` | `<git sha>[-dirty]-pro-<TOOL_VERSION>` | written to `aws/.image-tag`, picked up by `run-cluster.sh` |
+
+### `aws/bin/run-cluster.sh [scenario] [amount] [repetitions] [key=value]...`
+
+- Positional: scenario (`Scenario01ProcessJobs`), amount (`2000000`), repetitions (`1`).
+- Environment: `IMAGE_TAG` (from `aws/.image-tag`), `JAVA_OPTS` (`-XX:MaxRAMPercentage=75`), `START_DELAY_SECONDS`
+  (`120`), `EXECUTION_TIMEOUT_SECONDS` (`7200`; must exceed `max_duration` + `START_DELAY_SECONDS`).
+- The `key=value` extras are appended to the test's `exec.args` and take the same parameters as the local runner, e.g.
+  `max_duration=PT2H` or `log_data_store_timings=true` — see [Extra parameters](../README.md#extra-parameters).
+
+### `aws/bin/sweep.sh`
+
+Applies the cluster for every node count, runs the scenario, and destroys everything at the end.
+
+- Environment: `NODE_COUNTS` (`1 2 4`), `NODE_INSTANCE_TYPE` (`c7i.xlarge`), `DB_INSTANCE_TYPE` (`m6id.4xlarge`).
+- Any other cluster variable via `TF_VAR_*`, e.g. `TF_VAR_db_type=aurora`.
 
 ## Safety
 
@@ -101,8 +144,10 @@ other, which is why the database uses fixed credentials.
 - Use at least 3 repetitions per configuration and avoid burstable (`t*`) instances.
 - Use enough jobs that processing takes several minutes; with many nodes 500k jobs finish too quickly.
 - The database is usually the limit in cluster mode, so record and vary `db_instance_type` as well.
-- With `db_type=ec2`, defaults match the local runs (Postgres settings, Hikari pool of 40 per node) so results are
-  comparable with the Hetzner numbers. Change `postgres_extra_args` or `JAVA_OPTS` deliberately and note it.
+- With `db_type=ec2` the Hikari pool (40 per node) matches the local runs, but the Postgres settings are tuned for the
+  write churn of this scenario (the defaults are in `local.postgres_settings` in `aws/terraform/cluster/main.tf`) and
+  therefore differ from the local/Hetzner runs, which use the Testcontainers defaults. Change
+  `postgres_extra_args` or `JAVA_OPTS` deliberately and note it.
 - Nodes default to `c7i.xlarge` (4 vCPU, 8 GB): jobs are tiny and the database is the bottleneck. JobRunr's default
   worker count scales with vCPUs, so for a single-node comparison with the Hetzner EX44 use
   `-var node_instance_type=c7i.4xlarge`.

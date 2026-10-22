@@ -28,6 +28,19 @@ Please note that for JobRunrPro, you will need to set the JOBRUNRPRO_LICENSE env
 export JOBRUNRPRO_LICENSE=<license key>
 ```
 
+#### Extra parameters
+Append `key=value` pairs after the amount, e.g.
+`run-scenario JobRunrPro Scenario01ProcessJobs Postgres 500000 max_duration=PT2H`:
+
+| parameter | meaning |
+|---|---|
+| `tool_version=<version>` | pin the tool version instead of the `pom.xml` default |
+| `enable_profiling=true` | profile the run with async-profiler |
+| `json_mapper=jackson\|jackson3\|gson\|jsonb` | JobRunr / JobRunr Pro only (default `jackson`) |
+| `log_data_store_timings=true` | JobRunr Pro only: write a detailed query timing/plan report |
+
+Run `run-scenario` without arguments to see the full usage.
+
 
 ## Test Results
 Our test results can be found in the folder logbooks, grouped by scenario.
