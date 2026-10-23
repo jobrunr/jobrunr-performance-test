@@ -26,7 +26,11 @@ public abstract class AbstractJobRunrScenario extends AbstractScenario<JobRunrTo
     }
 
     public BackgroundJobServerConfiguration getBackgroundJobServerConfiguration() {
-        return usingStandardBackgroundJobServerConfiguration().andPollIntervalInSeconds(5);
+        BackgroundJobServerConfiguration configuration = usingStandardBackgroundJobServerConfiguration().andPollIntervalInSeconds(5);
+        String workerCount = getArg("worker_count");
+        if (workerCount == null) return configuration;
+        LOGGER.info("Using worker count {}", workerCount);
+        return configuration.andWorkerCount(parseInt(workerCount));
     }
 
     public JobRunrDashboardWebServerConfiguration getDashboardWebServerConfiguration() {

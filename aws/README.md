@@ -117,6 +117,72 @@ Applies the cluster for every node count, runs the scenario, and destroys everyt
 - Environment: `NODE_COUNTS` (`1 2 4`), `NODE_INSTANCE_TYPE` (`c7i.xlarge`), `DB_INSTANCE_TYPE` (`m6id.4xlarge`).
 - Any other cluster variable via `TF_VAR_*`, e.g. `TF_VAR_db_type=aurora`.
 
+## Recommended machines
+
+All of these are offered in `eu-central-1`. Prices are on-demand Linux list prices for Frankfurt (October 2026), per
+machine and hour, without the root volume (about $0.01/h) or data transfer; check the
+[pricing page](https://aws.amazon.com/ec2/pricing/on-demand/) before a big sweep. Intel/AMD and Graviton (`*g`)
+machines both work: the image is multi-arch (amd64 and arm64) and Terraform picks the matching AMI per machine. Keep
+amd64 as the reference series, since the local/Hetzner runs are amd64 too.
+
+The observations are what we expect, not what we measured. Replace them with results once a configuration has run.
+
+### Worker nodes (`node_instance_type`)
+
+| instance | vCPU / GB | $/h | why try it | expected |
+|---|---|---|---|---|
+| `c7i.xlarge` | 4 / 8 | 0.20 | default, Intel Sapphire Rapids | Baseline. Node CPU stays low because the database is the limit. |
+| `c8g.xlarge` | 4 / 8 | 0.18 | Graviton4, cheapest of the current generation | About the same throughput as `c7i.xlarge` for 10% less; best cost per job if the DB is the limit. |
+| `c7g.xlarge` | 4 / 8 | 0.16 | Graviton3, cheapest option | Close to `c8g.xlarge` while nodes are mostly waiting on the DB; falls behind when the node CPU matters. |
+| `c7a.xlarge` | 4 / 8 | 0.23 | AMD, every vCPU is a full core (no SMT) | Highest throughput per 4-vCPU node when the node CPU matters (e.g. 1–2 nodes); no difference when DB-bound. |
+| `c8i.xlarge` | 4 / 8 | 0.21 | newest Intel | A few % over `c7i.xlarge` for 5% more; mainly to check the newest generation. |
+| `m7i.xlarge` | 4 / 16 | 0.24 | same CPU as `c7i`, twice the memory (12 GB heap); db-scheduler's 4-core nodes | Same throughput as `c7i.xlarge`; if not, GC or heap size matters for the scenario. |
+| `m7i.large` | 2 / 8 | 0.12 | db-scheduler's 2-core nodes | Like `c7i.large`, with enough heap that memory is not a factor. |
+| `c7i.large` / `c8g.large` | 2 / 4 | 0.10 / 0.09 | many small nodes | More servers means more JobRunr coordination (heartbeats, master election, polling): expect lower throughput than half as many `xlarge` nodes. |
+| `c7i.4xlarge` / `c8g.4xlarge` | 16 / 32 | 0.81 / 0.73 | single-node comparison with the Hetzner EX44, or few big nodes | 4× the workers per node but still 40 Hikari connections: more throughput per node, but the DB limit is reached with fewer nodes. |
+
+With more than 12 nodes, raise `postgres_max_connections` (`node_count * 40 + 10`).
+
+### Database (`db_instance_type`, `db_type=ec2`)
+
+Needs local NVMe (a `d` in the family name, or `i*`). Postgres runs with `shared_buffers` at its default (128 MB), so
+extra memory only helps as OS page cache; set `postgres_extra_args='["shared_buffers=..."]'` when comparing memory
+sizes. Only the first NVMe disk is used, so sizes with several disks (`m6id.12xlarge` and up, `i4i.8xlarge` and up) get
+more CPU and memory but not more disk throughput.
+
+| instance | vCPU / GB | NVMe | $/h | why try it | expected |
+|---|---|---|---|---|---|
+| `c6id.xlarge` / `c8gd.xlarge` | 4 / 8 | 237 GB | 0.23 / 0.23 | smallest sensible DB (Intel / Graviton4) | Like `m6id.xlarge` while the job table fits in 8 GB; with millions of jobs, reads start hitting the disk. |
+| `m6id.xlarge` | 4 / 16 | 237 GB | 0.29 | small DB | DB CPU saturates with 1–2 nodes; shows how quickly the DB becomes the limit. |
+| `r6id.xlarge` | 4 / 32 | 237 GB | 0.36 | db-scheduler's 4-core Postgres | Same plateau as `m6id.xlarge`: the extra memory isn't used (see `shared_buffers` above). |
+| `m6id.2xlarge` | 8 / 32 | 474 GB | 0.57 | medium DB | Roughly half the plateau of `m6id.4xlarge`. |
+| `r6id.2xlarge` | 8 / 64 | 474 GB | 0.73 | db-scheduler's 8-core Postgres | Same plateau as `m6id.2xlarge`. |
+| `m6id.4xlarge` | 16 / 64 | 950 GB | 1.14 | default | Baseline. |
+| `m8gd.4xlarge` | 16 / 64 | 950 GB | 1.11 | Graviton4, same size, slightly cheaper | Higher plateau than `m6id.4xlarge` (newer CPU, more memory bandwidth) for the same price. |
+| `c6id.4xlarge` | 16 / 32 | 950 GB | 0.93 | same CPU, half the memory | Same throughput as `m6id.4xlarge` as long as the working set fits in memory; cheapest 16-vCPU DB. |
+| `r6id.4xlarge` | 16 / 128 | 950 GB | 1.45 | same CPU, twice the memory | No gain over `m6id.4xlarge` unless `shared_buffers` is raised and the job table outgrows memory. |
+| `i4i.4xlarge` | 16 / 128 | 3750 GB | 1.64 | storage-optimized NVMe (more IOPS, lower write latency) | If this beats `r6id.4xlarge`, WAL/fsync latency is the limit, not CPU. |
+| `m8gd.8xlarge` / `m6id.8xlarge` | 32 / 128 | 1900 GB | 2.22 / 2.28 | big DB | Higher plateau if the DB CPU is the limit; if not, lock contention on the jobs table is. |
+
+### Database (`aurora_instance_class`, `db_type=aurora`)
+
+I/O-Optimized, single writer. Aurora only offers memory-optimized classes (the smallest non-burstable one is 2 / 16,
+so there is no 4 / 8); compare with `r6id` / `i4i` rather than `m6id`. Both Graviton (`db.r7g`, `db.r8g`) and Intel
+(`db.r7i`, `db.r6i`) classes are offered.
+
+| instance | vCPU / GB | $/h | expected |
+|---|---|---|---|
+| `db.r7g.large` | 2 / 16 | 0.43 | Smallest useful size; saturates with a single node. |
+| `db.r7g.xlarge` | 4 / 32 | 0.87 | db-scheduler's 4-core Postgres. |
+| `db.r7g.2xlarge` | 8 / 64 | 1.73 | Medium; db-scheduler's 8-core Postgres. |
+| `db.r7g.4xlarge` / `db.r8g.4xlarge` | 16 / 128 | 3.46 / 3.46 | Default / Graviton4 at the same price. Expect a lower plateau than `ec2` on local NVMe with the same vCPUs: commits wait for network storage. |
+| `db.r7i.4xlarge` | 16 / 128 | 3.64 | Intel, to compare with the amd64 `ec2` series; about the same as `db.r7g.4xlarge`. |
+| `db.r7g.8xlarge` | 32 / 256 | 6.92 | Big. |
+| `db.r7g.16xlarge` | 64 / 512 | 13.84 | Very big; only if the 8xlarge still scales. |
+
+Example: 4 × `c8g.xlarge` with an `m6id.4xlarge` DB costs about $1.87/h; the same nodes with `db.r7g.4xlarge` about
+$4.19/h.
+
 ## Safety
 
 - Every EC2 machine powers off and terminates after `ttl_hours` (default 6) in case you forget `terraform destroy`.
@@ -150,7 +216,7 @@ Applies the cluster for every node count, runs the scenario, and destroys everyt
   `postgres_extra_args` or `JAVA_OPTS` deliberately and note it.
 - Nodes default to `c7i.xlarge` (4 vCPU, 8 GB): jobs are tiny and the database is the bottleneck. JobRunr's default
   worker count scales with vCPUs, so for a single-node comparison with the Hetzner EX44 use
-  `-var node_instance_type=c7i.4xlarge`.
+  `-var node_instance_type=c7i.4xlarge`, or pin it with `worker_count=<n>` (passed to `run-cluster.sh` as an extra).
 - Nodes run with `-XX:MaxRAMPercentage=75` (local runs use the JVM default of 25%), so the heap depends on the node's
   memory: 6 GB on a c7i.xlarge, 24 GB on a c7i.4xlarge, about 16 GB on the Hetzner EX44.
 - Aurora results are a separate series: different storage engine, memory-optimized instance classes only, and possibly

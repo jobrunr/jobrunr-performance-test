@@ -37,6 +37,7 @@ Append `key=value` pairs after the amount, e.g.
 | `tool_version=<version>` | pin the tool version instead of the `pom.xml` default |
 | `enable_profiling=true` | profile the run with async-profiler |
 | `json_mapper=jackson\|jackson3\|gson\|jsonb` | JobRunr / JobRunr Pro only (default `jackson`) |
+| `worker_count=<n>` | JobRunr / JobRunr Pro only: workers per BackgroundJobServer (default scales with the vCPUs) |
 | `log_data_store_timings=true` | JobRunr Pro only: write a detailed query timing/plan report |
 
 Run `run-scenario` without arguments to see the full usage.
