@@ -1,5 +1,7 @@
 package org.performance.datastore.sql;
 
+import com.zaxxer.hikari.HikariDataSource;
+
 import static java.util.Optional.ofNullable;
 
 /**
@@ -12,6 +14,11 @@ public class PostgresExternalDataStore extends AbstractSqlExternalDataStore {
                 env("DB_JDBC_URL", "jdbc:postgresql://localhost:5432/jobrunr_perf"),
                 env("DB_USER", "jobrunr"),
                 env("DB_PASSWORD", "jobrunr"));
+    }
+
+    @Override
+    protected HikariDataSource toHikariDataSource(String jdbcUrl, String userName, String password, String driverClassName) {
+        return super.toHikariDataSource(PostgresDataStore.withDriverSettings(jdbcUrl), userName, password, driverClassName);
     }
 
     @Override

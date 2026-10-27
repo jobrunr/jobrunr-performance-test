@@ -46,3 +46,4 @@ aws/.image-tag
 *.tfstate
 *.tfstate.*
 logbooks/aws/runs/
+logbooks/aws/details

@@ -7,6 +7,7 @@ import java.time.Duration;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.LongAdder;
 
 public class PerformanceTestJob {
 
@@ -17,8 +18,10 @@ public class PerformanceTestJob {
 
     public static final AtomicLong counter = new AtomicLong();
     public static final AtomicLong startTime = new AtomicLong(-1L);
+    public static final LongAdder executionNanos = new LongAdder();
 
     public void testJob(int totalAmountOfJobs, int index) {
+        long startNanos = System.nanoTime();
         long currentTime = System.currentTimeMillis();
         startTime.compareAndSet(-1L, currentTime);
 
@@ -44,6 +47,7 @@ public class PerformanceTestJob {
                     jobsPerSecond
             );
         }
+        executionNanos.add(System.nanoTime() - startNanos);
     }
 
     private void cleanUpOldEntries(long currentTimeSeconds) {

@@ -16,6 +16,7 @@ import org.jobrunr.storage.sql.common.SqlStorageProviderFactory;
 import org.jobrunr.utils.mapper.JsonMapper;
 import org.jobrunrpro.performance.scenario.AbstractJobRunrProScenario;
 import org.jobrunrpro.performance.scenario.monitor.JobRunrProScenarioMonitor;
+import org.jobrunrpro.performance.scenario.monitor.LastSucceededJobTracker;
 import org.performance.datastore.DataStore;
 import org.performance.datastore.nosql.MongoDBDataStore;
 import org.performance.datastore.sql.AbstractSqlDataStore;
@@ -38,6 +39,7 @@ public class JobRunrProTool implements Tool {
     private static final Logger LOGGER = LoggerFactory.getLogger(JobRunrProTool.class);
 
     private StorageProvider storageProvider;
+    private final LastSucceededJobTracker lastSucceededJobTracker = new LastSucceededJobTracker();
     private JobRunrConfiguration.JobRunrConfigurationResult jobRunrPro;
     private final String jobRunrProLicenseFromEnv;
 
@@ -91,6 +93,7 @@ public class JobRunrProTool implements Tool {
                 .useStorageProvider(storageProvider)
                 .useBackgroundJobServer(backgroundJobServerConfiguration, false)
                 .useDashboardIf(dashboardWebServerConfiguration != null, dashboardWebServerConfiguration)
+                .withJobFilter(lastSucceededJobTracker)
                 .initialize();
     }
 
@@ -106,7 +109,7 @@ public class JobRunrProTool implements Tool {
 
     @Override
     public ScenarioMonitor createScenarioMonitor(long createdJobs, Duration maxScenarioDuration) throws Exception {
-        JobRunrProScenarioMonitor scenarioMonitor = new JobRunrProScenarioMonitor(createdJobs, maxScenarioDuration);
+        JobRunrProScenarioMonitor scenarioMonitor = new JobRunrProScenarioMonitor(createdJobs, maxScenarioDuration, lastSucceededJobTracker);
         storageProvider.addJobStorageOnChangeListener(scenarioMonitor);
         return scenarioMonitor;
     }

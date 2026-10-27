@@ -5,6 +5,7 @@ import org.jobrunr.configuration.JobRunrConfiguration.JobRunrConfigurationResult
 import org.jobrunr.dashboard.JobRunrDashboardWebServerConfiguration;
 import org.jobrunr.performance.scenario.AbstractJobRunrScenario;
 import org.jobrunr.performance.scenario.monitor.JobRunrScenarioMonitor;
+import org.jobrunr.performance.scenario.monitor.LastSucceededJobTracker;
 import org.jobrunr.scheduling.JobScheduler;
 import org.jobrunr.server.BackgroundJobServerConfiguration;
 import org.jobrunr.storage.StorageProvider;
@@ -23,6 +24,7 @@ import java.time.Duration;
 public class JobRunrTool implements Tool {
 
     private StorageProvider storageProvider;
+    private final LastSucceededJobTracker lastSucceededJobTracker = new LastSucceededJobTracker();
     private JobRunrConfigurationResult jobRunr;
 
     @Override
@@ -57,6 +59,7 @@ public class JobRunrTool implements Tool {
                 .useStorageProvider(storageProvider)
                 .useBackgroundJobServer(backgroundJobServerConfiguration, false)
                 .useDashboardIf(dashboardWebServerConfiguration != null, dashboardWebServerConfiguration)
+                .withJobFilter(lastSucceededJobTracker)
                 .initialize();
     }
 
@@ -67,7 +70,7 @@ public class JobRunrTool implements Tool {
 
     @Override
     public ScenarioMonitor createScenarioMonitor(long createdJobs, Duration maxScenarioDuration) {
-        JobRunrScenarioMonitor scenarioMonitor = new JobRunrScenarioMonitor(createdJobs, maxScenarioDuration);
+        JobRunrScenarioMonitor scenarioMonitor = new JobRunrScenarioMonitor(createdJobs, maxScenarioDuration, lastSucceededJobTracker);
         storageProvider.addJobStorageOnChangeListener(scenarioMonitor);
         return scenarioMonitor;
     }

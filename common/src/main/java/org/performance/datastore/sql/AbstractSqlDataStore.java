@@ -176,6 +176,7 @@ public abstract class AbstractSqlDataStore implements DataStore, AnalysingDataSt
         config.setDriverClassName(driverClassName);
         config.setMinimumIdle(20);
         config.setMaximumPoolSize(40);
+        config.setMetricsTrackerFactory(new HikariConnectionTimings());
         return new HikariDataSource(config);
     }
 }

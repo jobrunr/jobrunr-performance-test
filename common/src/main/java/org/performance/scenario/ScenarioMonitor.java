@@ -1,6 +1,8 @@
 package org.performance.scenario;
 
 import java.time.Duration;
+import java.time.Instant;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -32,4 +34,11 @@ public abstract class ScenarioMonitor {
     }
 
     public abstract long getTotalAmountOfSucceededJobs();
+
+    /**
+     * @return when this JVM saw the last job succeed, if the tool tracks it
+     */
+    public Optional<Instant> getLastJobSucceededAt() {
+        return Optional.empty();
+    }
 }

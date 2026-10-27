@@ -35,9 +35,10 @@ Append `key=value` pairs after the amount, e.g.
 | parameter | meaning |
 |---|---|
 | `tool_version=<version>` | pin the tool version instead of the `pom.xml` default |
-| `enable_profiling=true` | profile the run with async-profiler |
+| `enable_profiling=true` | profile the run with async-profiler (CPU, wall clock, locks) and JDK Flight Recorder in the same file (`jfrsync`); the profile is written to `logbooks/async-profiler/` and its path logged when the run ends. |
 | `json_mapper=jackson\|jackson3\|gson\|jsonb` | JobRunr / JobRunr Pro only (default `jackson`) |
 | `worker_count=<n>` | JobRunr / JobRunr Pro only: workers per BackgroundJobServer (default scales with the vCPUs) |
+| `pg_aggressive_autovacuum=true` | JobRunr / JobRunr Pro on Postgres only: lets autovacuum process `jobrunr_jobs` sooner and unthrottled (vacuum after about 1% dead rows instead of 20%, no cost delay, and `autovacuum_naptime=10s` via `ALTER SYSTEM`, which needs a superuser and stays set on an external database until `ALTER SYSTEM RESET autovacuum_naptime`; see `PostgresAutovacuum`). A separate series: it tunes the system under test |
 | `log_data_store_timings=true` | JobRunr Pro only: write a detailed query timing/plan report |
 
 Run `run-scenario` without arguments to see the full usage.

@@ -95,7 +95,7 @@ variable "postgres_max_connections" {
 }
 
 variable "postgres_extra_args" {
-  description = "db_type=ec2 only. Extra postgres settings, e.g. [\"shared_buffers=8GB\"]."
+  description = "db_type=ec2 only. Default postgres settings of the DB machine, e.g. [\"shared_buffers=8GB\"]; to vary them between runs, use PG_SETTINGS of aws/bin/run-cluster.sh instead (no new DB machine)."
   type        = list(string)
   default     = []
 }
@@ -211,9 +211,10 @@ resource "aws_instance" "db" {
   user_data_replace_on_change          = true
 
   user_data = templatefile("${path.module}/db-user-data.sh.tftpl", {
-    db_password       = local.db_password
-    postgres_settings = concat(["max_wal_size=2GB", "random_page_cost=1.1", "shared_preload_libraries=pg_stat_statements", "pg_stat_statements.track=all", "max_connections=${var.postgres_max_connections}"], var.postgres_extra_args)
-    ttl_minutes       = var.ttl_hours * 60
+    db_password = local.db_password
+    postgres_settings        = concat(["max_wal_size=2GB", "random_page_cost=1.1", "pg_stat_statements.track=all"], var.postgres_extra_args)
+    postgres_max_connections = var.postgres_max_connections
+    ttl_minutes              = var.ttl_hours * 60
   })
 
   root_block_device {
@@ -377,4 +378,12 @@ output "node0_instance_id" {
 
 output "worker_instance_ids" {
   value = join(" ", slice(aws_instance.node[*].id, 1, var.node_count))
+}
+
+output "db_type" {
+  value = var.db_type
+}
+
+output "db_instance_id" {
+  value = var.db_type == "ec2" ? aws_instance.db[0].id : aws_rds_cluster_instance.aurora[0].identifier
 }

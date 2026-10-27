@@ -6,15 +6,20 @@ import org.performance.scenario.ScenarioMonitor;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Objects;
+import java.util.Optional;
 
 public class JobRunrScenarioMonitor extends ScenarioMonitor implements JobStatsChangeListener {
 
     private JobStats jobStats;
     private int duplicateJobStatsCounter;
 
-    public JobRunrScenarioMonitor(long totalAmountOfJobs, Duration maxDuration) {
+    private final LastSucceededJobTracker lastSucceededJobTracker;
+
+    public JobRunrScenarioMonitor(long totalAmountOfJobs, Duration maxDuration, LastSucceededJobTracker lastSucceededJobTracker) {
         super(totalAmountOfJobs, maxDuration);
+        this.lastSucceededJobTracker = lastSucceededJobTracker;
     }
 
     @Override
@@ -41,5 +46,10 @@ public class JobRunrScenarioMonitor extends ScenarioMonitor implements JobStatsC
     @Override
     public long getTotalAmountOfSucceededJobs() {
         return jobStats.getSucceeded() + jobStats.getAllTimeSucceeded();
+    }
+
+    @Override
+    public Optional<Instant> getLastJobSucceededAt() {
+        return lastSucceededJobTracker.lastSucceededAt();
     }
 }

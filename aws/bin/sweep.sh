@@ -5,6 +5,8 @@
 #          aws/bin/sweep.sh Scenario01ProcessJobs 2000000 3
 # Other cluster variables via the environment, e.g. TF_VAR_db_type=aurora
 set -euo pipefail
+# read fully before running, so edits don't affect a running sweep
+{
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 NODE_COUNTS="${NODE_COUNTS:-1 2 4}"
@@ -18,3 +20,5 @@ for node_count in $NODE_COUNTS; do
   "${TF[@]}" apply -auto-approve -var node_count="$node_count" -var node_instance_type="$NODE_INSTANCE_TYPE" -var db_instance_type="$DB_INSTANCE_TYPE"
   "$ROOT_DIR/aws/bin/run-cluster.sh" "$@" || echo "Run with $node_count node(s) failed, continuing"
 done
+exit
+}

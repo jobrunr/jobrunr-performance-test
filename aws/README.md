@@ -16,7 +16,7 @@ measure how throughput scales in cluster mode.
 - **Loader** (on node 0): creates the jobs and exits.
 - **All nodes**: start a worker that initializes JobRunr Pro with its `BackgroundJobServer` paused and starts processing
   at the same wall-clock time (`start_at`, 60 seconds after the loader finished; EC2 clocks are kept in sync by Amazon
-  Time Sync). Each worker stops once all jobs succeeded; node 0's logbook, measured from `start_at`, is the result.
+  Time Sync). Each worker stops once all jobs succeeded; node 0's logbook, measured from `start_at` until the last job of the cluster succeeded, is the result.
 
 The flow itself doesn't depend on the database (only JobRunr touches it), but the AWS setup provisions Postgres
 only. Runs are started with SSM Run Command, so the machines have no SSH or other inbound access.
@@ -65,8 +65,16 @@ TF_VAR_db_type=aurora NODE_COUNTS="1 2 4 8" aws/bin/sweep.sh Scenario01ProcessJo
 
 Results:
 - `logbooks/aws/<scenario>-cluster-logbook.csv`: one row per run, with run id, cluster size, instance types and vCPUs
-  next to the usual columns
-- `logbooks/aws/runs/<run id>/`: logbook, `performance-tests.log` and stdout of every node (not committed)
+  next to the usual columns. The processing duration runs from `start_at` until the last job of the whole cluster
+  succeeded (not until node 0 noticed, which takes up to a poll interval more); the start and end spread show how far
+  apart the nodes processed their first and last job
+- `logbooks/aws/details/<run id>.md`: the run's configuration, its profiles and the warnings and errors in the Postgres
+  log while processing. With `DIAGNOSTICS=true` also: the steady-state throughput, the round trip from every node to
+  the database, the CPU usage of every node and of the EC2 DB machine, the connection pool timings, the non-default
+  Postgres settings, what the database connections were waiting on, autovacuum and checkpoints, and the statements
+  that took most of the database's time
+- `logbooks/aws/runs/<run id>/`: logbook, `performance-tests.log` and stdout of every node, and the Postgres log
+  (`db/postgres.log`) (not committed)
 
 The machines run in the default VPC; they only accept traffic from each other, which is why the database uses fixed
 credentials. See [Options](#options) for all cluster variables.
@@ -89,11 +97,11 @@ Pass with `-var <name>=<value>` or `TF_VAR_<name>`; see `aws/terraform/cluster/m
 | `use_placement_group` | `false` | lower network latency; launches can fail for lack of capacity |
 | `ttl_hours` | `6` | machines terminate themselves after this |
 | `postgres_max_connections` | `500` | must fit `node_count * 40 + 10` |
-| `postgres_extra_args` | `[]` | `db_type=ec2` only: extra Postgres settings, appended after the built-in ones (e.g. `["shared_buffers=8GB"]`); changing them recreates the DB machine |
+| `postgres_extra_args` | `[]` | `db_type=ec2` only: the DB machine's default Postgres settings, after the built-in ones (e.g. `["shared_buffers=8GB"]`); changing them recreates the DB machine, so vary settings between runs with `PG_SETTINGS` instead |
 
-The `db_type=ec2` Postgres tuning (sized for the write churn of these scenarios) lives in `local.postgres_settings` in
-`aws/terraform/cluster/main.tf`, together with the reasoning per value. `postgres_extra_args` is appended last, so the
-last value wins.
+The `db_type=ec2` defaults (`postgres_settings` in [`main.tf`](terraform/cluster/main.tf), then `postgres_extra_args`)
+are written to the DB machine's `postgresql.conf`; the last value wins. Only `shared_preload_libraries` and `max_connections` are passed on
+the command line, so everything else can be overridden per run with `PG_SETTINGS` (see `run-cluster.sh` below).
 
 ### `aws/bin/build-and-push.sh`
 
@@ -107,8 +115,22 @@ last value wins.
 - Positional: scenario (`Scenario01ProcessJobs`), amount (`2000000`), repetitions (`1`).
 - Environment: `IMAGE_TAG` (from `aws/.image-tag`), `JAVA_OPTS` (`-XX:MaxRAMPercentage=75`), `START_DELAY_SECONDS`
   (`120`), `EXECUTION_TIMEOUT_SECONDS` (`7200`; must exceed `max_duration` + `START_DELAY_SECONDS`).
+- `PG_SETTINGS` (`db_type=ec2` only): Postgres settings for these runs on top of the DB machine's defaults, e.g.
+  `PG_SETTINGS="shared_buffers=16GB max_wal_size=16GB checkpoint_timeout=15min"`. Before every run the DB machine's
+  `/etc/jobrunr-perf/run.conf` is replaced by them (empty without `PG_SETTINGS`) and Postgres restarts, so settings can
+  change between runs on the same machine. A value Postgres rejects fails that run; the next run starts clean again.
+  What `pg_aggressive_autovacuum=true` sets with `ALTER SYSTEM` (`autovacuum_naptime`) overrides `PG_SETTINGS` and is
+  reset before the next run.
+- `DIAGNOSTICS=true`: records what the details file lists above. It samples the database every second, which adds a
+  little load, so it's off by default.
+- Profiling: pass `enable_profiling=true`; every node's (and the loader's) async-profiler / JFR recording is listed in
+  the run's details.
 - The `key=value` extras are appended to the test's `exec.args` and take the same parameters as the local runner, e.g.
   `max_duration=PT2H` or `log_data_store_timings=true` — see [Extra parameters](../README.md#extra-parameters).
+
+Database-specific steps are in `aws/bin/lib/postgres.sh` (configure, reset, log) and
+`aws/bin/lib/postgres-diagnostics.sh`, with their SQL in `aws/sql/postgres/`; `aws/bin/lib/diagnostics.sh` holds the
+database-independent diagnostics.
 
 ### `aws/bin/sweep.sh`
 
@@ -146,8 +168,7 @@ With more than 12 nodes, raise `postgres_max_connections` (`node_count * 40 + 10
 ### Database (`db_instance_type`, `db_type=ec2`)
 
 Needs local NVMe (a `d` in the family name, or `i*`). Postgres runs with `shared_buffers` at its default (128 MB), so
-extra memory only helps as OS page cache; set `postgres_extra_args='["shared_buffers=..."]'` when comparing memory
-sizes. Only the first NVMe disk is used, so sizes with several disks (`m6id.12xlarge` and up, `i4i.8xlarge` and up) get
+extra memory only helps as OS page cache; set `PG_SETTINGS="shared_buffers=..."` when comparing memory sizes. Only the first NVMe disk is used, so sizes with several disks (`m6id.12xlarge` and up, `i4i.8xlarge` and up) get
 more CPU and memory but not more disk throughput.
 
 | instance | vCPU / GB | NVMe | $/h | why try it | expected |
@@ -208,12 +229,12 @@ $4.19/h.
 ## Getting comparable numbers
 
 - Use at least 3 repetitions per configuration and avoid burstable (`t*`) instances.
+- Results are only comparable when using the exact same machines (the same cluster), otherwise you might be measuring network latency.
 - Use enough jobs that processing takes several minutes; with many nodes 500k jobs finish too quickly.
 - The database is usually the limit in cluster mode, so record and vary `db_instance_type` as well.
-- With `db_type=ec2` the Hikari pool (40 per node) matches the local runs, but the Postgres settings are tuned for the
-  write churn of this scenario (the defaults are in `local.postgres_settings` in `aws/terraform/cluster/main.tf`) and
-  therefore differ from the local/Hetzner runs, which use the Testcontainers defaults. Change
-  `postgres_extra_args` or `JAVA_OPTS` deliberately and note it.
+- With `db_type=ec2` the Hikari pool (40 per node) and the Postgres settings (see [`main.tf`](terraform/cluster/main.tf)
+  and `PostgresDataStore`) match the local runs. Change `PG_SETTINGS` or `JAVA_OPTS` deliberately; the details file
+  records both.
 - Nodes default to `c7i.xlarge` (4 vCPU, 8 GB): jobs are tiny and the database is the bottleneck. JobRunr's default
   worker count scales with vCPUs, so for a single-node comparison with the Hetzner EX44 use
   `-var node_instance_type=c7i.4xlarge`, or pin it with `worker_count=<n>` (passed to `run-cluster.sh` as an extra).

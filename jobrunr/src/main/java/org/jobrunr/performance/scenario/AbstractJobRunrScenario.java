@@ -9,6 +9,7 @@ import org.jobrunr.utils.mapper.jackson.JacksonJsonMapper;
 import org.jobrunr.utils.mapper.jackson3.Jackson3JsonMapper;
 import org.jobrunr.utils.mapper.jsonb.JsonbJsonMapper;
 import org.performance.datastore.DataStore;
+import org.performance.datastore.sql.PostgresAutovacuum;
 import org.performance.scenario.AbstractScenario;
 import org.performance.scenario.ScenarioResult;
 import org.slf4j.Logger;
@@ -31,6 +32,12 @@ public abstract class AbstractJobRunrScenario extends AbstractScenario<JobRunrTo
         if (workerCount == null) return configuration;
         LOGGER.info("Using worker count {}", workerCount);
         return configuration.andWorkerCount(parseInt(workerCount));
+    }
+
+    @Override
+    protected void initializeTool() throws Exception {
+        super.initializeTool();
+        if (!isClusterWorker() && getBooleanArg("pg_aggressive_autovacuum")) PostgresAutovacuum.makeAggressive(dataStore, "jobrunr_jobs");
     }
 
     public JobRunrDashboardWebServerConfiguration getDashboardWebServerConfiguration() {

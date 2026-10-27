@@ -16,6 +16,7 @@ import org.jobrunrpro.performance.scenario.monitor.QueryAnalysisMonitor;
 import org.jobrunrpro.performance.utils.MarkdownReporter;
 import org.performance.datastore.AnalysingDataStore;
 import org.performance.datastore.DataStore;
+import org.performance.datastore.sql.PostgresAutovacuum;
 import org.performance.scenario.AbstractScenario;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,9 +66,10 @@ public abstract class AbstractJobRunrProScenario extends AbstractScenario<JobRun
     @Override
     protected void initializeTool() throws Exception {
         super.initializeTool();
-        // marks the data as current so BackgroundJobServers skip the startup migrations; written once, workers find it
+        // lets BackgroundJobServers skip the startup migrations
         if (!isClusterWorker()) {
             tool.getStorageProvider().saveMetadata(new JobRunrMetadata("database_version", "cluster", JobRunrPro.VERSION));
+            if (getBooleanArg("pg_aggressive_autovacuum")) PostgresAutovacuum.makeAggressive(dataStore, "jobrunr_jobs");
         }
     }
 
