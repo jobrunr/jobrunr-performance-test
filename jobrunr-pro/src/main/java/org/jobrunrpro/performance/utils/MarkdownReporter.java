@@ -110,10 +110,11 @@ public class MarkdownReporter {
 
         Path fileName = findLogbooksFolder().resolve("details").resolve(scenarioResult.getTimestamp().toString() + ".md");
         try {
+            Files.createDirectories(fileName.getParent());
             Files.writeString(fileName, markdown.toString(), StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
             LOGGER.info("Successfully wrote details for scenario {} to {}", camelCaseToHumanReadable(scenarioResult.getScenario()), fileName);
         } catch (IOException e) {
-            LOGGER.error("Error writing details for scenario {} to {}", camelCaseToHumanReadable(scenarioResult.getScenario()), fileName);
+            LOGGER.error("Error writing details for scenario {} to {}", camelCaseToHumanReadable(scenarioResult.getScenario()), fileName, e);
         }
     }
 }
