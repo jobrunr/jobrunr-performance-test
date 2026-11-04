@@ -44,3 +44,14 @@ run_on() {
 
 # or_not_recorded <file>
 or_not_recorded() { if [ -s "$1" ]; then cat "$1"; else echo "Not recorded, see the output of run-cluster.sh."; fi; }
+
+# table_or <text without rows> <header> <separator>: the rows on stdin as a Markdown table
+table_or() {
+  local first
+  if read -r first; then
+    printf '%s\n%s\n%s\n' "$2" "$3" "$first"
+    cat
+  else
+    echo "$1"
+  fi
+}

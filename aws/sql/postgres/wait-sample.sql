@@ -1,3 +1,8 @@
+-- 'query id: start' without characters that need CSV or Markdown quoting
+CREATE FUNCTION pg_temp.statement_label(query_id bigint, query text) RETURNS text LANGUAGE sql AS $$
+  SELECT concat_ws(': ', query_id, left(regexp_replace(query, '[\s,"|`]+', ' ', 'g'), 70))
+$$;
+
 -- columns: sampled_at_ms, kind, then per kind; one 'sample' row per second, also without activity
 CREATE FUNCTION pg_temp.wait_sample()
   RETURNS TABLE (sampled_at_ms bigint, kind text, c3 text, c4 text, n bigint, c6 text, c7 text, c8 text, c9 text)
@@ -17,10 +22,39 @@ BEGIN
   RETURN QUERY
   SELECT sampled_at, 'sample', '', '', 0::bigint, '', '', '', ''
   UNION ALL
-  SELECT sampled_at, a.state, coalesce(a.wait_event_type, 'CPU'), coalesce(a.wait_event, 'CPU'), count(*), '', '', '', ''
+  -- client: wait event type, wait event, count, the statement (the last one if idle in transaction), state
+  SELECT sampled_at, 'client', coalesce(a.wait_event_type, 'CPU'), coalesce(a.wait_event, 'CPU'), count(*),
+         pg_temp.statement_label(a.query_id, a.query), a.state, '', ''
   FROM unnest(activity) a
-  WHERE a.backend_type = 'client backend' AND a.usename = current_user
-  GROUP BY a.state, a.wait_event_type, a.wait_event
+  WHERE a.backend_type = 'client backend' AND a.usename = current_user AND a.state <> 'idle'
+  GROUP BY a.state, a.wait_event_type, a.wait_event, 6
+  UNION ALL
+  -- backend: the other processes that are not idle in their main loop, by type and CPU or wait event type
+  SELECT sampled_at, 'backend', a.backend_type, coalesce(a.wait_event_type, 'CPU'), count(*), '', '', '', ''
+  FROM unnest(activity) a
+  WHERE a.backend_type <> 'client backend' AND a.wait_event_type IS DISTINCT FROM 'Activity'
+  GROUP BY a.backend_type, a.wait_event_type
+  UNION ALL
+  -- load: stats queries running, jobrunr_jobs updates so far, parallel workers, WAL bytes so far
+  SELECT sampled_at, 'load',
+         (count(*) FILTER (WHERE a.backend_type = 'client backend' AND a.state = 'active' AND a.query LIKE '%jobrunr_jobs_stats%'))::text,
+         (SELECT n_tup_upd FROM pg_stat_user_tables WHERE relname = 'jobrunr_jobs')::text,
+         count(*) FILTER (WHERE a.backend_type = 'parallel worker'),
+         (pg_current_wal_lsn() - '0/0'::pg_lsn)::text, '', '', ''
+  FROM unnest(activity) a
+  UNION ALL
+  -- horizon: the backend with the oldest xmin; statement, ms since its statement started, xid age, backend type, state.
+  -- A lazy VACUUM's xmin doesn't hold back the horizon (PROC_IN_VACUUM), the ANALYZE of a VACUUM ANALYZE does
+  (SELECT sampled_at, 'horizon',
+          CASE WHEN a.query = '' THEN a.backend_type
+               WHEN a.backend_type = 'autovacuum worker' THEN left(a.query, 64) || ' (analyze)'
+               ELSE pg_temp.statement_label(a.query_id, a.query) END,
+          coalesce(round(extract(epoch FROM clock_timestamp() - a.query_start) * 1000)::text, ''),
+          age(a.backend_xmin)::bigint, a.backend_type, coalesce(a.state, ''), '', ''
+   FROM unnest(activity) a
+   WHERE a.backend_xmin IS NOT NULL AND a.pid NOT IN (SELECT pid FROM pg_stat_progress_vacuum)
+   ORDER BY age(a.backend_xmin) DESC
+   LIMIT 1)
   UNION ALL
   SELECT sampled_at, 'autovacuum', replace(a.query, 'autovacuum: ', ''), '', 1::bigint, '', '', '', ''
   FROM unnest(activity) a
@@ -30,8 +64,7 @@ BEGIN
   FROM unnest(activity) a
   WHERE a.backend_type = 'checkpointer' AND a.wait_event IS DISTINCT FROM 'CheckpointerMain';
 
-  -- lock: blocker state, blocker wait, count, waiting statement, blocking statement, blocker, lock type; statements as
-  -- 'query id: start' without characters that need CSV or Markdown quoting
+  -- lock: blocker state, blocker wait, count, waiting statement, blocking statement, blocker, lock type
   RETURN QUERY
   WITH waits AS (
     SELECT l.pid AS waiter, blocker, l.locktype,
@@ -44,8 +77,8 @@ BEGIN
          CASE WHEN spans_snapshot THEN coalesce(b.state, '') ELSE 'unknown' END,
          CASE WHEN spans_snapshot THEN coalesce(b.wait_event_type || ' ' || b.wait_event, 'CPU') ELSE 'unknown' END,
          count(*),
-         CASE WHEN spans_snapshot THEN format('%s: %s', w.query_id, left(regexp_replace(w.query, '[\s,"|`]+', ' ', 'g'), 70)) ELSE 'unknown' END,
-         CASE WHEN spans_snapshot THEN format('%s: %s', b.query_id, left(regexp_replace(b.query, '[\s,"|`]+', ' ', 'g'), 70)) ELSE 'unknown' END,
+         CASE WHEN spans_snapshot THEN pg_temp.statement_label(w.query_id, w.query) ELSE 'unknown' END,
+         CASE WHEN spans_snapshot THEN pg_temp.statement_label(b.query_id, b.query) ELSE 'unknown' END,
          CASE WHEN b.backend_type <> 'client backend' THEN b.backend_type
               WHEN b.client_addr IS NOT DISTINCT FROM w.client_addr THEN 'same node' ELSE 'other node' END,
          waits.locktype

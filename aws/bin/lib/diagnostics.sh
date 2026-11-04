@@ -14,12 +14,34 @@ diagnostics_node_stop_script() {
   echo 'kill $VMSTAT'
 }
 
+# db_host_start_script: vmstat, and every second the jiffies of every vCPU and the CPU of the postmaster's exited
+# children, on the database instance
+db_host_start_script() {
+  cat <<'EOF'
+pkill -x vmstat; pkill -f cpu-sampler.sh
+mkdir -p /var/lib/jobrunr-perf
+cd /var/lib/jobrunr-perf
+cat > cpu-sampler.sh <<'SH'
+# lines: '<epoch ms> cpu<n> <jiffies as in /proc/stat>' per vCPU, '<epoch ms> children <cutime> <cstime>' of the postmaster
+postmaster=$(pgrep -o -x postgres)
+while :; do
+  awk -v now="$(date +%s%3N)" 'FNR == NR { if (/^cpu[0-9]/) print now, $0; next } { sub(/^.*\) /, ""); print now, "children", $14, $15 }' \
+    /proc/stat ${postmaster:+/proc/$postmaster/stat}
+  sleep 1
+done
+SH
+lscpu -p=CPU,CORE | grep -v '^#' > cores.txt
+setsid nohup vmstat -n -t 1 > vmstat.txt 2>&1 < /dev/null &
+setsid nohup bash cpu-sampler.sh > cpu.txt 2>&1 < /dev/null &
+EOF
+}
+
 # diagnostics_before_processing <run id>
 diagnostics_before_processing() {
   diagnostics_on || return 0
   log "Diagnostics: sampling the database"
   if [ "$DB_TYPE" = ec2 ]; then
-    send_command "pkill -x vmstat; mkdir -p /var/lib/jobrunr-perf; setsid nohup vmstat -n -t 1 > /var/lib/jobrunr-perf/vmstat.txt 2>&1 < /dev/null &" 300 "$DB_INSTANCE_ID" > /dev/null
+    send_command "$(db_host_start_script)" 300 "$DB_INSTANCE_ID" > /dev/null
   fi
   run_on "$NODE0_ID" "$(db_before_processing_script "$1")"
 }
@@ -30,7 +52,7 @@ diagnostics_after_processing() {
   log "Diagnostics: recording what the database did"
   run_on "$NODE0_ID" "$(db_after_processing_script "$1")"
   if [ "$DB_TYPE" = ec2 ]; then
-    run_on "$DB_INSTANCE_ID" "pkill -x vmstat; aws s3 cp --quiet /var/lib/jobrunr-perf/vmstat.txt s3://$BUCKET/runs/$1/db/vmstat.txt --region $REGION"
+    run_on "$DB_INSTANCE_ID" "pkill -x vmstat; pkill -f cpu-sampler.sh; for f in vmstat.txt cpu.txt cores.txt; do aws s3 cp --quiet /var/lib/jobrunr-perf/\$f s3://$BUCKET/runs/$1/db/\$f --region $REGION; done"
   fi
 }
 
@@ -55,6 +77,12 @@ From \`vmstat\` every second between \`start_at\` and the last job succeeding, i
 the processes running or waiting for a CPU: compare it with the vCPUs ($5 per node).
 
 $(cpu_table "$1" "$2" "$3")
+
+The database's vCPUs per physical core (two hyperthreads share one core) from \`/proc/stat\`, every second. Cores in
+use counts a core as busy as its busiest vCPU, both hyperthreads busy as its least busy one. Exited children is the CPU
+of the processes the postmaster reaped, most of all parallel and autovacuum workers.
+
+$(if [ -s "$1/db/cpu.txt" ] && [ -s "$1/db/cores.txt" ]; then core_table "$1/db" "$2" "$3"; else or_not_recorded ""; fi)
 
 ## Connection pool
 
@@ -111,6 +139,38 @@ cpu_table() {
       }
       END { if (n) printf "| %s | %.0f | %.0f | %.0f | %.0f | %d | %.1f |\n", machine, us / n, sy / n, wa / n, st / n, peak, r / n }' "$file"
   done
+}
+
+# core_table <db dir> <from epoch> <to epoch>
+core_table() {
+  awk -v from="$(($2 * 1000))" -v to="$(($3 * 1000))" -F'[ ,]+' '
+    FNR == NR { core[$1] = $2; if (!($2 in cores)) n++; cores[$2] = 1; next }
+    $1 < from || $1 > to { next }
+    $2 == "children" { if (has_children) children += $3 + $4 - last_children; has_children = 1; last_children = $3 + $4; next }
+    {
+      cpu = substr($2, 4); total = 0; for (i = 3; i <= 10; i++) total += $i
+      idle = $6 + $7
+      if (cpu in last_total && total > last_total[cpu]) {
+        b = 1 - (idle - last_idle[cpu]) / (total - last_total[cpu]); vcpus += b; key = $1 SUBSEP core[cpu]
+        if (b > hi[key]) hi[key] = b
+        if (!(key in lo) || b < lo[key]) lo[key] = b
+        if (!($1 in seen)) { seen[$1] = 1; seconds++; if (!first) first = $1; last = $1 }
+      }
+      last_total[cpu] = total; last_idle[cpu] = idle
+    }
+    END {
+      if (!seconds) exit
+      for (at in seen) {
+        full = 0
+        for (c in cores) { sum_hi += hi[at, c]; sum_lo += lo[at, c]; if (hi[at, c] >= 0.9) full++ }
+        if (full == n) saturated++
+      }
+      printf "| %d | %.1f | %.1f | %.1f | %.0f | %.1f |\n", n, vcpus / seconds, sum_hi / seconds, sum_lo / seconds,
+        100 * saturated / seconds, (last > first ? children / 100 / ((last - first) / 1000) : 0)
+    }' "$1/cores.txt" "$1/cpu.txt" |
+    table_or "Not recorded." \
+      '| physical cores | vCPUs busy | cores in use | cores with both hyperthreads busy | seconds with every core >= 90% busy (%) | exited children (vCPUs) |' \
+      '|---:|---:|---:|---:|---:|---:|'
 }
 
 # pool_table <run dir>

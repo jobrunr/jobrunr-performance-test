@@ -70,8 +70,10 @@ Results:
   apart the nodes processed their first and last job
 - `logbooks/aws/details/<run id>.md`: the run's configuration, its profiles and the warnings and errors in the Postgres
   log while processing. With `DIAGNOSTICS=true` also: the steady-state throughput, the round trip from every node to
-  the database, the CPU usage of every node and of the EC2 DB machine, the connection pool timings, the non-default
-  Postgres settings, what the database connections were waiting on, autovacuum and checkpoints, and the statements
+  the database, the CPU usage of every node and of the EC2 DB machine (also per physical core), the connection pool
+  timings, the non-default Postgres settings, what the database connections and the other Postgres processes were
+  waiting on (also per statement), the throughput while the stats query runs, who holds back the xmin horizon,
+  autovacuum and checkpoints, the use of every `jobrunr_jobs` index, buffer I/O, WAL by record type, and the statements
   that took most of the database's time
 - `logbooks/aws/runs/<run id>/`: logbook, `performance-tests.log` and stdout of every node, and the Postgres log
   (`db/postgres.log`) (not committed)

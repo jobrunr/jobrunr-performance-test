@@ -1,6 +1,7 @@
-SELECT format('- %s (table options: %s): %s live / %s dead rows, %s%% of %s updates HOT, %s autovacuums (last at %s), %s autoanalyzes',
-              s.relname, coalesce(array_to_string(c.reloptions, ', '), 'none'), n_live_tup, n_dead_tup,
+SELECT format('- %s (table options: %s): %s live / %s dead rows, %s heap, %s%% of %s updates HOT, %s%% moved to another page, %s autovacuums (last at %s), %s autoanalyzes',
+              s.relname, coalesce(array_to_string(c.reloptions, ', '), 'none'), n_live_tup, n_dead_tup, pg_size_pretty(pg_relation_size(s.relid)),
               round(100.0 * n_tup_hot_upd / nullif(n_tup_upd, 0), 1), n_tup_upd,
+              round(100.0 * n_tup_newpage_upd / nullif(n_tup_upd, 0), 1),
               autovacuum_count, coalesce(last_autovacuum::text, 'never'), autoanalyze_count)
 FROM pg_stat_user_tables s JOIN pg_class c ON c.oid = s.relid
 WHERE s.relname = 'jobrunr_jobs';

@@ -167,13 +167,13 @@ run_once() {
   local start_at=$(($(date +%s) + START_DELAY_SECONDS))
   log "Processing jobs on $NODE_COUNT node(s), starting in ${START_DELAY_SECONDS}s"
   local node0_command
-  node0_command=$(send_command "$(node_script "$run_id" node-0 "cluster_role=worker start_at=$start_at")" "$EXECUTION_TIMEOUT_SECONDS" "$NODE0_ID")
+  node0_command=$(send_command "$(node_script "$run_id" node-0 "cluster_role=worker node_index=0 start_at=$start_at")" "$EXECUTION_TIMEOUT_SECONDS" "$NODE0_ID")
 
   local -a worker_commands=()
   local node_index=0
   for id in ${WORKER_IDS[@]+"${WORKER_IDS[@]}"}; do
     node_index=$((node_index + 1))
-    worker_commands+=("$(send_command "$(node_script "$run_id" "node-$node_index" "cluster_role=worker start_at=$start_at")" "$EXECUTION_TIMEOUT_SECONDS" "$id")")
+    worker_commands+=("$(send_command "$(node_script "$run_id" "node-$node_index" "cluster_role=worker node_index=$node_index start_at=$start_at")" "$EXECUTION_TIMEOUT_SECONDS" "$id")")
   done
 
   local failed=0

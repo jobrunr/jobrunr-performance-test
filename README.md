@@ -62,6 +62,8 @@ There are many scenarios that are available for JobRunr Pro, including:
 - Scenario00CombinedScenario: a combination of all other scenarios (including rate limiting, dynamic queues, ...)
 - Scenario01ProcessJobs: Creates 500.000 jobs and processes them.
 - Scenario02ProcessJobsInDynamicQueues: Creates 500.000 jobs in multiple dynamic queues and processes them.
+- Scenario02ProcessJobsInNodeQueues: Splits the jobs evenly over one dynamic queue per cluster node; every node reserves
+  all its workers for its own queue (`node_index` per node).
 - Scenario04BatchJobs: Creates 10 batch jobs which in turn create 50.000 child jobs.
 
 ### Todo:
