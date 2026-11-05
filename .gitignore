@@ -38,3 +38,12 @@ build/
 .DS_Store
 
 performance-tests.log
+
+### AWS benchmarks ###
+aws/docker/build/
+aws/.image-tag
+**/.terraform/
+*.tfstate
+*.tfstate.*
+logbooks/aws/runs/
+logbooks/aws/details

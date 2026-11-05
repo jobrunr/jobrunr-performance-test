@@ -108,7 +108,14 @@ public abstract class AbstractSqlDataStore implements DataStore, AnalysingDataSt
         try (Connection connection = dataSource().getConnection()) {
             long endTime = System.nanoTime();
             connectionStatistics.accept(endTime - startTime);
-            return explainAnalyseQuery(connection, analyzeQueryWithValues);
+            // explain analyze executes the statement
+            connection.setAutoCommit(false);
+            try {
+                return explainAnalyseQuery(connection, analyzeQueryWithValues);
+            } finally {
+                connection.rollback();
+                connection.setAutoCommit(true);
+            }
         } catch (SQLException e) {
             return "Could not explain query plan for query '" + analyzeQueryWithValues + "' due to " + e.getMessage();
         }
@@ -176,6 +183,7 @@ public abstract class AbstractSqlDataStore implements DataStore, AnalysingDataSt
         config.setDriverClassName(driverClassName);
         config.setMinimumIdle(20);
         config.setMaximumPoolSize(40);
+        config.setMetricsTrackerFactory(new HikariConnectionTimings());
         return new HikariDataSource(config);
     }
 }

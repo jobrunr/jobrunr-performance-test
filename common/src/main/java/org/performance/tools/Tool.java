@@ -24,4 +24,12 @@ public interface Tool {
 
     void stop() throws Exception;
 
+    default void saveAmountOfExpectedJobs(long amountOfExpectedJobs) {
+        throw new UnsupportedOperationException(getName() + " does not support cluster mode");
+    }
+
+    default long getAmountOfExpectedJobs() {
+        throw new UnsupportedOperationException(getName() + " does not support cluster mode");
+    }
+
 }

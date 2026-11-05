@@ -1,6 +1,9 @@
 package org.performance.scenario;
 
 import org.performance.datastore.DataStore;
+import org.performance.datastore.sql.AbstractSqlDataStore;
+import org.performance.datastore.sql.HikariConnectionTimings;
+import org.performance.jobs.PerformanceTestJob;
 import org.performance.tools.Tool;
 import org.performance.utils.ArgUtils;
 import org.performance.utils.LogBookReporter;
@@ -9,9 +12,12 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 import static java.lang.Boolean.parseBoolean;
+import static java.lang.Long.parseLong;
 import static java.time.Instant.now;
 import static org.performance.utils.StringUtils.camelCaseToHumanReadable;
 
@@ -31,10 +37,10 @@ public abstract class AbstractScenario<T extends Tool> implements Scenario {
 
     protected AbstractScenario(T tool, Function<Scenario, ScenarioResult> scenarioResultCreator, DataStore dataStore, String[] args) {
         this.tool = tool;
-        this.scenarioProfiler = new ScenarioProfiler();
+        this.args = args;
+        this.scenarioProfiler = new ScenarioProfiler(getBooleanArg("enable_profiling"));
         this.scenarioResult = scenarioResultCreator.apply(this);
         this.dataStore = dataStore;
-        this.args = args;
         logTitle();
     }
 
@@ -43,12 +49,50 @@ public abstract class AbstractScenario<T extends Tool> implements Scenario {
     public void run() throws Exception {
         scenarioProfiler.start();
         startDataStoreAndInitializeTool();
-        createJobsAndUpdateStatistics();
-        processJobs();
-        appendToLogbook();
+        if (isClusterWorker()) {
+            scenarioResult.setAmountOfJobsCreated(tool.getAmountOfExpectedJobs(), null);
+            waitUntilStartTime();
+        } else {
+            createJobsAndUpdateStatistics();
+            if (isClusterLoader()) tool.saveAmountOfExpectedJobs(scenarioResult.getCreatedJobs());
+        }
+        if (!isClusterLoader()) {
+            processJobs();
+            if (isClusterWorker()) {
+                // parsed by aws/bin/run-cluster.sh
+                LOGGER.info("First job started at epoch millis: {}", PerformanceTestJob.startTime.get());
+            }
+            appendToLogbook();
+        }
         stopToolAndDataStore();
         scenarioProfiler.stop();
         exitJVMIfRequested();
+    }
+
+    protected boolean isClusterLoader() {
+        return "loader".equals(getClusterRole());
+    }
+
+    protected boolean isClusterWorker() {
+        return "worker".equals(getClusterRole());
+    }
+
+    private String getClusterRole() {
+        String clusterRole = getArg("cluster_role", "standalone");
+        if (!List.of("standalone", "loader", "worker").contains(clusterRole)) {
+            throw new IllegalArgumentException("Unknown cluster_role '" + clusterRole + "'. Valid values: standalone, loader, worker");
+        }
+        return clusterRole;
+    }
+
+    private void waitUntilStartTime() throws InterruptedException {
+        Instant startAt = Instant.ofEpochSecond(parseLong(getArg("start_at")));
+        Duration waitTime = Duration.between(now(), startAt);
+        if (waitTime.isNegative()) {
+            throw new IllegalStateException("Worker was initialized " + waitTime.negated() + " after start_at; increase the start delay");
+        }
+        LOGGER.info("Waiting {} until {} to start processing jobs", waitTime, startAt);
+        Thread.sleep(waitTime.toMillis());
     }
 
     private void logTitle() {
@@ -85,10 +129,22 @@ public abstract class AbstractScenario<T extends Tool> implements Scenario {
     }
 
     protected void processJobs() throws Exception {
+        HikariConnectionTimings connectionTimings = getConnectionTimings();
+        if (connectionTimings != null) connectionTimings.sinceLastRead();
         Instant startTime = startProcessingJobs();
         Instant endTime = waitForJobsToComplete();
         scenarioResult.setProcessingDuration(Duration.between(startTime, endTime));
         LOGGER.info("Processed {} jobs in {}", scenarioResult.getSucceededJobs(), scenarioResult.getProcessingDuration());
+        if (connectionTimings != null) {
+            // parsed by aws/bin/run-cluster.sh
+            LOGGER.info("Connections while processing (pool of {}): {}", ((AbstractSqlDataStore) dataStore).dataSource().getMaximumPoolSize(), connectionTimings.sinceLastRead());
+        }
+        LOGGER.info("Average job execution time on this node: {} µs", PerformanceTestJob.executionNanos.sum() / 1000.0 / Math.max(PerformanceTestJob.counter.get(), 1));
+    }
+
+    private HikariConnectionTimings getConnectionTimings() {
+        if (!(dataStore instanceof AbstractSqlDataStore sqlDataStore)) return null;
+        return sqlDataStore.dataSource().getMetricsTrackerFactory() instanceof HikariConnectionTimings timings ? timings : null;
     }
 
     protected void appendToLogbook(String... extraParams) {
@@ -102,10 +158,25 @@ public abstract class AbstractScenario<T extends Tool> implements Scenario {
     }
 
     protected Instant waitForJobsToComplete() throws Exception {
-        ScenarioMonitor scenarioMonitor = tool.createScenarioMonitor(scenarioResult.getCreatedJobs(), getMaxScenarioDuration());
-        scenarioMonitor.awaitForScenario();
+        ScenarioMonitor scenarioMonitor = tool.createScenarioMonitor(getSucceededJobsToAwait(), getMaxScenarioDuration());
+        boolean finished = scenarioMonitor.awaitForScenario();
+        Instant detectedAt = now();
         scenarioResult.setSucceededJobs(scenarioMonitor.getTotalAmountOfSucceededJobs());
-        return now();
+        if (isClusterWorker()) {
+            // parsed by aws/bin/run-cluster.sh
+            LOGGER.info("Jobs succeeded on this node: {}", scenarioResult.getSucceededJobs());
+        }
+        if (!finished) return detectedAt;
+        Optional<Instant> lastJobSucceededAt = scenarioMonitor.getLastJobSucceededAt();
+        if (isClusterWorker()) {
+            // parsed by aws/bin/run-cluster.sh
+            LOGGER.info("Last job succeeded at epoch millis: {}", lastJobSucceededAt.map(Instant::toEpochMilli).orElse(-1L));
+        }
+        return lastJobSucceededAt.orElse(detectedAt);
+    }
+
+    protected long getSucceededJobsToAwait() {
+        return scenarioResult.getCreatedJobs();
     }
 
     private void stopToolAndDataStore() throws Exception {

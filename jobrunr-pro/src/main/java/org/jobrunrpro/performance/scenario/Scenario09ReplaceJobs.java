@@ -2,7 +2,6 @@ package org.jobrunrpro.performance.scenario;
 
 import org.jobrunr.jobs.Job;
 import org.jobrunr.scheduling.BackgroundJob;
-import org.jobrunr.storage.listeners.JobStatsChangeListener;
 import org.jobrunrpro.performance.scenario.jobs.ReplaceableJob;
 import org.performance.datastore.DataStore;
 
@@ -10,7 +9,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
@@ -42,22 +40,15 @@ public class Scenario09ReplaceJobs extends AbstractJobRunrProScenario {
     }
 
     @Override
-    protected Instant waitForJobsToComplete() {
+    protected Instant waitForJobsToComplete() throws Exception {
         replacingDuration = createOrReplaceJobs(jobsIds);
+        return super.waitForJobsToComplete();
+    }
 
-        CountDownLatch latch = new CountDownLatch(1);
-        tool.getStorageProvider().addJobStorageOnChangeListener((JobStatsChangeListener) jobStats -> {
-            if (jobStats.getEnqueued() == 0 && jobStats.getProcessing() == 0 && jobStats.getSucceeded() >= jobsIds.size()) {
-                latch.countDown();
-            }
-        });
-        try {
-            latch.await();
-        } catch (InterruptedException e) {
-            throw new RuntimeException("Exception waiting for " + jobsIds.size() + " jobs to succeed", e);
-        }
-
-        return Instant.now();
+    @Override
+    protected long getSucceededJobsToAwait() {
+        // replaced jobs can succeed twice, so only idle workers end this scenario
+        return Long.MAX_VALUE;
     }
 
     @Override

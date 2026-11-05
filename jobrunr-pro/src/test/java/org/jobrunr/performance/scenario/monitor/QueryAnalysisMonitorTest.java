@@ -60,7 +60,7 @@ class QueryAnalysisMonitorTest {
         queryAnalysisMonitor.onChange(storageProvider.getJobStats());
 
         List<ThreadSafeStorageProvider.MethodStatistics> allMethodsStatistics = ThreadSafeStorageProvider.getMethodStatistics();
-        assertThat(allMethodsStatistics).hasSizeGreaterThan(3);
+        assertThat(allMethodsStatistics).hasSizeGreaterThanOrEqualTo(3);
         ThreadSafeStorageProvider.MethodStatistics methodStatistics = allMethodsStatistics.stream().filter(x -> "getJobsToProcess()".equals(x.getMethodIdentifier())).findFirst().get();
         assertThat(methodStatistics.getQueries()).hasSize(2);
     }

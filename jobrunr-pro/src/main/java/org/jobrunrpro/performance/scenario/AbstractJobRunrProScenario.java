@@ -6,11 +6,17 @@ import org.jobrunr.jobs.queues.Queues;
 import org.jobrunr.server.BackgroundJobServerConfiguration;
 import org.jobrunr.storage.JobRunrMetadata;
 import org.jobrunr.storage.ThreadSafeStorageProvider;
+import org.jobrunr.utils.mapper.JsonMapper;
+import org.jobrunr.utils.mapper.gson.GsonJsonMapper;
+import org.jobrunr.utils.mapper.jackson.JacksonJsonMapper;
+import org.jobrunr.utils.mapper.jackson3.Jackson3JsonMapper;
+import org.jobrunr.utils.mapper.jsonb.JsonbJsonMapper;
 import org.jobrunrpro.performance.JobRunrProTool;
 import org.jobrunrpro.performance.scenario.monitor.QueryAnalysisMonitor;
 import org.jobrunrpro.performance.utils.MarkdownReporter;
 import org.performance.datastore.AnalysingDataStore;
 import org.performance.datastore.DataStore;
+import org.performance.datastore.sql.PostgresAutovacuum;
 import org.performance.scenario.AbstractScenario;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +38,11 @@ public abstract class AbstractJobRunrProScenario extends AbstractScenario<JobRun
     }
 
     public BackgroundJobServerConfiguration getBackgroundJobServerConfiguration() {
-        return usingStandardBackgroundJobServerConfiguration().andPollIntervalInSeconds(5);
+        BackgroundJobServerConfiguration configuration = usingStandardBackgroundJobServerConfiguration().andPollIntervalInSeconds(5);
+        String workerCount = getArg("worker_count");
+        if (workerCount == null) return configuration;
+        LOGGER.info("Using worker count {}", workerCount);
+        return configuration.andWorkerCount(parseInt(workerCount));
     }
 
     public JobRunrDashboardWebServerConfiguration getDashboardWebServerConfiguration() {
@@ -41,9 +51,30 @@ public abstract class AbstractJobRunrProScenario extends AbstractScenario<JobRun
         return JobRunrDashboardWebServerConfiguration.usingStandardDashboardConfiguration().andPort(dashboardPort);
     }
 
+    public JsonMapper getJsonMapper() {
+        String jsonMapper = getArg("json_mapper", "jackson");
+        LOGGER.info("Using JsonMapper {}", jsonMapper);
+        return switch (jsonMapper.toLowerCase()) {
+            case "jackson" -> new JacksonJsonMapper();
+            case "jackson3" -> new Jackson3JsonMapper();
+            case "gson" -> new GsonJsonMapper();
+            case "jsonb" -> new JsonbJsonMapper();
+            default -> throw new IllegalArgumentException("Unknown json_mapper '" + jsonMapper + "'. Valid values: jackson, jackson3, gson, jsonb");
+        };
+    }
+
+    @Override
+    protected void initializeTool() throws Exception {
+        super.initializeTool();
+        // lets BackgroundJobServers skip the startup migrations
+        if (!isClusterWorker()) {
+            tool.getStorageProvider().saveMetadata(new JobRunrMetadata("database_version", "cluster", JobRunrPro.VERSION));
+            if (getBooleanArg("pg_aggressive_autovacuum")) PostgresAutovacuum.makeAggressive(dataStore, "jobrunr_jobs");
+        }
+    }
+
     @Override
     protected Instant startProcessingJobs() throws Exception {
-        tool.getStorageProvider().saveMetadata(new JobRunrMetadata("database_version", "cluster", JobRunrPro.VERSION));
         Instant startTime = super.startProcessingJobs();
         if (isDataStoreQueryTimeLoggingEnabled()) {
             ThreadSafeStorageProvider.setMethodStatisticsConfiguration(DETAILED);

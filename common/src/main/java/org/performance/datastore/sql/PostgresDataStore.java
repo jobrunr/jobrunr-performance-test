@@ -3,6 +3,7 @@ package org.performance.datastore.sql;
 import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.PortBinding;
 import com.github.dockerjava.api.model.Ports;
+import com.zaxxer.hikari.HikariDataSource;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import java.sql.Connection;
@@ -13,7 +14,7 @@ import java.util.List;
 public class PostgresDataStore extends AbstractSqlContainerDataStore<PostgreSQLContainer> {
 
     public PostgresDataStore() {
-        super(new PostgreSQLContainer("postgres:18.4")
+        super(new PostgreSQLContainer("postgres:18.6")
                 .withCreateContainerCmdModifier(cmd ->
                         cmd.withHostConfig(cmd.getHostConfig().withPortBindings(new PortBinding(Ports.Binding.bindPort(54320), new ExposedPort(5432)))
                         )).withCommand("postgres",
@@ -21,6 +22,15 @@ public class PostgresDataStore extends AbstractSqlContainerDataStore<PostgreSQLC
                         "-c", "random_page_cost=1.1",
                         "-c", "shared_preload_libraries=pg_stat_statements",
                         "-c", "pg_stat_statements.track=all"));
+    }
+
+    @Override
+    protected HikariDataSource toHikariDataSource(String jdbcUrl, String userName, String password, String driverClassName) {
+        return super.toHikariDataSource(withDriverSettings(jdbcUrl), userName, password, driverClassName);
+    }
+
+    static String withDriverSettings(String jdbcUrl) {
+        return jdbcUrl + (jdbcUrl.contains("?") ? "&" : "?") + "reWriteBatchedInserts=true";
     }
 
     @Override

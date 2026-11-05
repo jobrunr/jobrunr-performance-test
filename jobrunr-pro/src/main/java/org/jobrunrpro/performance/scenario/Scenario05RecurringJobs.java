@@ -1,18 +1,23 @@
 package org.jobrunrpro.performance.scenario;
 
 import org.jobrunr.jobs.RecurringJob;
+import org.jobrunr.jobs.details.JobDetailsAsmGenerator;
+import org.jobrunr.jobs.lambdas.JobLambda;
 import org.performance.datastore.DataStore;
 import org.performance.jobs.PerformanceTestJob;
 
 import java.time.Duration;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.IntStream;
 
 import static java.lang.Integer.parseInt;
 import static java.lang.String.format;
-import static org.jobrunr.jobs.RecurringJobTestBuilder.aDefaultRecurringJob;
+import static org.jobrunr.scheduling.ScheduleExpressionType.createScheduleFromString;
 
 public class Scenario05RecurringJobs extends AbstractJobRunrProScenario {
+
+    private static final JobDetailsAsmGenerator JOB_DETAILS_GENERATOR = new JobDetailsAsmGenerator();
 
     public Scenario05RecurringJobs(DataStore dataStore, String[] args) {
         super(dataStore, args);
@@ -23,12 +28,8 @@ public class Scenario05RecurringJobs extends AbstractJobRunrProScenario {
         PerformanceTestJob performanceTestJob = new PerformanceTestJob();
         int totalAmountOfRecurringJobs = parseInt(getArg("amount", "50_000").replace("_", ""));
         List<RecurringJob> recurringJobs = IntStream.range(0, totalAmountOfRecurringJobs).boxed()
-                .map(i -> aDefaultRecurringJob()
-                        .withId(format("rj-%05d", i))
-                        .withCronExpression("*/2 * * * *")
-                        .withLabels("every 2 min")
-                        .withJobLambda(() -> performanceTestJob.testJob(totalAmountOfRecurringJobs, i))
-                        .build())
+                .map(i -> recurringJob(format("rj-%05d", i), "*/2 * * * *", "every 2 min",
+                        () -> performanceTestJob.testJob(totalAmountOfRecurringJobs, i)))
                 .toList();
 
         long startTime = System.nanoTime();
@@ -49,12 +50,8 @@ public class Scenario05RecurringJobs extends AbstractJobRunrProScenario {
             List<RecurringJob> recurringJobsEvery15Seconds = IntStream.range(0, 1000).boxed()
                     .map(j -> {
                         int index = finalI * j;
-                        return aDefaultRecurringJob()
-                                .withId(format("sec-%d-%03d", finalI * 15, j))
-                                .withCronExpression(format("%d * * * * *", finalI * 15))
-                                .withLabels(format("%d * * * * *", finalI * 15))
-                                .withJobLambda(() -> performanceTestJob.testJob(1000, index))
-                                .build();
+                        return recurringJob(format("sec-%d-%03d", finalI * 15, j), format("%d * * * * *", finalI * 15), format("%d * * * * *", finalI * 15),
+                                () -> performanceTestJob.testJob(1000, index));
                     })
                     .toList();
 
@@ -62,12 +59,8 @@ public class Scenario05RecurringJobs extends AbstractJobRunrProScenario {
         }
 
         List<RecurringJob> recurringJobsEvery15Seconds = IntStream.range(0, 1000).boxed()
-                .map(j -> aDefaultRecurringJob()
-                        .withId(format("every-15-sec-%03d", j))
-                        .withCronExpression("*/15 * * * * *")
-                        .withLabels("*/15 * * * * *")
-                        .withJobLambda(() -> performanceTestJob.testJob(1000, j))
-                        .build())
+                .map(j -> recurringJob(format("every-15-sec-%03d", j), "*/15 * * * * *", "*/15 * * * * *",
+                        () -> performanceTestJob.testJob(1000, j)))
                 .toList();
 
         tool.getStorageProvider().saveRecurringJobs(recurringJobsEvery15Seconds);
@@ -75,5 +68,12 @@ public class Scenario05RecurringJobs extends AbstractJobRunrProScenario {
         return (5L * totalAmountOfRecurringJobs) // jobs scheduled ahead of time during 10 min
                 + (4 * 1000 * 11) // jobs running every minute (15 * * * *, ...) during 10 min;
                 + (4 * 1000 * 10); // jobs scheduled every 15 seconds during 10 min;
+    }
+
+    private static RecurringJob recurringJob(String id, String cronExpression, String label, JobLambda job) {
+        RecurringJob recurringJob = new RecurringJob(id, JOB_DETAILS_GENERATOR.toJobDetails(job), createScheduleFromString(cronExpression), ZoneId.systemDefault(), RecurringJob.CreatedBy.API);
+        recurringJob.setJobName("a recurring job");
+        recurringJob.setLabels(List.of(label));
+        return recurringJob;
     }
 }
