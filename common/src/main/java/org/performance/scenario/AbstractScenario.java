@@ -50,10 +50,11 @@ public abstract class AbstractScenario<T extends Tool> implements Scenario {
         scenarioProfiler.start();
         startDataStoreAndInitializeTool();
         if (isClusterWorker()) {
-            scenarioResult.setAmountOfJobsCreated(parseLong(getArg("amount", "0").replace("_", "")), null);
+            scenarioResult.setAmountOfJobsCreated(tool.getAmountOfExpectedJobs(), null);
             waitUntilStartTime();
         } else {
             createJobsAndUpdateStatistics();
+            if (isClusterLoader()) tool.saveAmountOfExpectedJobs(scenarioResult.getCreatedJobs());
         }
         if (!isClusterLoader()) {
             processJobs();
@@ -157,10 +158,14 @@ public abstract class AbstractScenario<T extends Tool> implements Scenario {
     }
 
     protected Instant waitForJobsToComplete() throws Exception {
-        ScenarioMonitor scenarioMonitor = tool.createScenarioMonitor(scenarioResult.getCreatedJobs(), getMaxScenarioDuration());
+        ScenarioMonitor scenarioMonitor = tool.createScenarioMonitor(getSucceededJobsToAwait(), getMaxScenarioDuration());
         boolean finished = scenarioMonitor.awaitForScenario();
         Instant detectedAt = now();
         scenarioResult.setSucceededJobs(scenarioMonitor.getTotalAmountOfSucceededJobs());
+        if (isClusterWorker()) {
+            // parsed by aws/bin/run-cluster.sh
+            LOGGER.info("Jobs succeeded on this node: {}", scenarioResult.getSucceededJobs());
+        }
         if (!finished) return detectedAt;
         Optional<Instant> lastJobSucceededAt = scenarioMonitor.getLastJobSucceededAt();
         if (isClusterWorker()) {
@@ -168,6 +173,10 @@ public abstract class AbstractScenario<T extends Tool> implements Scenario {
             LOGGER.info("Last job succeeded at epoch millis: {}", lastJobSucceededAt.map(Instant::toEpochMilli).orElse(-1L));
         }
         return lastJobSucceededAt.orElse(detectedAt);
+    }
+
+    protected long getSucceededJobsToAwait() {
+        return scenarioResult.getCreatedJobs();
     }
 
     private void stopToolAndDataStore() throws Exception {

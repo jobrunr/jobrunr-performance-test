@@ -211,6 +211,11 @@ run_once() {
                                   END { if (n == nodes && m > 0) printf "%d %d\n", max, max - min; else print "n/a n/a" }')
   local row
   row=$(tail -1 "$csv" | tr -d '\r')
+  # nodes stop on their own, so node 0's row only has its own jobs
+  local succeeded
+  succeeded=$(grep -Eho 'Jobs succeeded on this node: [0-9]+' "$local_dir"/*/stdout.log | awk '{ sum += $NF } END { print sum + 0 }')
+  row=$(echo "$row" | awk -F, -v OFS=, -v succeeded="$succeeded" \
+    '{ if ($8 > 0) $11 = sprintf("%.2f", $11 * succeeded / $8); $8 = succeeded; print }')
   if [ "$last_succeeded_at" != "n/a" ]; then
     row=$(echo "$row" | awk -F, -v OFS=, -v millis=$((last_succeeded_at - start_at * 1000)) \
       '{ $10 = sprintf("PT%.3fS", millis / 1000); $11 = sprintf("%.2f", $8 / (millis / 1000)); print }')

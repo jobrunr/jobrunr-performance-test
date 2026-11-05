@@ -1,5 +1,5 @@
 CREATE TEMP VIEW statements AS SELECT * FROM pg_stat_statements WHERE toplevel AND calls > 0;
-SELECT format('JobStats queries (the scenario monitor on every node, every poll interval): %s calls, %s%% of the execution time',
+SELECT format('JobStats queries: %s calls, %s%% of the execution time',
               coalesce(sum(calls) FILTER (WHERE query LIKE '%jobrunr_jobs_stats%'), 0),
               round((100 * coalesce(sum(total_exec_time) FILTER (WHERE query LIKE '%jobrunr_jobs_stats%'), 0) / nullif(sum(total_exec_time), 0))::numeric, 2))
 FROM statements;

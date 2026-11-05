@@ -8,6 +8,7 @@ import org.jobrunr.jobs.queues.Queues;
 import org.jobrunr.scheduling.JobScheduler;
 import org.jobrunr.server.BackgroundJobServer;
 import org.jobrunr.server.BackgroundJobServerConfiguration;
+import org.jobrunr.server.BackgroundJobServerConfigurationReader;
 import org.jobrunr.storage.DatabaseOptions;
 import org.jobrunr.storage.JobRunrMetadata;
 import org.jobrunr.storage.StorageProvider;
@@ -15,13 +16,13 @@ import org.jobrunr.storage.nosql.mongo.MongoDBStorageProvider;
 import org.jobrunr.storage.sql.common.SqlStorageProviderFactory;
 import org.jobrunr.utils.mapper.JsonMapper;
 import org.jobrunrpro.performance.scenario.AbstractJobRunrProScenario;
-import org.jobrunrpro.performance.scenario.monitor.JobRunrProScenarioMonitor;
-import org.jobrunrpro.performance.scenario.monitor.LastSucceededJobTracker;
+import org.jobrunrpro.performance.scenario.monitor.JobActivityTracker;
 import org.performance.datastore.DataStore;
 import org.performance.datastore.nosql.MongoDBDataStore;
 import org.performance.datastore.sql.AbstractSqlDataStore;
 import org.performance.scenario.Scenario;
 import org.performance.scenario.ScenarioMonitor;
+import org.performance.scenario.JobActivityScenarioMonitor;
 import org.performance.tools.Tool;
 import org.performance.utils.JarUtils;
 import org.slf4j.Logger;
@@ -37,9 +38,11 @@ import static org.performance.utils.StringUtils.isNullOrEmpty;
 public class JobRunrProTool implements Tool {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JobRunrProTool.class);
+    private static final String EXPECTED_JOBS_METADATA = "performance-test-expected-jobs";
+    private static final String EXPECTED_JOBS_METADATA_OWNER = "cluster";
 
     private StorageProvider storageProvider;
-    private final LastSucceededJobTracker lastSucceededJobTracker = new LastSucceededJobTracker();
+    private final JobActivityTracker jobActivityTracker = new JobActivityTracker(JobRunrPro::getBackgroundJobServer);
     private JobRunrConfiguration.JobRunrConfigurationResult jobRunrPro;
     private final String jobRunrProLicenseFromEnv;
 
@@ -93,7 +96,7 @@ public class JobRunrProTool implements Tool {
                 .useStorageProvider(storageProvider)
                 .useBackgroundJobServer(backgroundJobServerConfiguration, false)
                 .useDashboardIf(dashboardWebServerConfiguration != null, dashboardWebServerConfiguration)
-                .withJobFilter(lastSucceededJobTracker)
+                .withJobFilter(jobActivityTracker)
                 .initialize();
     }
 
@@ -109,14 +112,27 @@ public class JobRunrProTool implements Tool {
 
     @Override
     public ScenarioMonitor createScenarioMonitor(long createdJobs, Duration maxScenarioDuration) throws Exception {
-        JobRunrProScenarioMonitor scenarioMonitor = new JobRunrProScenarioMonitor(createdJobs, maxScenarioDuration, lastSucceededJobTracker);
-        storageProvider.addJobStorageOnChangeListener(scenarioMonitor);
-        return scenarioMonitor;
+        BackgroundJobServerConfigurationReader configuration = JobRunrPro.getBackgroundJobServer().getConfiguration();
+        return new JobActivityScenarioMonitor(createdJobs, maxScenarioDuration, jobActivityTracker, configuration.getPollInterval(), configuration.getServerTimeoutPollIntervalMultiplicand());
     }
 
     @Override
     public void stop() {
         JobRunrPro.destroy();
+    }
+
+    @Override
+    public void saveAmountOfExpectedJobs(long amountOfExpectedJobs) {
+        storageProvider.saveMetadata(new JobRunrMetadata(EXPECTED_JOBS_METADATA, EXPECTED_JOBS_METADATA_OWNER, amountOfExpectedJobs));
+    }
+
+    @Override
+    public long getAmountOfExpectedJobs() {
+        JobRunrMetadata amountOfExpectedJobs = storageProvider.getMetadata(EXPECTED_JOBS_METADATA, EXPECTED_JOBS_METADATA_OWNER);
+        if (amountOfExpectedJobs == null) {
+            throw new IllegalStateException("No expected amount of jobs found, the loader must finish before the workers start");
+        }
+        return amountOfExpectedJobs.getValueAsLong();
     }
 
     public StorageProvider getStorageProvider() {

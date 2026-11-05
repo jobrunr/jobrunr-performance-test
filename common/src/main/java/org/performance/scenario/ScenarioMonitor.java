@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 public abstract class ScenarioMonitor {
 
     protected final long totalAmountOfJobs;
-    private final Duration maxDuration;
+    protected final Duration maxDuration;
     protected final CountDownLatch countDownLatch;
 
     public ScenarioMonitor(long totalAmountOfJobs) {
